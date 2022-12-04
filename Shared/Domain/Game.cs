@@ -1,47 +1,57 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace Shared.Domain;
 
 public class Game
 {
-    // 
-    Dictionary<string, Player> players = new();
+    List<Player> players = new();
 
+    public Dictionary<Player, int> RankList { get; set; } = new(); // 玩家名次 {玩家,名次}
 
     public void AddPlayer(string id)
     {
-        players.Add(id, new Player());
+        players.Add(new Player(id));
     }
 
     public void SetState(string id, PlayerState playerState)
     {
-        // 不會做事
-        FindPlayerById(id)?.SetState(playerState);
-    }
-
-    public Player? Settlement()
-    {
-        // 跟我剛才寫的一樣
-        // 先filter，再儲存，然後長度為一就是結束，最後把player從那個長度唯一的變數取出來
-        // 感覺我是專門提供想法的XD
-        var notBankruptPlayer = players.Where(p => !p.Value.IsBankrupt());
-        if (notBankruptPlayer.Count() == 1) {
-            return notBankruptPlayer.First().Value;
+        var player = FindPlayerById(id);
+        if (player == null)
+        {
+            return;
         }
-        // 回傳沒破產的很奇怪，因為還有其他的就代表還沒結束
-        // 但 null 很危險
-        return null;
+        // 不會做事
+        player.SetState(playerState);
+        //破產時，將名次加入名次清單
+        if (playerState == PlayerState.Bankrupt)
+        {
+            AddPlayerToRankList(player);
+        }
     }
 
-    // unsafe
-    public Player? FindPlayerById(string id)
+    public void Settlement()
     {
-        Player? player;
-        players.TryGetValue(id, out player); // return bool
-
-        return player;
+        // 玩家資產計算方式: 土地價格+升級價格+剩餘金額
+        
+        // 排序未破產玩家的資產並加入名次清單
+        var playerList = from p in players
+            where !p.IsBankrupt()
+            orderby p.Money + p.LandContractList.Sum(l => l.Price + (l.House * l.Price)) ascending
+            select p;
+        foreach (var player in playerList)
+        {
+            AddPlayerToRankList(player);
+        }
     }
+
+    private void AddPlayerToRankList(Player player)
+    {
+        foreach(var rank in RankList){
+            RankList[rank.Key] += 1;
+        }
+        RankList.Add(player, 1);
+    }
+
+    // if not find return
+    public Player? FindPlayerById(string id) => players.FirstOrDefault(p => p.Id == id);
+
+
 }
