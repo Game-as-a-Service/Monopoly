@@ -2,9 +2,15 @@ namespace Shared.Domain;
 
 public class Game
 {
+    private readonly Map _map;
+    public Game(Map? map = null){
+        _map = map ?? new Map(new IBlock[0][]);
+    }
+
     List<Player> players = new();
 
     public Dictionary<Player, int> RankList { get; set; } = new(); // 玩家名次 {玩家,名次}
+    public Map Map => _map;
 
     public void AddPlayer(Player player)
     {
