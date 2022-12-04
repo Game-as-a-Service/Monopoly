@@ -10,17 +10,16 @@ public class GameTest
         // Arrange
         Game game = new();
         // 玩家 A B C
-        string id_a = "A";
-        string id_b = "B";
-        string id_c = "C";
-        
-        game.AddPlayer(id_a);
-        game.AddPlayer(id_b);
-        game.AddPlayer(id_c);
+        var player_a = new Player("A");
+        var player_b = new Player("B");
+        var player_c = new Player("C");
+        game.AddPlayer(player_a);
+        game.AddPlayer(player_b);
+        game.AddPlayer(player_c);
 
         // 玩家 B、C 破產
-        game.SetState(id_b, PlayerState.Bankrupt);
-        game.SetState(id_c, PlayerState.Bankrupt);
+        game.SetState(player_b, PlayerState.Bankrupt);
+        game.SetState(player_c, PlayerState.Bankrupt);
         
         // Act
         // 遊戲結算
@@ -28,12 +27,9 @@ public class GameTest
         
         // Assert
         // 玩家A獲勝
-        var playerA = game.FindPlayerById(id_a);
-        Assert.AreEqual(1, game.RankList[playerA]);
-        Player playerB = game.FindPlayerById(id_b);
-        Assert.AreEqual(3, game.RankList[playerB]);
-        Player playerC = game.FindPlayerById(id_c);
-        Assert.AreEqual(2, game.RankList[playerC]);
+        Assert.AreEqual(1, game.RankList[player_a]);
+        Assert.AreEqual(3, game.RankList[player_b]);
+        Assert.AreEqual(2, game.RankList[player_c]);
 
     }
 
@@ -43,42 +39,33 @@ public class GameTest
         // Arrange
         Game game = new();
         // 玩家 A B C D
-        string id_a = "A";
-        string id_b = "B";
-        string id_c = "C";
-        string id_d = "D";
-        
-        game.AddPlayer(id_a);
-        game.AddPlayer(id_b);
-        game.AddPlayer(id_c);
-        game.AddPlayer(id_d);
+        var player_a = new Player("A");
+        var player_b = new Player("B");
+        var player_c = new Player("C");
+        var player_d = new Player("D");
+        game.AddPlayer(player_a);
+        game.AddPlayer(player_b);
+        game.AddPlayer(player_c);
+        game.AddPlayer(player_d);
 
-        // 土地+升級+剩餘金額
-        // 玩家 A 的結算金額為 5000
-        // 升級價格固定為土地購買價
-        var playerA = game.FindPlayerById(id_a);
-        // 土地價格 持有人(null) 升級次數
-        var landContractA1 = new LandContract(2000, playerA);
+        var landContractA1 = new LandContract(2000, player_a);
         landContractA1.Upgrade();
-        playerA?.AddLandContract(landContractA1); 
-        playerA?.AddMoney(1000);
+        player_a.AddLandContract(landContractA1); 
+        player_a.AddMoney(1000);
 
         // 玩家 B 的結算金額為 4000
-        var playerB = game.FindPlayerById(id_b);
-        var landContractB1 = new LandContract(2000, playerB);
+        var landContractB1 = new LandContract(2000, player_b);
         landContractB1.Upgrade();
-        playerB?.AddLandContract(landContractB1); 
+        player_b.AddLandContract(landContractB1); 
 
         // 玩家 C 的結算金額為 3000
-        var playerC = game.FindPlayerById(id_c);
-        var landContractC1 = new LandContract(2000, playerC);
-        playerC?.AddLandContract(landContractC1); 
-        playerC?.AddMoney(1000);
+        var landContractC1 = new LandContract(2000, player_c);
+        player_c.AddLandContract(landContractC1); 
+        player_c.AddMoney(1000);
 
         // 玩家 D 的結算金額為 2000
-        var playerD = game.FindPlayerById(id_d);
-        var landContractD1 = new LandContract(2000, playerD);
-        playerD?.AddLandContract(landContractD1); 
+        var landContractD1 = new LandContract(2000, player_d);
+        player_d.AddLandContract(landContractD1); 
         
         // Act
         // 遊戲結算
@@ -87,9 +74,9 @@ public class GameTest
         // Assert
         // 名次為 A B C D
         var ranking = game.RankList;
-        Assert.AreEqual(1, ranking[playerA]);
-        Assert.AreEqual(2, ranking[playerB]);
-        Assert.AreEqual(3, ranking[playerC]);
-        Assert.AreEqual(4, ranking[playerD]);
+        Assert.AreEqual(1, ranking[player_a]);
+        Assert.AreEqual(2, ranking[player_b]);
+        Assert.AreEqual(3, ranking[player_c]);
+        Assert.AreEqual(4, ranking[player_d]);
     }
 }

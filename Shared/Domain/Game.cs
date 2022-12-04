@@ -6,19 +6,13 @@ public class Game
 
     public Dictionary<Player, int> RankList { get; set; } = new(); // 玩家名次 {玩家,名次}
 
-    public void AddPlayer(string id)
+    public void AddPlayer(Player player)
     {
-        players.Add(new Player(id));
+        players.Add(player);
     }
 
-    public void SetState(string id, PlayerState playerState)
+    public void SetState(Player player, PlayerState playerState)
     {
-        var player = FindPlayerById(id);
-        if (player == null)
-        {
-            return;
-        }
-        // 不會做事
         player.SetState(playerState);
         //破產時，將名次加入名次清單
         if (playerState == PlayerState.Bankrupt)
