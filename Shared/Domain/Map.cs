@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace Shared.Domain;
 
 public class Map
@@ -38,7 +36,7 @@ public class Map
             }
         }
     }
-    public void PlayerMove(Player player, string blockId, Direction direction)
+    public void SetPlayerToBlock(Player player, string blockId, Direction direction)
     {
         _playerPositionDictionary[player] = (FindBlockById(blockId), direction); 
     }
@@ -108,10 +106,7 @@ public class Map
         return directions.ToArray();
     }
 
-    public IBlock GetPlayerPositionBlock(Player player)
-    {
-        return _playerPositionDictionary[player].block;
-    }
+    public (IBlock block, Direction direction) GetPlayerPosition(Player player) => _playerPositionDictionary[player];
 
     public enum Direction
     {
