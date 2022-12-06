@@ -27,9 +27,9 @@ public class GameTest
         
         // Assert
         // 玩家A獲勝
-        Assert.AreEqual(1, game.RankList[player_a]);
-        Assert.AreEqual(3, game.RankList[player_b]);
-        Assert.AreEqual(2, game.RankList[player_c]);
+        Assert.AreEqual(1, game.PlayerRankDictionary[player_a]);
+        Assert.AreEqual(3, game.PlayerRankDictionary[player_b]);
+        Assert.AreEqual(2, game.PlayerRankDictionary[player_c]);
 
     }
 
@@ -73,7 +73,7 @@ public class GameTest
         
         // Assert
         // 名次為 A B C D
-        var ranking = game.RankList;
+        var ranking = game.PlayerRankDictionary;
         Assert.AreEqual(1, ranking[player_a]);
         Assert.AreEqual(2, ranking[player_b]);
         Assert.AreEqual(3, ranking[player_c]);

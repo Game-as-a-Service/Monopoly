@@ -1,3 +1,5 @@
+using static Shared.Domain.Map;
+
 namespace Shared.Domain;
 
 [TestClass]
@@ -12,14 +14,14 @@ public class MoveChessTest
         var player = new Player("A");
         game.AddPlayer(player);
 
-        game.Map.PlayerMove(player, "F4", Map.Direction.Up);
+        game.SetPlayerToBlock(player, "F4", Map.Direction.Up);
         var point = 6; // TODO: 這邊應該要用骰子的結果
 
         // Act
-        game.Map.PlayerMove(player, point);
+        game.PlayerMove(player, point);
 
         // Assert
-        Assert.AreEqual("A4", game.Map.GetPlayerPositionBlock(player).Id);
+        Assert.AreEqual("A4" , game.GetPlayerPosition(player).Id);
     }
 
     IBlock[][] SevenXSevenMap()
