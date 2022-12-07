@@ -58,11 +58,11 @@ public class Map
         var (block, direction) = _playerPositionDictionary[player];
         for (int i = 0; i < moveCount; i++)
         {
-            block = GetNextBlock(block!, direction);
-            var nextDirection = GetNextDirection(block, direction);
-            if (nextDirection.Count() == 1)
+            var (nextBlock, nextBlockDirections) = GetNextBlockAndDirections(block, direction);
+            block = nextBlock;
+            if (nextBlockDirections.Length == 1)
             {
-                direction = nextDirection.First();
+                direction = nextBlockDirections[0];
             }
             else
             {
@@ -72,38 +72,34 @@ public class Map
         _playerPositionDictionary[player] = (block, direction);
     }
 
-    private IBlock? GetNextBlock(IBlock block, Direction direction)
+    // 得到下一個 Block 及方向
+    private (IBlock NextBlock, Direction[] NextBlockDirections) GetNextBlockAndDirections(IBlock currentBlock, Direction currentDirection)
     {
-        return direction switch
+        // 先得到 下一個 Block
+        var nextBlock = currentDirection switch
         {
-            Direction.Up => block.Up,
-            Direction.Down => block.Down,
-            Direction.Left => block.Left,
-            Direction.Right => block.Right,
-            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+            Direction.Up => currentBlock.Up!,
+            Direction.Down => currentBlock.Down!,
+            Direction.Left => currentBlock.Left!,
+            Direction.Right => currentBlock.Right!,
+            _ => throw new ArgumentOutOfRangeException(nameof(currentDirection), currentDirection, null)
         };
-    }
-    // 得到 block 可以移動的方向，且不能走回頭路
-    private Direction[] GetNextDirection(IBlock block, Direction currentDirection)
-    {
-        var directions = new List<Direction>();
-        if (block.Up != null && currentDirection != Direction.Down)
+        // 再得到 下一個 Block 可以移動的方向
+        var nextBlockDirections = new[]
         {
-            directions.Add(Direction.Up);
+            (direction: Direction.Up, block: nextBlock.Up),
+            (direction: Direction.Down, block: nextBlock.Down),
+            (direction: Direction.Left, block: nextBlock.Left),
+            (direction: Direction.Right, block: nextBlock.Right)
         }
-        if (block.Down != null && currentDirection != Direction.Up)
+        .Where(x => x.block != null && x.direction != currentDirection.Opposite())
+        .Select(x => x.direction)
+        .ToArray();
+        if (nextBlockDirections.Length == 0)
         {
-            directions.Add(Direction.Down);
+            throw new Exception("無法移動");
         }
-        if (block.Left != null && currentDirection != Direction.Right)
-        {
-            directions.Add(Direction.Left);
-        }
-        if (block.Right != null && currentDirection != Direction.Left)
-        {
-            directions.Add(Direction.Right);
-        }
-        return directions.ToArray();
+        return (nextBlock, nextBlockDirections);
     }
 
     public (IBlock block, Direction direction) GetPlayerPosition(Player player) => _playerPositionDictionary[player];
@@ -114,5 +110,20 @@ public class Map
         Down,
         Left,
         Right
+    }
+}
+
+public static class DirectionExtension
+{
+    public static Map.Direction Opposite(this Map.Direction direction)
+    {
+        return direction switch
+        {
+            Map.Direction.Up => Map.Direction.Down,
+            Map.Direction.Down => Map.Direction.Up,
+            Map.Direction.Left => Map.Direction.Right,
+            Map.Direction.Right => Map.Direction.Left,
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+        };
     }
 }
