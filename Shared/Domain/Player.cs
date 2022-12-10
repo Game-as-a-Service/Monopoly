@@ -33,5 +33,14 @@ public class Player
         this.money += money;
     }
 
+    public LandContract SellLandContract(string id, int price) {
+        var landContract = landContractList.Where(land => {
+            if (land.Id == id) return true;
+            return false;
+        });
+
+        return landContract.First().DefaultPrice(price);
+    }
+
     internal IList<LandContract> LandContractList => landContractList.AsReadOnly();
 }
