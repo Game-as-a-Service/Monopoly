@@ -9,13 +9,9 @@ public class BuyRealEstateTest
                b_id = "b",
                c_id = "c";
 
-        Player a = new(a_id),
-               b = new(b_id),
-               c = new(c_id);
-
-        a.AddMoney(1000);
-        b.AddMoney(2000);
-        c.AddMoney(3000);
+        Player a = new(a_id, 1000),
+               b = new(b_id, 2000),
+               c = new(c_id, 3000);
 
         a.AddLandContract(new(1000, a, "A1"));
         var landContract = a.SellLandContract("A1");
@@ -32,13 +28,9 @@ public class BuyRealEstateTest
                b_id = "b",
                c_id = "c";
 
-        Player a = new(a_id),
-               b = new(b_id),
-               c = new(c_id);
-
-        a.AddMoney(1000);
-        b.AddMoney(2000);
-        c.AddMoney(3000);
+        Player a = new(a_id, 1000),
+               b = new(b_id, 2000),
+               c = new(c_id, 3000);
         
         a.AddLandContract(new(1000, a, "A1"));
         var landContract = a.SellLandContract("A1");
@@ -58,13 +50,9 @@ public class BuyRealEstateTest
                b_id = "b",
                c_id = "c";
 
-        Player a = new(a_id),
-               b = new(b_id),
-               c = new(c_id);
-
-        a.AddMoney(1000);
-        b.AddMoney(2000);
-        c.AddMoney(3000);
+        Player a = new(a_id, 1000),
+               b = new(b_id, 2000),
+               c = new(c_id, 3000);
         
         a.AddLandContract(new(1000, a, "A1"));
         var landContract = a.SellLandContract("A1");

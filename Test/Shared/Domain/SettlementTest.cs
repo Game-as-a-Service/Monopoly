@@ -11,15 +11,15 @@ public class GameTest
         Game game = new();
         // 玩家 A B C
         var player_a = new Player("A");
-        var player_b = new Player("B");
-        var player_c = new Player("C");
+        var player_b = new Player("B", 0);
+        var player_c = new Player("C", 0);
         game.AddPlayer(player_a);
         game.AddPlayer(player_b);
         game.AddPlayer(player_c);
 
         // 玩家 B、C 破產
-        game.SetState(player_b, PlayerState.Bankrupt);
-        game.SetState(player_c, PlayerState.Bankrupt);
+        game.UpdatePlayerState(player_b);
+        game.UpdatePlayerState(player_c);
         
         // Act
         // 遊戲結算
@@ -27,9 +27,9 @@ public class GameTest
         
         // Assert
         // 玩家A獲勝
-        Assert.AreEqual(1, game.RankList[player_a]);
-        Assert.AreEqual(3, game.RankList[player_b]);
-        Assert.AreEqual(2, game.RankList[player_c]);
+        Assert.AreEqual(1, game.PlayerRankDictionary[player_a]);
+        Assert.AreEqual(3, game.PlayerRankDictionary[player_b]);
+        Assert.AreEqual(2, game.PlayerRankDictionary[player_c]);
 
     }
 
@@ -73,7 +73,7 @@ public class GameTest
         
         // Assert
         // 名次為 A B C D
-        var ranking = game.RankList;
+        var ranking = game.PlayerRankDictionary;
         Assert.AreEqual(1, ranking[player_a]);
         Assert.AreEqual(2, ranking[player_b]);
         Assert.AreEqual(3, ranking[player_c]);

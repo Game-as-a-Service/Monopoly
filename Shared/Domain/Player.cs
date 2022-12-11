@@ -3,25 +3,26 @@ namespace Shared.Domain;
 public class Player
 {
     private List<LandContract> landContractList = new();
-    private int money;
 
-    public Player(string id)
+    public Player(string id, int money = 15000)
     {
         Id = id;
+        State = PlayerState.Normal;
+        Money = money;
     }
 
-    public PlayerState State { get; private set; } = PlayerState.Normal;
+    public PlayerState State { get; private set; }
     public string Id { get; }
-    public int Money => money;
+    public int Money { get; set; }
 
-    public void SetState(PlayerState playerState)
+    public IList<LandContract> LandContractList => landContractList.AsReadOnly();
+
+    public void UpdateState()
     {
-        switch(playerState) {
-        case PlayerState.Bankrupt:
-            if (this.money > 0 || this.LandContractList.Count > 0) return;
-            break;
+        if (Money <= 0 && LandContractList.Count == 0)
+        {
+            State = PlayerState.Bankrupt;
         }
-        State = playerState;
     }
 
     public bool IsBankrupt() {
@@ -43,7 +44,7 @@ public class Player
 
     public void AddMoney(int money)
     {
-        this.money += money;
+        Money += money;
     }
 
     public LandContract SellLandContract(string id) {
@@ -51,6 +52,4 @@ public class Player
 
         return landContract.First();
     }
-
-    internal IList<LandContract> LandContractList => landContractList.AsReadOnly();
 }

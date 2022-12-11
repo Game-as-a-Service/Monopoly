@@ -4,11 +4,12 @@ namespace Shared.Domain;
 public class BankruptTest
 {
     [TestMethod]
-    public void 玩家A_A沒錢沒房_已破產() {
+    public void 玩家A_A沒錢沒房__更新玩家A的狀態__玩家A的狀態為破產() {
         string id_a = "a";
-        Player player_a = new(id_a);
+        Player player_a = new(id_a, 0);
+        var game = new Game();
 
-        player_a.SetState(PlayerState.Bankrupt);
+        game.UpdatePlayerState(player_a);
 
         Assert.AreEqual(player_a.State, PlayerState.Bankrupt);
     }
