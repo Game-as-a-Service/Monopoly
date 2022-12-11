@@ -28,9 +28,23 @@ public class Player
         this.landContractList.Add(landContract);
     }
 
+    public void RemoveLandContract(LandContract landContract) {
+        this.landContractList.Remove(landContract);
+    }
+
+    public bool FindLAndContract(string id) {
+        return LandContractList.Where(landContract => landContract.Id == id).Count() == 1;
+    }
+
     public void AddMoney(int money)
     {
         this.money += money;
+    }
+
+    public LandContract SellLandContract(string id) {
+        var landContract = landContractList.Where(land => land.Id == id);
+
+        return landContract.First();
     }
 
     internal IList<LandContract> LandContractList => landContractList.AsReadOnly();
