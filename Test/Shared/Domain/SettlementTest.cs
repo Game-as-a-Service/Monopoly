@@ -27,9 +27,9 @@ public class GameTest
         
         // Assert
         // 玩家A獲勝
-        Assert.AreEqual(1, game.PlayerRankDictionary[player_a]);
-        Assert.AreEqual(3, game.PlayerRankDictionary[player_b]);
-        Assert.AreEqual(2, game.PlayerRankDictionary[player_c]);
+        Assert.AreEqual(1, game.RankList[player_a]);
+        Assert.AreEqual(3, game.RankList[player_b]);
+        Assert.AreEqual(2, game.RankList[player_c]);
 
     }
 
@@ -48,23 +48,23 @@ public class GameTest
         game.AddPlayer(player_c);
         game.AddPlayer(player_d);
 
-        var landContractA1 = new LandContract(2000, player_a);
+        var landContractA1 = new LandContract(2000, player_a, "A1");
         landContractA1.Upgrade();
         player_a.AddLandContract(landContractA1); 
         player_a.AddMoney(1000);
 
         // 玩家 B 的結算金額為 4000
-        var landContractB1 = new LandContract(2000, player_b);
+        var landContractB1 = new LandContract(2000, player_b, "B1");
         landContractB1.Upgrade();
         player_b.AddLandContract(landContractB1); 
 
         // 玩家 C 的結算金額為 3000
-        var landContractC1 = new LandContract(2000, player_c);
+        var landContractC1 = new LandContract(2000, player_c, "C1");
         player_c.AddLandContract(landContractC1); 
         player_c.AddMoney(1000);
 
         // 玩家 D 的結算金額為 2000
-        var landContractD1 = new LandContract(2000, player_d);
+        var landContractD1 = new LandContract(2000, player_d, "D1");
         player_d.AddLandContract(landContractD1); 
         
         // Act
@@ -73,7 +73,7 @@ public class GameTest
         
         // Assert
         // 名次為 A B C D
-        var ranking = game.PlayerRankDictionary;
+        var ranking = game.RankList;
         Assert.AreEqual(1, ranking[player_a]);
         Assert.AreEqual(2, ranking[player_b]);
         Assert.AreEqual(3, ranking[player_c]);

@@ -16,6 +16,11 @@ public class Player
 
     public void SetState(PlayerState playerState)
     {
+        switch(playerState) {
+        case PlayerState.Bankrupt:
+            if (this.money > 0 || this.LandContractList.Count > 0) return;
+            break;
+        }
         State = playerState;
     }
 
@@ -28,9 +33,23 @@ public class Player
         this.landContractList.Add(landContract);
     }
 
+    public void RemoveLandContract(LandContract landContract) {
+        this.landContractList.Remove(landContract);
+    }
+
+    public bool FindLAndContract(string id) {
+        return LandContractList.Where(landContract => landContract.Id == id).Count() == 1;
+    }
+
     public void AddMoney(int money)
     {
         this.money += money;
+    }
+
+    public LandContract SellLandContract(string id) {
+        var landContract = landContractList.Where(land => land.Id == id);
+
+        return landContract.First();
     }
 
     internal IList<LandContract> LandContractList => landContractList.AsReadOnly();
