@@ -4,10 +4,10 @@ namespace Shared.Domain;
 public class BuyRealEstateTest
 {
     [TestMethod]
-    public void test() {
-        string a_id = "a";
-        string b_id = "b";
-        string c_id = "c";
+    public void 玩家ABC_玩家A拍賣A1_賣給系統() {
+        string a_id = "a",
+               b_id = "b",
+               c_id = "c";
 
         Player a = new(a_id),
                b = new(b_id),
@@ -18,11 +18,63 @@ public class BuyRealEstateTest
         c.AddMoney(3000);
 
         a.AddLandContract(new(1000, a, "A1"));
-        var landContract = a.SellLandContract("A1", 500);
-        if (!landContract.HasOutcry()) {
-            a.AddMoney(landContract.Sell("system", null));
-        }
+        var landContract = a.SellLandContract("A1");
+        if (!landContract.HasOutcry())
+            landContract.Sell();
 
+        Assert.AreEqual(a.FindLAndContract("A1"), false);
         Assert.AreEqual(a.Money, 1700);
+    }
+
+    [TestMethod]
+    public void 玩家ABC_玩家A拍賣A1_B喊價600_B獲得A1() {
+        string a_id = "a",
+               b_id = "b",
+               c_id = "c";
+
+        Player a = new(a_id),
+               b = new(b_id),
+               c = new(c_id);
+
+        a.AddMoney(1000);
+        b.AddMoney(2000);
+        c.AddMoney(3000);
+        
+        a.AddLandContract(new(1000, a, "A1"));
+        var landContract = a.SellLandContract("A1");
+
+        landContract.SetOutcry(b, 600);
+        landContract.Sell();
+
+        Assert.AreEqual(a.FindLAndContract("A1"), false);
+        Assert.AreEqual(a.Money, 1600);
+        Assert.AreEqual(b.Money, 1400);
+        Assert.AreEqual(b.FindLAndContract("A1"), true);
+    }
+
+    [TestMethod]
+    public void 玩家ABC_玩家A拍賣A1_B喊價3000因餘額不足不能喊價() {
+        string a_id = "a",
+               b_id = "b",
+               c_id = "c";
+
+        Player a = new(a_id),
+               b = new(b_id),
+               c = new(c_id);
+
+        a.AddMoney(1000);
+        b.AddMoney(2000);
+        c.AddMoney(3000);
+        
+        a.AddLandContract(new(1000, a, "A1"));
+        var landContract = a.SellLandContract("A1");
+
+        landContract.SetOutcry(b, 3000);
+        landContract.Sell();
+
+        Assert.AreEqual(a.FindLAndContract("A1"), false);
+        Assert.AreEqual(a.Money, 1700);
+        Assert.AreEqual(b.Money, 2000);
+        Assert.AreEqual(b.FindLAndContract("A1"), false);
     }
 }

@@ -3,8 +3,9 @@ namespace Shared.Domain;
 public class LandContract
 {
     private int price;
-    private int defaultPrice = 0;
+    private int defaultPrice;
     private int sellPrice = 0;
+    private Player? sellPlayer = null;
     private Player? owner;
     private int houseCount;
     private string id;
@@ -12,40 +13,43 @@ public class LandContract
     public LandContract(int price, Player? owner, string id)
     {
         this.price = price;
+        this.defaultPrice = (int)(price * 0.5);
         this.owner = owner;
         this.houseCount = 0;
         this.id = id;
     }
 
-    public LandContract DefaultPrice(int price) {
-        this.defaultPrice = price;
-        return this;
+    public void SetOutcry(Player player, int price) {
+        if (price > this.sellPrice && player.Money >= price) {
+            this.sellPlayer = player;
+            this.sellPrice = price;
+        }
     }
 
     public bool HasOutcry() {
-        if (sellPrice == 0) return false;
-        return true;
+        return sellPrice != 0;
     }
 
-    public int Sell(string id, Player? player) {
-        int? _price;
-        switch (id) {
-            case "system":
-                _price = (int)(price * 0.7);
-                defaultPrice = 0;
-                sellPrice = 0;
-                owner = null;
-                houseCount = 0;
-                break;
-            default:
-                _price = sellPrice;
-                defaultPrice = 0;
-                sellPrice = 0;
-                owner = player;
-                break;
+    public void Sell() {
+        int _price;
+        Player? player = this.owner;
+
+        if (this.sellPlayer != null) {
+            _price = sellPrice;
+            this.sellPrice = 0;
+            this.owner = this.sellPlayer;
+            this.owner?.AddLandContract(this);
+            this.owner?.AddMoney(-_price);
+            this.sellPlayer = null;
+        } else {
+            _price = (int)(price * 0.7);
+            this.sellPrice = 0;
+            this.owner = null;
+            this.houseCount = 0;
         }
 
-        return (int)_price;
+        player?.AddMoney(_price);
+        player?.RemoveLandContract(this);
     }
 
     public int Price => price;
