@@ -17,14 +17,12 @@ public class Game
 
     public void AddPlayer(Player player) => _players.Add(player);
 
-    public void SetState(Player player, PlayerState playerState)
+    public void UpdatePlayerState(Player player)
     {
-        player.SetState(playerState);
-        //破產時，將名次加入名次清單
-        if (playerState == PlayerState.Bankrupt)
-        {
+        player.UpdateState();
+        
+        if (player.IsBankrupt())
             AddPlayerToRankList(player);
-        }
     }
 
     public void Settlement()
@@ -55,4 +53,13 @@ public class Game
     }
 
     public IBlock GetPlayerPosition(Player player) => _map.GetPlayerPosition(player).block;
+
+    public void Initial()
+    {
+        // 初始化玩家位置
+        foreach (var player in _players)
+        {
+            _map.SetPlayerToBlock(player, "Start", Direction.Right);
+        }
+    }
 }
