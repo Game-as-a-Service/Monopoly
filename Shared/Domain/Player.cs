@@ -16,6 +16,11 @@ public class Player
 
     public void SetState(PlayerState playerState)
     {
+        switch(playerState) {
+        case PlayerState.Bankrupt:
+            if (this.money > 0 || this.LandContractList.Count > 0) return;
+            break;
+        }
         State = playerState;
     }
 
