@@ -52,7 +52,30 @@ public class Game
         _playerRankDictionary.Add(player, 1);
     }
 
-    public IBlock GetPlayerPosition(Player player) => _map.GetPlayerPosition(player).block;
+    public IBlock GetPlayerPosition(Player player) => _map.GetPlayerPositionAndDirection(player).block;
+
+    // 玩家選擇方向
+    // 1.不能選擇回頭的方向
+    // 2.不能選擇沒有的方向
+    public void SelectDirection(Player player, Direction direction)
+    {
+        var (block, currentDirection) = _map.GetPlayerPositionAndDirection(player);
+
+        if (direction == currentDirection.Opposite())
+        {
+            throw new Exception("不能選擇原本的方向");
+        }
+        new [] {Direction.Up, Direction.Down, Direction.Left, Direction.Right}.ToList().ForEach(d =>
+        {
+            if (d == direction && block.GetDirectionBlock(d) is null)
+            {
+                throw new Exception("不能選擇沒有的方向");
+            }
+        });
+        _map.SetPlayerToBlock(player, block.Id, direction);
+    }
+
+    public Direction GetPlayerDirection(Player player) => _map.GetPlayerPositionAndDirection(player).direction;
 
     public void Initial()
     {

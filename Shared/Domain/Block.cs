@@ -12,11 +12,25 @@ public abstract class IBlock
     {
         Id = id;
     }
+
+    public abstract IBlock? GetDirectionBlock(Map.Direction d);
 }
 
 public class Block: IBlock
 {
     public Block(string id) : base(id)
     {
+    }
+
+    public override IBlock? GetDirectionBlock(Map.Direction d)
+    {
+        return d switch
+        {
+            Map.Direction.Up => Up,
+            Map.Direction.Down => Down,
+            Map.Direction.Left => Left,
+            Map.Direction.Right => Right,
+            _ => throw new ArgumentOutOfRangeException(nameof(d), d, null)
+        };
     }
 }
