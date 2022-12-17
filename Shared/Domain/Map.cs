@@ -102,7 +102,7 @@ public class Map
         return (nextBlock, nextBlockDirections);
     }
 
-    public (IBlock block, Direction direction) GetPlayerPosition(Player player) => _playerPositionDictionary[player];
+    public (IBlock block, Direction direction) GetPlayerPositionAndDirection(Player player) => _playerPositionDictionary[player];
 
     public enum Direction
     {
