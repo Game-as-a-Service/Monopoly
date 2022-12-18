@@ -1,28 +1,28 @@
 namespace Shared.Domain;
 
-public abstract class IBlock
+public abstract class Block
 {
     public string Id { get; }
-    public IBlock? Up { get; set; }
-    public IBlock? Down { get; set; }
-    public IBlock? Left { get; set; }
-    public IBlock? Right { get; set; }
+    public Block? Up { get; set; }
+    public Block? Down { get; set; }
+    public Block? Left { get; set; }
+    public Block? Right { get; set; }
 
-    public IBlock(string id)
+    public Block(string id)
     {
         Id = id;
     }
 
-    public abstract IBlock? GetDirectionBlock(Map.Direction d);
+    public abstract Block? GetDirectionBlock(Map.Direction d);
 }
 
-public class Block: IBlock
+public class Land: Block
 {
-    public Block(string id) : base(id)
+    public Land(string id) : base(id)
     {
     }
 
-    public override IBlock? GetDirectionBlock(Map.Direction d)
+    public override Block? GetDirectionBlock(Map.Direction d)
     {
         return d switch
         {

@@ -2,14 +2,14 @@ namespace Shared.Domain;
 
 public class Map
 {
-    private readonly IBlock[][] _blocks;
+    private readonly Block[][] _blocks;
 
-    private readonly Dictionary<Player, (IBlock block, Direction direction)> _playerPositionDictionary = new();
-    public Map(IBlock[][] blocks){
+    private readonly Dictionary<Player, (Block block, Direction direction)> _playerPositionDictionary = new();
+    public Map(Block[][] blocks){
         _blocks = blocks;
         GererateBlockConnection(blocks);
     }
-    private void GererateBlockConnection(IBlock[][] blocks){
+    private void GererateBlockConnection(Block[][] blocks){
         for (int i = 0; i < blocks.Length; i++)
         {
             for (int j = 0; j < blocks[i].Length; j++)
@@ -41,7 +41,7 @@ public class Map
         _playerPositionDictionary[player] = (FindBlockById(blockId), direction); 
     }
 
-    private IBlock FindBlockById(string blockId)
+    private Block FindBlockById(string blockId)
     {
         foreach (var iBlock in from block in _blocks
                                from iBlock in block
@@ -73,7 +73,7 @@ public class Map
     }
 
     // 得到下一個 Block 及方向
-    private (IBlock NextBlock, Direction[] NextBlockDirections) GetNextBlockAndDirections(IBlock currentBlock, Direction currentDirection)
+    private (Block NextBlock, Direction[] NextBlockDirections) GetNextBlockAndDirections(Block currentBlock, Direction currentDirection)
     {
         // 先得到 下一個 Block
         var nextBlock = currentDirection switch
@@ -102,7 +102,7 @@ public class Map
         return (nextBlock, nextBlockDirections);
     }
 
-    public (IBlock block, Direction direction) GetPlayerPositionAndDirection(Player player) => _playerPositionDictionary[player];
+    public (Block block, Direction direction) GetPlayerPositionAndDirection(Player player) => _playerPositionDictionary[player];
 
     public enum Direction
     {
