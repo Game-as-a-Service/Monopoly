@@ -18,7 +18,7 @@ public class BuyRealEstateTest
         if (!landContract.HasOutcry())
             landContract.Sell();
 
-        Assert.AreEqual(a.FindLAndContract("A1"), false);
+        Assert.AreEqual(a.FindLandContract("A1"), false);
         Assert.AreEqual(a.Money, 1700);
     }
 
@@ -38,10 +38,10 @@ public class BuyRealEstateTest
         landContract.SetOutcry(b, 600);
         landContract.Sell();
 
-        Assert.AreEqual(a.FindLAndContract("A1"), false);
+        Assert.AreEqual(a.FindLandContract("A1"), false);
         Assert.AreEqual(a.Money, 1600);
         Assert.AreEqual(b.Money, 1400);
-        Assert.AreEqual(b.FindLAndContract("A1"), true);
+        Assert.AreEqual(b.FindLandContract("A1"), true);
     }
 
     [TestMethod]
@@ -60,9 +60,9 @@ public class BuyRealEstateTest
         landContract.SetOutcry(b, 3000);
         landContract.Sell();
 
-        Assert.AreEqual(a.FindLAndContract("A1"), false);
+        Assert.AreEqual(a.FindLandContract("A1"), false);
         Assert.AreEqual(a.Money, 1700);
         Assert.AreEqual(b.Money, 2000);
-        Assert.AreEqual(b.FindLAndContract("A1"), false);
+        Assert.AreEqual(b.FindLandContract("A1"), false);
     }
 }

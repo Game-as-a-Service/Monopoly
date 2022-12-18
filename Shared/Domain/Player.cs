@@ -38,7 +38,7 @@ public class Player
         this.landContractList.Remove(landContract);
     }
 
-    public bool FindLAndContract(string id) {
+    public bool FindLandContract(string id) {
         return LandContractList.Where(landContract => landContract.Id == id).Count() == 1;
     }
 
