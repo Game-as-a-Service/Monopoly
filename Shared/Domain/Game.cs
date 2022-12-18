@@ -12,7 +12,7 @@ public class Game
     public IDictionary<Player, int> PlayerRankDictionary => _playerRankDictionary.AsReadOnly();
 
     public Game(Map? map = null){
-        _map = map ?? new Map(new IBlock[0][]);
+        _map = map ?? new Map(new Block[0][]);
     }
 
     public void AddPlayer(Player player) => _players.Add(player);
@@ -52,12 +52,12 @@ public class Game
         _playerRankDictionary.Add(player, 1);
     }
 
-    public IBlock GetPlayerPosition(Player player) => _map.GetPlayerPositionAndDirection(player).block;
+    public Block GetPlayerPosition(Player player) => _map.GetPlayerPositionAndDirection(player).block;
 
     // 玩家選擇方向
     // 1.不能選擇回頭的方向
     // 2.不能選擇沒有的方向
-    public void SelectDirection(Player player, Direction direction)
+    public void PlayerSelectDirection(Player player, Direction direction)
     {
         var (block, currentDirection) = _map.GetPlayerPositionAndDirection(player);
 
