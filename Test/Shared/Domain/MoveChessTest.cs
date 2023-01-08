@@ -10,7 +10,7 @@ public class MoveChessTest
     {
         // Arrange
         var map = new Map(Utils.SevenXSevenMap());
-        var game = new Game(map);
+        var game = new Game("Test", map);
         var player = new Player("A");
         game.AddPlayer(player);
 
@@ -21,6 +21,6 @@ public class MoveChessTest
         game.PlayerMove(player, point);
 
         // Assert
-        Assert.AreEqual("A4" , game.GetPlayerPosition(player).Id);
+        Assert.AreEqual("A4" , game.GetPlayerPosition("A").Id);
     }
 }

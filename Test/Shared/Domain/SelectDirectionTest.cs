@@ -8,7 +8,7 @@ public class SelectDirectionTest
     {
         // Arrange
         var map = new Map(Utils.SevenXSevenMap());
-        var game = new Game(map);
+        var game = new Game("Test", map);
         var player = new Player("A");
         game.AddPlayer(player);
 
@@ -18,9 +18,9 @@ public class SelectDirectionTest
         game.PlayerSelectDirection(player, Map.Direction.Left);
 
         // Assert
-        Assert.AreEqual("ParkingLot", game.GetPlayerPosition(player).Id);
+        Assert.AreEqual("ParkingLot", game.GetPlayerPosition("A").Id);
 
-        var direction = game.GetPlayerDirection(player);
+        var direction = game.GetPlayerDirection("A");
         Assert.AreEqual(Map.Direction.Left, direction);
     }
 

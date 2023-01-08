@@ -8,7 +8,7 @@ public class GameTest
     public void 玩家ABC_玩家BC破產__當遊戲結算__名次為ACB()
     {
         // Arrange
-        Game game = new();
+        Game game = new("Test");
         // 玩家 A B C
         var player_a = new Player("A");
         var player_b = new Player("B", 0);
@@ -37,7 +37,7 @@ public class GameTest
     public void 玩家ABCD_遊戲時間結束_A的結算金額為5000_B的結算金額為4000_C的結算金額為3000_D的結算金額為2000__當遊戲結算__名次為ABCD()
     {
         // Arrange
-        Game game = new();
+        Game game = new("Test");
         // 玩家 A B C D
         var player_a = new Player("A");
         var player_b = new Player("B");
