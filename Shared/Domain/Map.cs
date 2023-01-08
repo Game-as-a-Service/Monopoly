@@ -5,6 +5,7 @@ public class Map
     private readonly Block[][] _blocks;
 
     private readonly Dictionary<Player, (Block block, Direction direction)> _playerPositionDictionary = new();
+    public IDictionary<Player, (Block block, Direction direction)> PlayerPositionDictionary => _playerPositionDictionary.AsReadOnly();
     public Map(Block[][] blocks){
         _blocks = blocks;
         GererateBlockConnection(blocks);

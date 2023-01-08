@@ -8,7 +8,7 @@ public class GameInitialTest
     {
         // Arrange
         var map = new Map(Utils.SevenXSevenMap());
-        Game game = new(map);
+        Game game = new("Test", map);
         // 玩家 A B C D
         var player_a = new Player("A");
         var player_b = new Player("B");
@@ -28,10 +28,10 @@ public class GameInitialTest
         Assert.AreEqual(15000, player_c.Money);
         Assert.AreEqual(15000, player_d.Money);
 
-        Assert.AreEqual("Start", game.GetPlayerPosition(player_a).Id);
-        Assert.AreEqual("Start", game.GetPlayerPosition(player_a).Id);
-        Assert.AreEqual("Start", game.GetPlayerPosition(player_a).Id);
-        Assert.AreEqual("Start", game.GetPlayerPosition(player_a).Id);
+        Assert.AreEqual("Start", game.GetPlayerPosition("A").Id);
+        Assert.AreEqual("Start", game.GetPlayerPosition("B").Id);
+        Assert.AreEqual("Start", game.GetPlayerPosition("C").Id);
+        Assert.AreEqual("Start", game.GetPlayerPosition("D").Id);
 
     }
 }
