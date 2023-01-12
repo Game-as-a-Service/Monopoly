@@ -20,12 +20,12 @@ public class RollDiceUsecase
         //存
         _repository.Save(game);
         //推
-        presenter.Dice = game.CurrentDice;
+        presenter.CurrentDice = game.CurrentDice;
     }
 
     public class Presenter
     {
-        public int Dice { get; set; }
+        public int[]? CurrentDice { get; set; }
     }
 
     public record Input(string GameId, string PlayerId);

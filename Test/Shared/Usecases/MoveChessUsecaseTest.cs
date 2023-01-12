@@ -11,9 +11,13 @@ public class MoveChessUsecaseTest
         // Arrange
         const string GameId = "g1";
         const string PlayerId = "p1";
+        var game = UsecaseUtils.GameSetup();
+        
+        // 灌了水銀的骰子 1 顆, 只會骰 5 點
+        game.SetDice(1, 5, 5);
+        game.PlayerRollDice(PlayerId);
+        new JsonRepository().Save(game);
 
-        UsecaseUtils.GameSetup();
-        UsecaseUtils.SetGameDice(GameId, 5);
         MoveChessUsecase.Input input = new(GameId, PlayerId);
         var presenter = new MoveChessUsecase.Presenter();
 

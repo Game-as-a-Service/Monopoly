@@ -2,15 +2,15 @@ namespace Shared.Domain;
 
 public class Map
 {
-    private readonly Block[][] _blocks;
+    private readonly Block?[][] _blocks;
 
     private readonly Dictionary<Player, (Block block, Direction direction)> _playerPositionDictionary = new();
     public IDictionary<Player, (Block block, Direction direction)> PlayerPositionDictionary => _playerPositionDictionary.AsReadOnly();
-    public Map(Block[][] blocks){
+    public Map(Block?[][] blocks){
         _blocks = blocks;
         GererateBlockConnection(blocks);
     }
-    private void GererateBlockConnection(Block[][] blocks){
+    private static void GererateBlockConnection(Block?[][] blocks){
         for (int i = 0; i < blocks.Length; i++)
         {
             for (int j = 0; j < blocks[i].Length; j++)
@@ -74,7 +74,7 @@ public class Map
     }
 
     // 得到下一個 Block 及方向
-    private (Block NextBlock, Direction[] NextBlockDirections) GetNextBlockAndDirections(Block currentBlock, Direction currentDirection)
+    private static (Block NextBlock, Direction[] NextBlockDirections) GetNextBlockAndDirections(Block currentBlock, Direction currentDirection)
     {
         // 先得到 下一個 Block
         var nextBlock = currentDirection switch

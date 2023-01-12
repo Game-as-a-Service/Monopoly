@@ -8,7 +8,7 @@ public class MoveChessUsecase
 
     public MoveChessUsecase(IRepository jsonRepository)
     {
-        this._repository = jsonRepository;
+        _repository = jsonRepository;
     }
 
     public void Execute(Input input, Presenter presenter)
@@ -29,6 +29,7 @@ public class MoveChessUsecase
     {
         public Presenter()
         {
+            ChessPosition = string.Empty;
         }
 
         public string ChessPosition { get; set; }

@@ -4,7 +4,7 @@ namespace Shared.Usecases.Utils;
 
 public class UsecaseUtils
 {
-    public static void GameSetup()
+    public static Game GameSetup()
     {
         var map = new Map(Shared.Utils.SevenXSevenMap());
         var game = new Game("g1", map);
@@ -22,19 +22,13 @@ public class UsecaseUtils
 
         var gameRepository = new JsonRepository();
         gameRepository.Save(game);
+
+        return game;
     }
 
     public static Game GetGameById(string id)
     {
         var gameRepository = new JsonRepository();
         return gameRepository.FindGameById(id);
-    }
-
-    public static void SetGameDice(string id, int dice)
-    {
-        var gameRepository = new JsonRepository();
-        var game = gameRepository.FindGameById(id);
-        game.CurrentDice = dice;
-        gameRepository.Save(game);
     }
 }
