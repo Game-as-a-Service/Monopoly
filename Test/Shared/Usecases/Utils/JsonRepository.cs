@@ -18,7 +18,13 @@ public class JsonRepository : IRepository
         }
 
         var map = new Map(Shared.Utils.SevenXSevenMap());
-        Game game = new(jsonGame.Id, map);
+        Game game = new(jsonGame.Id, map, new DiceSetting
+        {
+            NumberOfDice = jsonGame.DiceSetting.NumberOfDice,
+            Min = jsonGame.DiceSetting.Min, 
+            Max = jsonGame.DiceSetting.Max,
+        });
+
         foreach (var jsonPlayer in jsonGame.Players)
         {
             var player = new Player(jsonPlayer.Id);
@@ -27,8 +33,6 @@ public class JsonRepository : IRepository
         }
         game.CurrentPlayer = game.Players.Where(p => p.Id == jsonGame.CurrentPlayerId).FirstOrDefault();
         game.CurrentDice = jsonGame.CurrentDice;
-
-        game.SetDice(jsonGame.DiceSetting.NumberOfDice, jsonGame.DiceSetting.Min, jsonGame.DiceSetting.Max);
 
         return game;
     }
