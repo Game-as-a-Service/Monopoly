@@ -10,15 +10,12 @@ public class MoveChessTest
     {
         // Arrange
         var map = new Map(Utils.SevenXSevenMap());
-        var game = new Game("Test", map);
+        // 灌了水銀的骰子 1 顆, 只會骰 6 點
+        var game = new Game("Test", map, new DiceSetting(1, 6, 6));
         var player = new Player("A");
         game.AddPlayer(player);
         game.Initial();
         game.SetPlayerToBlock(player, "F4", Direction.Up);
-        
-        // 灌了水銀的骰子 1 顆, 只會骰 6 點
-        game.SetDice(1, 6, 6);
-        
 
         // Act
         game.PlayerRollDice(player.Id);

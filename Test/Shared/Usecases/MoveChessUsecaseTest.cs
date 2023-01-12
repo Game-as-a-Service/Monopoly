@@ -1,3 +1,4 @@
+using Shared.Domain;
 using Shared.Usecases.Utils;
 
 namespace Shared.Usecases;
@@ -11,10 +12,9 @@ public class MoveChessUsecaseTest
         // Arrange
         const string GameId = "g1";
         const string PlayerId = "p1";
-        var game = UsecaseUtils.GameSetup();
-        
+
         // 灌了水銀的骰子 1 顆, 只會骰 5 點
-        game.SetDice(1, 5, 5);
+        var game = UsecaseUtils.GameSetup(new DiceSetting(1, 5, 5));
         game.PlayerRollDice(PlayerId);
         new JsonRepository().Save(game);
 
