@@ -27,6 +27,9 @@ public class JsonRepository : IRepository
         }
         game.CurrentPlayer = game.Players.Where(p => p.Id == jsonGame.CurrentPlayerId).FirstOrDefault();
         game.CurrentDice = jsonGame.CurrentDice;
+
+        game.SetDice(jsonGame.DiceSetting.NumberOfDice, jsonGame.DiceSetting.Min, jsonGame.DiceSetting.Max);
+
         return game;
     }
 
