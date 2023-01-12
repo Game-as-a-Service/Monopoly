@@ -13,12 +13,16 @@ public class MoveChessTest
         var game = new Game("Test", map);
         var player = new Player("A");
         game.AddPlayer(player);
-
-        game.SetPlayerToBlock(player, "F4", Map.Direction.Up);
-        var point = 6; // TODO: 這邊應該要用骰子的結果
+        game.Initial();
+        game.SetPlayerToBlock(player, "F4", Direction.Up);
+        
+        // 灌了水銀的骰子 1 顆, 只會骰 6 點
+        game.SetDice(1, 6, 6);
+        
 
         // Act
-        game.PlayerMove(player, point);
+        game.PlayerRollDice(player.Id);
+        game.PlayerMoveChess(player.Id);
 
         // Assert
         Assert.AreEqual("A4" , game.GetPlayerPosition("A").Id);

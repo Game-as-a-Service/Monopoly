@@ -4,27 +4,40 @@ namespace Shared.Domain;
 
 public class Game
 {
-    private readonly Map _map;
+    public string Id { get; init; }
+    public int[]? CurrentDice { get; set; } = null;
+    public int CurrentDiceTotal => CurrentDice?.Sum() ?? 0;
+    public Player? CurrentPlayer { get; set; }
+    public DiceSetting DiceSetting { get; } = new DiceSetting();
 
+    private readonly Map _map;
     private readonly List<Player> _players = new();
     private readonly Dictionary<Player, int> _playerRankDictionary = new(); // 玩家名次 {玩家,名次}
-    private string id;
-    private int currentDice; // 目前骰子點數
+    private readonly Random _random;
+
     public IDictionary<Player, (Block block, Direction direction)> PlayerPositionDictionary => _map.PlayerPositionDictionary;
     public IDictionary<Player, int> PlayerRankDictionary => _playerRankDictionary.AsReadOnly();
     public IReadOnlyList<Player> Players => _players.AsReadOnly();
-    public int CurrentDice { get => currentDice; set => currentDice = value; }
-    public string Id => id;
 
-    public Player CurrentPlayer { get; set; }
-
-    public Game(string id, Map? map = null)
+    public Game(string id) : this(id, new Map(Array.Empty<Block[]>()))
     {
-        this.id = id;
-        _map = map ?? new Map(new Block[0][]);
     }
 
-    public void AddPlayer(Player player) => _players.Add(player);
+    // 初始化遊戲, 正常骰子 (2, 12)
+    public Game(string id, Map map)
+    {
+        Id = id;
+        _map = map;
+        _random = new Random(id.GetHashCode());
+
+        // 兩顆正常骰子 (1 ~ 6)
+        SetDice(2, 1, 6);
+    }
+
+    public void AddPlayer(Player player)
+    {
+        _players.Add(player);
+    }
 
     public void UpdatePlayerState(Player player)
     {
@@ -51,6 +64,7 @@ public class Game
 
     public void SetPlayerToBlock(Player player, string blockId, Direction direction) => _map.SetPlayerToBlock(player, blockId, direction);
 
+    // Rick: PlayerMove 跟 PlayerMoveChess 很像, 兩個函數都需要嗎?
     public void PlayerMove(Player player, int moveCount) => _map.PlayerMove(player, moveCount);
 
     private void AddPlayerToRankList(Player player)
@@ -125,9 +139,15 @@ public class Game
         {
             throw new Exception("不是該玩家的回合");
         }
-        Random random = new();
-        var moveCount = random.Next(1, 7);
-        this.currentDice = moveCount;
+
+        CurrentDice = RollDice();
+    }
+
+    public int[] RollDice()
+    {
+        return Enumerable.Range(0, DiceSetting.NumberOfDice)
+            .Select(_ => _random.Next(DiceSetting.Min, DiceSetting.Max + 1))
+            .ToArray();
     }
 
     public void PlayerMoveChess(string playerId)
@@ -141,6 +161,28 @@ public class Game
         {
             throw new Exception("不是該玩家的回合");
         }
-        _map.PlayerMove(player, currentDice);
+        _map.PlayerMove(player, CurrentDiceTotal);
+    }
+
+    public void SetDice(int numberOfDice, int min, int max)
+    {
+        if (numberOfDice < 1)
+        {
+            throw new ArgumentException("遊戲至少要有一顆骰子吧");
+        }
+
+        if (min > max)
+        {
+            throw new ArgumentException("骰子大小區間看起來好像不太對喔");
+        }
+
+        if (min <= 0)
+        {
+            throw new ArgumentException("骰子骰不出負數吧, 別太欺人太甚了!");
+        }
+
+        DiceSetting.NumberOfDice = numberOfDice;
+        DiceSetting.Min = min;
+        DiceSetting.Max = max;
     }
 }
