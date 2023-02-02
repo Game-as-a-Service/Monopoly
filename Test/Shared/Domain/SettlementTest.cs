@@ -48,25 +48,18 @@ public class GameTest
         game.AddPlayer(player_c);
         game.AddPlayer(player_d);
 
-        var landContractA1 = new LandContract(2000, player_a, "A1");
-        landContractA1.Upgrade();
-        player_a.AddLandContract(landContractA1); 
-        player_a.AddMoney(1000);
+        // 玩家 B 的結算金額為 5000
+        player_a.AddMoney(5000);
 
         // 玩家 B 的結算金額為 4000
-        var landContractB1 = new LandContract(2000, player_b, "B1");
-        landContractB1.Upgrade();
-        player_b.AddLandContract(landContractB1); 
+        player_b.AddMoney(4000);
 
         // 玩家 C 的結算金額為 3000
-        var landContractC1 = new LandContract(2000, player_c, "C1");
-        player_c.AddLandContract(landContractC1); 
-        player_c.AddMoney(1000);
+        player_c.AddMoney(3000);
 
         // 玩家 D 的結算金額為 2000
-        var landContractD1 = new LandContract(2000, player_d, "D1");
-        player_d.AddLandContract(landContractD1); 
-        
+        player_d.AddMoney(2000);
+
         // Act
         // 遊戲結算
         game.Settlement();

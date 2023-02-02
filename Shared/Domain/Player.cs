@@ -5,7 +5,8 @@ namespace Shared.Domain;
 public class Player
 {
     private Chess chess;
-    private List<LandContract> landContractList = new();
+    private readonly List<LandContract> _landContractList = new();
+    private Auction auction;
 
     public Player(string id, int money = 15000)
     {
@@ -18,9 +19,10 @@ public class Player
     public string Id { get; }
     public int Money { get; set; }
 
-    public IList<LandContract> LandContractList => landContractList.AsReadOnly();
+    public IList<LandContract> LandContractList => _landContractList.AsReadOnly();
 
     public Chess Chess { get => chess; set => chess = value; }
+    public Auction Auction => auction;
 
     public void UpdateState()
     {
@@ -36,15 +38,15 @@ public class Player
 
     public void AddLandContract(LandContract landContract)
     {
-        this.landContractList.Add(landContract);
+        _landContractList.Add(landContract);
     }
 
     public void RemoveLandContract(LandContract landContract) {
-        this.landContractList.Remove(landContract);
+        _landContractList.Remove(landContract);
     }
 
-    public bool FindLandContract(string id) {
-        return LandContractList.Where(landContract => landContract.Id == id).Count() == 1;
+    public LandContract? FindLandContract(string id) {
+        return LandContractList.Where(landContract => landContract.Land.Id == id).FirstOrDefault();
     }
 
     public void AddMoney(int money)
@@ -52,10 +54,11 @@ public class Player
         Money += money;
     }
 
-    public LandContract SellLandContract(string id) {
-        var landContract = landContractList.Where(land => land.Id == id);
-
-        return landContract.First();
+    public void AuctionLandContract(string id) {
+        var landContract = _landContractList.Where(landContract => landContract.Land.Id == id).FirstOrDefault();
+        if (landContract is null)
+            throw new Exception("找不到地契");
+        auction = new Auction(landContract);
     }
 
     internal IDice[] RollDice(IDice[] dices)
@@ -73,5 +76,10 @@ public class Player
     internal void SelectDirection(Map.Direction direction)
     {
         chess.ChangeDirection(direction);
+    }
+
+    internal void Outcry(int money)
+    {
+        throw new NotImplementedException();
     }
 }

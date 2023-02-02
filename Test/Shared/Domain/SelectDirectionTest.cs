@@ -4,7 +4,15 @@ namespace Shared.Domain;
 public class SelectDirectionTest
 {
     [TestMethod]
-    public void 玩家A目前在停車場_方向為Down__選擇方向Left__玩家A在停車場_方向為Left()
+    [Description(
+        """
+        Given:  玩家A目前在停車場
+                玩家A方向為Down
+        When:   玩家A選擇方向為Left
+        Then:   玩家A在停車場
+                玩家A方向為Left
+        """)]
+    public void 玩家選擇方向()
     {
         // Arrange
         var map = new Map(Utils.SevenXSevenMap());
