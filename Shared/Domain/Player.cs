@@ -8,7 +8,7 @@ public class Player
     private readonly List<LandContract> _landContractList = new();
     private Auction auction;
 
-    public Player(string id, int money = 15000)
+    public Player(string id, decimal money = 15000)
     {
         Id = id;
         State = PlayerState.Normal;
@@ -17,7 +17,7 @@ public class Player
 
     public PlayerState State { get; private set; }
     public string Id { get; }
-    public int Money { get; set; }
+    public decimal Money { get; set; }
 
     public IList<LandContract> LandContractList => _landContractList.AsReadOnly();
 
@@ -49,7 +49,7 @@ public class Player
         return LandContractList.Where(landContract => landContract.Land.Id == id).FirstOrDefault();
     }
 
-    public void AddMoney(int money)
+    public void AddMoney(decimal money)
     {
         Money += money;
     }
