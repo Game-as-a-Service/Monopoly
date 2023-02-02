@@ -35,7 +35,19 @@ public abstract class Block
 
 public class Land: Block
 {
-    public Land(string id) : base(id)
+    private readonly int _price;
+    private int house;
+    public int Price => _price; // 土地購買價格
+    // public int UpgradePrice => _price; // 升級價格
+    // public int TollFee => _price; // 過路費
+    public int House => house;
+    public Land(string id, int price = 1000) : base(id)
     {
+        _price = price;
+    }
+
+    public void Upgrade()
+    {
+        house++;
     }
 }

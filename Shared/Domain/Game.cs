@@ -44,7 +44,7 @@ public class Game
         // 排序未破產玩家的資產並加入名次清單
         var playerList = from p in _players
                          where !p.IsBankrupt()
-                         orderby p.Money + p.LandContractList.Sum(l => l.Price + (l.House * l.Price)) ascending
+                         orderby p.Money + p.LandContractList.Sum(l => (l.Land.House + 1) * l.Land.Price) ascending
                          select p;
         foreach (var player in playerList)
         {
@@ -113,6 +113,35 @@ public class Game
         }
         IDice[] dices = player.RollDice(Dices);
     }
+    
+    public void EndAuction()
+    {
+        CurrentPlayer.Auction.End();
+    }
+    
+    public void PlayerSellLandContract(string id, string landId)
+    {
+        var player = _players.Find(p => p.Id == id);
+        if (player is null)
+        {
+            throw new Exception("找不到玩家");
+        }
+        if (player != CurrentPlayer)
+        {
+            throw new Exception("不是該玩家的回合");
+        }
+        player.AuctionLandContract(landId);
+    }
+    
+    public void PlayerBid(string id, int price)
+    {
+        var player = _players.Find(p => p.Id == id);
+        if (player is null)
+        {
+            throw new Exception("找不到玩家");
+        }
+        CurrentPlayer.Auction.Bid(player, price);
+    }
 
     #region Private Functions
     private void AddPlayerToRankList(Player player)
@@ -123,5 +152,7 @@ public class Game
         }
         _playerRankDictionary.Add(player, 1);
     }
+
+    
     #endregion
 }
