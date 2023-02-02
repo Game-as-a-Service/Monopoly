@@ -1,3 +1,4 @@
+using Shared.Domain.Interfaces;
 using static Shared.Domain.Map;
 
 namespace Shared.Domain;
@@ -6,27 +7,21 @@ public class Game
 {
     public string Id { get; init; }
     public int[]? CurrentDice { get; set; } = null;
-    public int CurrentDiceTotal => CurrentDice?.Sum() ?? 0;
     public Player? CurrentPlayer { get; set; }
-    public DiceSetting DiceSetting { get; init; } 
+    public IDice[] Dices { get; init; }
 
     private readonly Map _map;
     private readonly List<Player> _players = new();
     private readonly Dictionary<Player, int> _playerRankDictionary = new(); // 玩家名次 {玩家,名次}
-    private readonly Random _random;
 
-    public IDictionary<Player, (Block block, Direction direction)> PlayerPositionDictionary => _map.PlayerPositionDictionary;
     public IDictionary<Player, int> PlayerRankDictionary => _playerRankDictionary.AsReadOnly();
-    public IReadOnlyList<Player> Players => _players.AsReadOnly();
 
     // 初始化遊戲
-    public Game(string id, Map? map = null, DiceSetting? diceSetting = null)
+    public Game(string id, Map? map = null, IDice[]? dices = null)
     {
         Id = id;
         _map = map ?? new Map(Array.Empty<Block[]>());
-        _random = new Random(id.GetHashCode());
-
-        DiceSetting = diceSetting ?? new DiceSetting();
+        Dices = dices ?? new IDice[2] { new Dice(), new Dice() };
     }
 
     public void AddPlayer(Player player)
@@ -57,7 +52,7 @@ public class Game
         }
     }
 
-    public void SetPlayerToBlock(Player player, string blockId, Direction direction) => _map.SetPlayerToBlock(player, blockId, direction);
+    public void SetPlayerToBlock(Player player, string blockId, Direction direction) => player.Chess.SetBlock(blockId, direction);
 
     public Block GetPlayerPosition(string playerId) 
     {
@@ -66,7 +61,7 @@ public class Game
         {
             throw new Exception("找不到玩家");
         }
-        return _map.GetPlayerPositionAndDirection(player).block;
+        return player.Chess.CurrentBlock;
     } 
 
     // 玩家選擇方向
@@ -74,20 +69,7 @@ public class Game
     // 2.不能選擇沒有的方向
     public void PlayerSelectDirection(Player player, Direction direction)
     {
-        var (block, currentDirection) = _map.GetPlayerPositionAndDirection(player);
-
-        if (direction == currentDirection.Opposite())
-        {
-            throw new Exception("不能選擇原本的方向");
-        }
-        new[] { Direction.Up, Direction.Down, Direction.Left, Direction.Right }.ToList().ForEach(d =>
-        {
-            if (d == direction && block.GetDirectionBlock(d) is null)
-            {
-                throw new Exception("不能選擇沒有的方向");
-            }
-        });
-        _map.SetPlayerToBlock(player, block.Id, direction);
+        player.SelectDirection(direction);
     }
 
     public Direction GetPlayerDirection(string playerId)
@@ -97,20 +79,27 @@ public class Game
         {
             throw new Exception("找不到玩家");
         }
-        return _map.GetPlayerPositionAndDirection(player).direction;
+        return player.Chess.CurrentDirection;
     }
 
     public void Initial()
     {
         // 初始化玩家位置
+        Block startBlock = _map.FindBlockById("Start");
         foreach (var player in _players)
         {
-            _map.SetPlayerToBlock(player, "Start", Direction.Right);
+            Chess chess = new(player, _map, startBlock, Direction.Right);
+            player.Chess = chess;
         }
         // 初始化目前玩家
         CurrentPlayer = _players[0];
     }
-
+    /// <summary>
+    /// 擲骰子
+    /// 並且移動棋子直到遇到需要選擇方向的地方
+    /// </summary>
+    /// <param name="playerId"></param>
+    /// <exception cref="Exception"></exception>
     public void PlayerRollDice(string playerId)
     {
         var player = _players.Find(p => p.Id == playerId);
@@ -122,36 +111,10 @@ public class Game
         {
             throw new Exception("不是該玩家的回合");
         }
-
-        CurrentDice = RollDice();
-    }
-
-    public void PlayerMoveChess(string playerId)
-    {
-        var player = _players.Find(p => p.Id == playerId);
-        if (player is null)
-        {
-            throw new Exception("找不到玩家");
-        }
-        if (player != CurrentPlayer)
-        {
-            throw new Exception("不是該玩家的回合");
-        }
-        _map.PlayerMove(player, CurrentDiceTotal);
+        IDice[] dices = player.RollDice(Dices);
     }
 
     #region Private Functions
-    /// <summary>
-    /// 根據設定來擲骰子
-    /// </summary>
-    /// <returns>所有的骰子點數</returns>
-    private int[] RollDice()
-    {
-        return Enumerable.Range(0, DiceSetting.NumberOfDice)
-            .Select(_ => _random.Next(DiceSetting.Min, DiceSetting.Max + 1))
-            .ToArray();
-    }
-
     private void AddPlayerToRankList(Player player)
     {
         foreach (var rank in _playerRankDictionary)

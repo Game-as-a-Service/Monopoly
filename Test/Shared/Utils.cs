@@ -1,4 +1,6 @@
+using Moq;
 using Shared.Domain;
+using Shared.Domain.Interfaces;
 
 namespace Shared;
 
@@ -16,5 +18,19 @@ public class Utils
             new Block?[] { null,                    null,               new Land("E3"),        null,               null,                       null,               new Land("D1") },
             new Block?[] { null,                    null,               new Land("E2"),        new Land("E1"),    new Land("Station3"),      new Land("D3"),    new Land("D2") },
         };
+    }
+    
+    public static IDice[]? MockDice(params int[] diceValues)
+    {
+        var dice = new IDice[diceValues.Length];
+        for (int i = 0; i < diceValues.Length; i++)
+        {
+            var mockDice = new Mock<IDice>();
+            mockDice.Setup(x => x.Roll());
+            mockDice.Setup(x => x.Value).Returns(diceValues[i]);
+            dice[i] = mockDice.Object;
+        }
+
+        return dice;
     }
 }

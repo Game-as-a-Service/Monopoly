@@ -11,7 +11,7 @@ public class SelectDirectionTest
         var game = new Game("Test", map);
         var player = new Player("A");
         game.AddPlayer(player);
-
+        game.Initial();
         game.SetPlayerToBlock(player, "ParkingLot", Map.Direction.Down);
 
         // Act
