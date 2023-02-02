@@ -1,7 +1,10 @@
+using Shared.Domain.Interfaces;
+
 namespace Shared.Domain;
 
 public class Player
 {
+    private Chess chess;
     private List<LandContract> landContractList = new();
 
     public Player(string id, int money = 15000)
@@ -16,6 +19,8 @@ public class Player
     public int Money { get; set; }
 
     public IList<LandContract> LandContractList => landContractList.AsReadOnly();
+
+    public Chess Chess { get => chess; set => chess = value; }
 
     public void UpdateState()
     {
@@ -51,5 +56,22 @@ public class Player
         var landContract = landContractList.Where(land => land.Id == id);
 
         return landContract.First();
+    }
+
+    internal IDice[] RollDice(IDice[] dices)
+    {
+        foreach (var dice in dices)
+        {
+            dice.Roll();
+        }
+
+        chess.Move(dices.Sum(dice => dice.Value));
+
+        return dices;
+    }
+
+    internal void SelectDirection(Map.Direction direction)
+    {
+        chess.ChangeDirection(direction);
     }
 }

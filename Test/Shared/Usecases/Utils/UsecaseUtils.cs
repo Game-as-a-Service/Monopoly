@@ -1,13 +1,15 @@
+using Server.Repositories;
 using Shared.Domain;
+using Shared.Domain.Interfaces;
 
-namespace Shared.Usecases.Utils;
+namespace Shared.Usecases.UsecaseUtils;
 
 public class UsecaseUtils
 {
-    public static Game GameSetup(DiceSetting? diceSetting = null)
+    public static Game GameSetup(IDice[]? dice = null)
     {
-        var map = new Map(Shared.Utils.SevenXSevenMap());
-        var game = new Game("g1", map, diceSetting);
+        var map = new Map(Utils.SevenXSevenMap());
+        var game = new Game("g1", map, dice);
         var playerA = new Player("p1");
         var playerB = new Player("p2");
         var playerC = new Player("p3");
@@ -20,7 +22,7 @@ public class UsecaseUtils
 
         game.Initial();
 
-        var gameRepository = new JsonRepository();
+        var gameRepository = new InMemoryRepository();
         gameRepository.Save(game);
 
         return game;
@@ -28,7 +30,7 @@ public class UsecaseUtils
 
     public static Game GetGameById(string id)
     {
-        var gameRepository = new JsonRepository();
+        var gameRepository = new InMemoryRepository();
         return gameRepository.FindGameById(id);
     }
 }

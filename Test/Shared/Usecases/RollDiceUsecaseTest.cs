@@ -1,5 +1,4 @@
-using Shared.Domain;
-using Shared.Usecases.Utils;
+using Server.Repositories;
 namespace Shared.Usecases;
 
 [TestClass]
@@ -7,17 +6,24 @@ public class RollDiceUsecaseTest
 {
 
     [TestMethod]
-    public void 輪到玩家A_玩家A在起點__玩家擲骰子__沒有錯誤()
+    [Description(
+        """
+        Given:  輪到玩家A
+                玩家A在起點
+        When:   玩家擲骰子
+        Then:   不需要選擇方向
+        """)]
+    public void 玩家擲骰子後不需要選擇方向()
     {
         // Arrange
         const string GameId = "g1";
 
-        UsecaseUtils.GameSetup();
+        UsecaseUtils.UsecaseUtils.GameSetup(Utils.MockDice(2, 3));
         RollDiceUsecase.Input input = new(GameId, "p1");
         var presenter = new RollDiceUsecase.Presenter();
 
         // Act
-        var rollDiceUsecase = new RollDiceUsecase(new JsonRepository());
+        var rollDiceUsecase = new RollDiceUsecase(new InMemoryRepository());
         rollDiceUsecase.Execute(input, presenter);
 
         // Assert
