@@ -67,7 +67,6 @@ public class Player
         {
             dice.Roll();
         }
-
         chess.Move(dices.Sum(dice => dice.Value));
 
         return dices;
