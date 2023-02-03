@@ -1,9 +1,8 @@
 using Server.Repositories;
 using Shared.Domain;
 using Shared.Domain.Interfaces;
-using SharedTests;
 
-namespace SharedTests.Usecases.Utils;
+namespace SharedTests.Usecases;
 
 public class UsecaseUtils
 {
