@@ -2,7 +2,7 @@ using Moq;
 using Server.Hubs;
 using SignalR_UnitTestingSupportCommon.Hubs;
 
-namespace Server.HubTests;
+namespace ServerTests.HubTests;
 
 [TestClass]
 public class MonopolyHubTest

@@ -1,8 +1,9 @@
 using Server.Repositories;
 using Shared.Domain;
 using Shared.Domain.Interfaces;
+using SharedTests;
 
-namespace Shared.Usecases.UsecaseUtils;
+namespace SharedTests.Usecases.Utils;
 
 public class UsecaseUtils
 {
@@ -14,7 +15,7 @@ public class UsecaseUtils
         var playerB = new Player("p2");
         var playerC = new Player("p3");
         var playerD = new Player("p4");
-        
+
         game.AddPlayer(playerA);
         game.AddPlayer(playerB);
         game.AddPlayer(playerC);

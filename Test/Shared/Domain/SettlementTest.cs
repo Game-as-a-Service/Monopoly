@@ -1,5 +1,6 @@
 using Shared.Domain;
-namespace Shared.Usecases;
+
+namespace SharedTests.Domain;
 
 [TestClass]
 public class GameTest
@@ -20,11 +21,11 @@ public class GameTest
         // 玩家 B、C 破產
         game.UpdatePlayerState(player_b);
         game.UpdatePlayerState(player_c);
-        
+
         // Act
         // 遊戲結算
         game.Settlement();
-        
+
         // Assert
         // 玩家A獲勝
         Assert.AreEqual(1, game.PlayerRankDictionary[player_a]);
@@ -63,7 +64,7 @@ public class GameTest
         // Act
         // 遊戲結算
         game.Settlement();
-        
+
         // Assert
         // 名次為 A B C D
         var ranking = game.PlayerRankDictionary;
