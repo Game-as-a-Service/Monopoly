@@ -21,7 +21,7 @@ public class RollDiceUsecaseTest
         // Arrange
         const string GameId = "g1";
 
-        UsecaseUtils.UsecaseUtils.GameSetup(Utils.MockDice(2, 3));
+        UsecaseUtils.GameSetup(Utils.MockDice(2, 3));
         RollDiceUsecase.Input input = new(GameId, "p1");
         var presenter = new RollDiceUsecase.Presenter();
 
