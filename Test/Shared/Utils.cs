@@ -2,7 +2,7 @@ using Moq;
 using Shared.Domain;
 using Shared.Domain.Interfaces;
 
-namespace Shared;
+namespace SharedTests;
 
 public class Utils
 {
@@ -19,7 +19,7 @@ public class Utils
             new Block?[] { null,                    null,               new Land("E2"),        new Land("E1"),    new Land("Station3"),      new Land("D3"),    new Land("D2") },
         };
     }
-    
+
     public static IDice[]? MockDice(params int[] diceValues)
     {
         var dice = new IDice[diceValues.Length];

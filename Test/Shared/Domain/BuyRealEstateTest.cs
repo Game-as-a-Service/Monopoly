@@ -1,5 +1,9 @@
-namespace Shared.Domain;
+using Shared.Domain;
+
+namespace SharedTests.Domain;
 using Shared.Domain.Exceptions;
+using SharedTests;
+
 [TestClass]
 public class BuyRealEstateTest
 {
@@ -15,7 +19,8 @@ public class BuyRealEstateTest
         Then:   玩家A不再擁有A1
                 玩家A持有1700元
         """)]
-    public void 拍賣結算時流拍() {
+    public void 拍賣結算時流拍()
+    {
         // Arrange
         var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var a, out var b);
 
@@ -42,7 +47,8 @@ public class BuyRealEstateTest
                 玩家B持有1400元
                 玩家B擁有A1
         """)]
-    public void 拍賣結算時轉移金錢及地契() {
+    public void 拍賣結算時轉移金錢及地契()
+    {
         // Arrange
         var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var a, out var b);
         game.PlayerBid(b.Id, 600);
@@ -68,7 +74,8 @@ public class BuyRealEstateTest
         When:   玩家B喊價3000元
         Then:   玩家B不能喊價
         """)]
-    public void 不能喊出比自己的現金還要大的價錢() {
+    public void 不能喊出比自己的現金還要大的價錢()
+    {
         // Arrange
         var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var a, out var b);
 

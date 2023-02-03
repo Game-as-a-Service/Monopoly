@@ -1,4 +1,7 @@
-namespace Shared.Domain;
+using Shared.Domain;
+using SharedTests;
+
+namespace SharedTests.Domain;
 
 [TestClass]
 public class SelectDirectionTest
@@ -32,5 +35,5 @@ public class SelectDirectionTest
         Assert.AreEqual(Map.Direction.Left, direction);
     }
 
-    
+
 }

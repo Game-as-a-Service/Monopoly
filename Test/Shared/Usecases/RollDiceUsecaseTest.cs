@@ -1,5 +1,8 @@
 using Server.Repositories;
-namespace Shared.Usecases;
+using Shared.Usecases;
+using SharedTests;
+
+namespace SharedTests.Usecases;
 
 [TestClass]
 public class RollDiceUsecaseTest

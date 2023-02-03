@@ -1,6 +1,5 @@
 ﻿using Shared.Domain.Exceptions;
 using Shared.Domain;
-using Shared;
 using static Shared.Domain.Map;
 
 namespace SharedTests.Domain;
