@@ -41,7 +41,10 @@ public class Chess
             }
             currentBlock = nextBlock;
             remainingSteps--;
-
+            if (currentBlock is StartPoint && remainingSteps > 0) // 如果移動到起點，且還有剩餘步數，則獲得獎勵金
+            {
+                player.AddMoney(3000);
+            }
             var directions = DirectionOptions();
             if (directions.Count > 1)
             {
