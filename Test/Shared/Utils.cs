@@ -10,7 +10,7 @@ public class Utils
     {
         return new Block?[][]
         {
-            new Block?[] { new Land("Start"),      new Land("A1"),    new Land("Station1"),  new Land("A2"),    new Land("A3"),            null,               null },
+            new Block?[] { new StartPoint("Start"),      new Land("A1"),    new Land("Station1"),  new Land("A2"),    new Land("A3"),            null,               null },
             new Block?[] { new Land("F4"),         null,               null,                   null,               new Land("A4"),            null,               null },
             new Block?[] { new Land("Station4"),   null,               new Land("B5"),        new Land("B6"),    new Land("ParkingLot"),    new Land("C1"),    new Land("C2") },
             new Block?[] { new Land("F3"),         null,               new Land("B4"),        null,               new Land("B1"),            null,               new Land("C3") },
