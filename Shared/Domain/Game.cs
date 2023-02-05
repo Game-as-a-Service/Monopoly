@@ -56,11 +56,7 @@ public class Game
 
     public Block GetPlayerPosition(string playerId) 
     {
-        var player = _players.Find(p => p.Id == playerId);
-        if (player is null)
-        {
-            throw new Exception("找不到玩家");
-        }
+        Player player = GetPlayer(playerId);
         return player.Chess.CurrentBlock;
     } 
 
@@ -74,11 +70,7 @@ public class Game
 
     public Direction GetPlayerDirection(string playerId)
     {
-        var player = _players.Find(p => p.Id == playerId);
-        if (player is null)
-        {
-            throw new Exception("找不到玩家");
-        }
+        Player player = GetPlayer(playerId);
         return player.Chess.CurrentDirection;
     }
 
@@ -102,15 +94,8 @@ public class Game
     /// <exception cref="Exception"></exception>
     public void PlayerRollDice(string playerId)
     {
-        var player = _players.Find(p => p.Id == playerId);
-        if (player is null)
-        {
-            throw new Exception("找不到玩家");
-        }
-        if (player != CurrentPlayer)
-        {
-            throw new Exception("不是該玩家的回合");
-        }
+        Player player = GetPlayer(playerId);
+        VerifyCurrentPlayer(player);
         IDice[] dices = player.RollDice(Dices);
     }
     
@@ -119,40 +104,23 @@ public class Game
         CurrentPlayer.Auction.End();
     }
     
-    public void PlayerSellLandContract(string id, string landId)
+    public void PlayerSellLandContract(string playerId, string landId)
     {
-        var player = _players.Find(p => p.Id == id);
-        if (player is null)
-        {
-            throw new Exception("找不到玩家");
-        }
-        if (player != CurrentPlayer)
-        {
-            throw new Exception("不是該玩家的回合");
-        }
+        Player player = GetPlayer(playerId);
+        VerifyCurrentPlayer(player);
         player.AuctionLandContract(landId);
     }
     
-    public void PlayerBid(string id, int price)
+    public void PlayerBid(string playerId, int price)
     {
-        var player = _players.Find(p => p.Id == id);
-        if (player is null)
-        {
-            throw new Exception("找不到玩家");
-        }
+        Player player = GetPlayer(playerId);
         CurrentPlayer.Auction.Bid(player, price);
     }
-    public void MortgageLandContract(string id, string landId)
+    
+    public void MortgageLandContract(string playerId, string landId)
     {
-        var player = _players.Find(p => p.Id == id);
-        if (player is null)
-        {
-            throw new Exception("找不到玩家");
-        }
-        if (player != CurrentPlayer)
-        {
-            throw new Exception("不是該玩家的回合");
-        }
+        Player player = GetPlayer(playerId);
+        VerifyCurrentPlayer(player);
         player.MortgageLandContract(landId);
     }
 
@@ -164,6 +132,23 @@ public class Game
             _playerRankDictionary[rank.Key] += 1;
         }
         _playerRankDictionary.Add(player, 1);
+    }
+    private Player GetPlayer(string id)
+    {
+        var player = _players.Find(p => p.Id == id);
+        if (player is null)
+        {
+            throw new Exception("找不到玩家");
+        }
+
+        return player;
+    }
+    private void VerifyCurrentPlayer(Player? player)
+    {
+        if (player != CurrentPlayer)
+        {
+            throw new Exception("不是該玩家的回合");
+        }
     }
     #endregion
 }
