@@ -50,16 +50,16 @@ public class GameTest
         game.AddPlayer(player_d);
 
         // 玩家 B 的結算金額為 5000
-        player_a.AddMoney(5000);
+        player_a.Money = 5000;
 
         // 玩家 B 的結算金額為 4000
-        player_b.AddMoney(4000);
+        player_b.Money = 4000;
 
         // 玩家 C 的結算金額為 3000
-        player_c.AddMoney(3000);
+        player_c.Money = 3000;
 
         // 玩家 D 的結算金額為 2000
-        player_d.AddMoney(2000);
+        player_d.Money = 2000;
 
         // Act
         // 遊戲結算

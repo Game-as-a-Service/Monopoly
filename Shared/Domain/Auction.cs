@@ -26,12 +26,13 @@ public class Auction
         if (highestBidder != null)
         {
             highestBidder.AddLandContract(landContract with { Owner = highestBidder });
-            highestBidder.AddMoney(-highestPrice);
-            landContract.Owner.AddMoney(highestPrice);
+            highestBidder.Money -= highestPrice;
+            
+            landContract.Owner.Money += highestPrice;
         }
         else // 流拍
         {
-            landContract.Owner.AddMoney(landContract.Land.Price * (decimal)0.7);
+            landContract.Owner.Money += landContract.Land.Price * (decimal)0.7;
         }
     }
 
