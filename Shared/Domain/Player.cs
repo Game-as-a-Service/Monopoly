@@ -49,11 +49,6 @@ public class Player
         return LandContractList.Where(landContract => landContract.Land.Id == id).FirstOrDefault();
     }
 
-    public void AddMoney(decimal money)
-    {
-        Money += money;
-    }
-
     public void AuctionLandContract(string id) {
         var landContract = _landContractList.Where(landContract => landContract.Land.Id == id).FirstOrDefault();
         if (landContract is null)
