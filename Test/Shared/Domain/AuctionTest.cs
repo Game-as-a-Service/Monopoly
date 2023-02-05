@@ -1,11 +1,11 @@
-using Shared.Domain;
-
 namespace SharedTests.Domain;
+
+using Shared.Domain;
 using Shared.Domain.Exceptions;
 using SharedTests;
 
 [TestClass]
-public class BuyRealEstateTest
+public class AuctionTest
 {
     [TestMethod]
     [Description(
