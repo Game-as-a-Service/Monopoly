@@ -142,6 +142,19 @@ public class Game
         }
         CurrentPlayer.Auction.Bid(player, price);
     }
+    public void MortgageLandContract(string id, string landId)
+    {
+        var player = _players.Find(p => p.Id == id);
+        if (player is null)
+        {
+            throw new Exception("找不到玩家");
+        }
+        if (player != CurrentPlayer)
+        {
+            throw new Exception("不是該玩家的回合");
+        }
+        player.MortgageLandContract(landId);
+    }
 
     #region Private Functions
     private void AddPlayerToRankList(Player player)
@@ -152,7 +165,5 @@ public class Game
         }
         _playerRankDictionary.Add(player, 1);
     }
-
-    
     #endregion
 }

@@ -7,12 +7,14 @@ public class Player
     private Chess chess;
     private readonly List<LandContract> _landContractList = new();
     private Auction auction;
+    private readonly List<Mortgage> mortgages;
 
     public Player(string id, decimal money = 15000)
     {
         Id = id;
         State = PlayerState.Normal;
         Money = money;
+        mortgages = new List<Mortgage>();
     }
 
     public PlayerState State { get; private set; }
@@ -23,6 +25,7 @@ public class Player
 
     public Chess Chess { get => chess; set => chess = value; }
     public Auction Auction => auction;
+    public IList<Mortgage> Mortgage => mortgages.AsReadOnly();
 
     public void UpdateState()
     {
@@ -72,8 +75,10 @@ public class Player
         chess.ChangeDirection(direction);
     }
 
-    internal void Outcry(int money)
+    internal void MortgageLandContract(string landId)
     {
-        throw new NotImplementedException();
+        var landContract = _landContractList.First(l => l.Land.Id == landId);
+        mortgages.Add(new Mortgage(this, landContract));
+        Money += landContract.Land.Price * (decimal)0.7;
     }
 }
