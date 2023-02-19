@@ -54,11 +54,11 @@ public class Game
 
     public void SetPlayerToBlock(Player player, string blockId, Direction direction) => player.Chess.SetBlock(blockId, direction);
 
-    public Block GetPlayerPosition(string playerId) 
+    public Block GetPlayerPosition(string playerId)
     {
         Player player = GetPlayer(playerId);
         return player.Chess.CurrentBlock;
-    } 
+    }
 
     // 玩家選擇方向
     // 1.不能選擇回頭的方向
@@ -98,25 +98,25 @@ public class Game
         VerifyCurrentPlayer(player);
         IDice[] dices = player.RollDice(Dices);
     }
-    
+
     public void EndAuction()
     {
         CurrentPlayer.Auction.End();
     }
-    
+
     public void PlayerSellLandContract(string playerId, string landId)
     {
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
         player.AuctionLandContract(landId);
     }
-    
+
     public void PlayerBid(string playerId, int price)
     {
         Player player = GetPlayer(playerId);
         CurrentPlayer.Auction.Bid(player, price);
     }
-    
+
     public void MortgageLandContract(string playerId, string landId)
     {
         Player player = GetPlayer(playerId);
@@ -125,6 +125,7 @@ public class Game
     }
 
     #region Private Functions
+
     private void AddPlayerToRankList(Player player)
     {
         foreach (var rank in _playerRankDictionary)
@@ -151,4 +152,34 @@ public class Game
         }
     }
     #endregion
+
+    /// <summary>
+    /// 購買土地
+    /// </summary>
+    /// <param name="player">購買玩家</param>
+    /// <param name="BlockId">購買土地ID</param>
+    public void BuyLand(Player player, string BlockId)
+    {
+        //判斷是否踩在該土地
+        if (player.Chess.CurrentBlock.Id != BlockId) throw new Exception("必須在購買的土地上才可以購買");
+
+        //判斷是否為空土地
+        if (this.FindPlayerByLandId(BlockId) != null) throw new Exception("非空地");
+
+        //判斷格子購買金額足夠
+        var land = _map.FindBlockById(BlockId) as Land;
+        if (land.Price > player.Money) throw new Exception("金額不足");
+
+        //玩家扣款
+        player.Money -= land.Price;
+
+        //過戶(?
+        var landContract = new LandContract(player, land);
+        player.AddLandContract(landContract);
+    }
+
+    private Player? FindPlayerByLandId(string blockId)
+    {
+        return _players.Where(p => p.LandContractList.Any(l => l.Equals(blockId))).FirstOrDefault();
+    }
 }
