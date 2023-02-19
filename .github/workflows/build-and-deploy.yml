@@ -1,0 +1,106 @@
+name: Build and Deploy
+
+on: [push, pull_request]
+
+env:
+  DOTNET_VERSION: '7.0.x'
+  DOTNET_APP_SOURCE_PATH: '.'
+  #DOTNET_APP_PUBLISH_PROJECT_PATH: './src/BackEnd/src/InterfaceAdapter/WebApi'
+
+jobs:
+  build:
+    name: Build, Test and Publish Artifact
+    runs-on: ubuntu-latest
+    steps:
+    # Checkout the repo
+    - name: git checkout
+      uses: actions/checkout@v3
+    
+    # Setup .NET SDK
+    - name: Setup .NET SDK ${{ env.DOTNET_VERSION }}
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+  
+    # Run dotnet build and test
+    - name: dotnet restore, build and test
+      working-directory: ${{ env.DOTNET_APP_SOURCE_PATH }}
+      run: |
+        dotnet restore
+        dotnet build -c Release --no-restore
+        dotnet test -c Release --no-build --verbosity normal
+    # Run dotnet publish
+    #- name: dotnet publish
+    #  if: github.event_name == 'push' && (github.ref_name == 'develop' || github.ref_name == 'master')
+    #  run: |
+    #      dotnet publish ${{ env.DOTNET_APP_PUBLISH_PROJECT_PATH }} -c Release -r linux-x64 --no-self-contained -o publish/backend /p:DebugType=None /p:DebugSymbols=false
+    # Upload Artifact
+    #- name: Upload Artifact
+    #  if: github.event_name == 'push' && (github.ref_name == 'develop' || github.ref_name == 'master')
+    #  uses: actions/upload-artifact@v3
+    #  with:
+    #    name: backend-app
+    #    path: publish/backend
+
+    # Dump GitHub Context
+    - name: Dump GitHub Context
+      run: |
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo '${{ toJSON(env) }}' >> $GITHUB_STEP_SUMMARY
+        echo '${{ toJSON(github) }}' >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+  # deploy-dev:
+  #   name: Deploy Dev
+  #   if: github.ref_name == 'develop' && github.event_name == 'push'
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   environment: dev
+  #   env:
+  #     AZURE_WEBAPP_NAME: 'werewolf-api-dev'
+  #   steps:
+  #   # Download Artifact
+  #   - name: Download Artifact
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: backend-app
+  #       path: ./backend-app
+    
+  #   # Display file structures
+  #   - name: Display structure of downloaded files
+  #     run: ls -R
+  
+  #   # Deploy to Azure App Service
+  #   - name: Deploy to Azure App Service
+  #     uses: azure/webapps-deploy@v2
+  #     with:
+  #       app-name: ${{ env.AZURE_WEBAPP_NAME }}
+  #       publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+  #       package: './backend-app'
+  
+  # deploy-production:
+  #   name: Deploy Production
+  #   if: github.ref_name == 'main' && github.event_name == 'push'
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   env:
+  #     AZURE_WEBAPP_NAME: 'werewolf-api-dev'
+  #   steps:
+  #   # Download Artifact
+  #   - name: Download Artifact
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: backend-app
+  #       path: ./backend-app
+    
+  #   # Display file structures
+  #   - name: Display structure of downloaded files
+  #     run: ls -R
+  
+  #   # Deploy to Azure App Service
+  #   - name: Deploy to Azure App Service
+  #     uses: azure/webapps-deploy@v2
+  #     with:
+  #       app-name: ${{ env.AZURE_WEBAPP_NAME }}
+  #       publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+  #       package: './backend-app'
