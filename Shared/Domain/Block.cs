@@ -7,6 +7,9 @@ public abstract class Block
     public Block? Down { get; set; }
     public Block? Left { get; set; }
     public Block? Right { get; set; }
+    protected string lot = "";
+    public string Lot => lot;
+
     public List<Map.Direction> Directions => new List<Map.Direction>()
     {
         Up is not null ? Map.Direction.Up : Map.Direction.None,
@@ -31,24 +34,71 @@ public abstract class Block
             _ => throw new ArgumentOutOfRangeException(nameof(d), d, null)
         };
     }
+
+    public virtual Player? GetOwner()
+    {
+        return null;
+    }
+
+    public virtual void UpdateOwner(Player Owner)
+    {
+        throw new Exception("此地不可購買！");
+    }
 }
 
 public class Land: Block
 {
+    private static readonly decimal[] RATE_OF_HOUSE = new decimal[]{0.05m, 0.4m, 1, 3, 6, 10};
+    private static readonly decimal[] RATE_OF_LOT = new decimal[]{0, 1, 1.3m, 2, 4, 8, 16};
+
+    private LandContract landContract;
     private readonly decimal _price;
     private int house;
+    
     public decimal Price => _price; // 土地購買價格
     // public int UpgradePrice => _price; // 升級價格
     // public int TollFee => _price; // 過路費
     public int House => house;
-    public Land(string id, decimal price = 1000) : base(id)
+    public Land(string id, decimal price = 1000, string lot = " ") : base(id)
     {
         _price = price;
+        landContract = new LandContract(null, this);
+        this.lot = lot;
     }
 
     public void Upgrade()
     {
         house++;
+    }
+
+    public bool CalculateToll(Player payer, Player payee, out decimal amount)
+    {
+        // payer 應該付過路費給 payee
+        // 計算過路費
+
+        if (payee.Chess.CurrentBlock.Id == "Jail" || payee.Chess.CurrentBlock.Id == "ParkingLot") 
+        {
+            amount = 0;
+            return false;
+        }
+        else
+        {
+            int lotCount=payee.LandContractList.Count(t=>t.Land.Lot==lot);
+
+            amount = _price * RATE_OF_HOUSE[house] * RATE_OF_LOT[lotCount];
+
+            return (payer.Money > amount);
+        }
+    }
+
+    public override Player? GetOwner()
+    {
+        return landContract.Owner;
+    }
+
+    public override void UpdateOwner(Player Owner)
+    {
+        landContract.Owner = Owner;
     }
 }
 

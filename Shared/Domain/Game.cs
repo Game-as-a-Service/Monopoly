@@ -124,6 +124,21 @@ public class Game
         player.MortgageLandContract(landId);
     }
 
+    public Player? GetOwner(Land location)
+    {
+        return location.GetOwner();
+    }
+
+    public bool CalculateToll(Land location, Player payer, Player payee,out decimal amount)
+    {
+        return location.CalculateToll(payer, payee,out amount);
+    }
+
+    public void PayToll(Player payer, Player payee, decimal amount)
+    {
+        payer.PayToll(payee, amount);
+    }
+
     #region Private Functions
 
     private void AddPlayerToRankList(Player player)

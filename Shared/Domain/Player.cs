@@ -42,6 +42,7 @@ public class Player
     public void AddLandContract(LandContract landContract)
     {
         _landContractList.Add(landContract);
+        landContract.Land.UpdateOwner(this);
     }
 
     public void RemoveLandContract(LandContract landContract) {
@@ -80,5 +81,11 @@ public class Player
         var landContract = _landContractList.First(l => l.Land.Id == landId);
         mortgages.Add(new Mortgage(this, landContract));
         Money += landContract.Land.Price * (decimal)0.7;
+    }
+
+    public void PayToll(Player payee, decimal amount)
+    {
+        Money -= amount;
+        payee.Money += amount;
     }
 }
