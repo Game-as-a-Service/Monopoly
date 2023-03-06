@@ -129,9 +129,9 @@ public class Game
         return location.GetOwner();
     }
 
-    public bool CalculateToll(Land location, Player payer, Player payee,out decimal amount)
+    public bool CalculateToll(Land location, Player payer, Player payee, out decimal amount)
     {
-        return location.CalculateToll(payer, payee,out amount);
+        return location.CalculateToll(payer, payee, out amount);
     }
 
     public void PayToll(Player payer, Player payee, decimal amount)
@@ -195,6 +195,6 @@ public class Game
 
     private Player? FindPlayerByLandId(string blockId)
     {
-        return _players.Where(p => p.LandContractList.Any(l => l.Equals(blockId))).FirstOrDefault();
+        return _players.Where(p => p.LandContractList.Any(l => l.Land.Id.Equals(blockId))).FirstOrDefault();
     }
 }
