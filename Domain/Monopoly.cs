@@ -1,5 +1,6 @@
 using Domain.Common;
 using Domain.Interfaces;
+using Domain.Maps;
 using static Domain.Map;
 
 namespace Domain;
@@ -21,12 +22,16 @@ public class Monopoly: AbstractAggregateRoot
     public Monopoly(string id, Map? map = null, IDice[]? dices = null)
     {
         Id = id;
-        _map = map ?? new Map(Array.Empty<Block[]>());
+        _map = map ?? new SevenXSevenMap();
         Dices = dices ?? new IDice[2] { new Dice(), new Dice() };
     }
 
-    public void AddPlayer(Player player)
+    public void AddPlayer(Player player, string blockId = "Start", Direction direction = Direction.Right)
     {
+        Block block = _map.FindBlockById(blockId);
+        Chess chess = new(player, _map, block, direction);
+        player.Chess = chess;
+        player.Chess.SetBlock(blockId, direction);
         _players.Add(player);
     }
 
@@ -53,8 +58,6 @@ public class Monopoly: AbstractAggregateRoot
         }
     }
 
-    public void SetPlayerToBlock(Player player, string blockId, Direction direction) => player.Chess.SetBlock(blockId, direction);
-
     public Block GetPlayerPosition(string playerId)
     {
         Player player = GetPlayer(playerId);
@@ -77,13 +80,6 @@ public class Monopoly: AbstractAggregateRoot
 
     public void Initial()
     {
-        // 初始化玩家位置
-        Block startBlock = _map.FindBlockById("Start");
-        foreach (var player in _players)
-        {
-            Chess chess = new(player, _map, startBlock, Direction.Right);
-            player.Chess = chess;
-        }
         // 初始化目前玩家
         CurrentPlayer = _players[0];
     }

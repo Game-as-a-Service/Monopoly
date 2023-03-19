@@ -20,9 +20,8 @@ public class RollDiceTest
         // 灌了水銀的骰子 1 顆, 只會骰 6 點
         var game = new Monopoly("Test", map, Utils.MockDice(6));
         var player = new Player("A");
-        game.AddPlayer(player);
+        game.AddPlayer(player, "F4", Direction.Up);
         game.Initial();
-        game.SetPlayerToBlock(player, "F4", Direction.Up);
 
         // Act
         game.PlayerRollDice(player.Id);
@@ -46,9 +45,8 @@ public class RollDiceTest
         var map = new SevenXSevenMap();
         var game = new Monopoly("Test", map, Utils.MockDice(2, 6));
         var player = new Player("A");
-        game.AddPlayer(player);
+        game.AddPlayer(player, "F4", Direction.Up);
         game.Initial();
-        game.SetPlayerToBlock(player, "F4", Direction.Up);
 
         // Act
         Assert.ThrowsException<PlayerNeedToChooseDirectionException>(() => game.PlayerRollDice(player.Id));
@@ -74,9 +72,8 @@ public class RollDiceTest
         var map = new SevenXSevenMap();
         var game = new Monopoly("Test", map, Utils.MockDice(2, 2));
         var player = new Player("A", 1000);
-        game.AddPlayer(player);
+        game.AddPlayer(player, "F3", Direction.Up);
         game.Initial();
-        game.SetPlayerToBlock(player, "F3", Direction.Up);
 
         // Act
         game.PlayerRollDice(player.Id);
@@ -103,9 +100,8 @@ public class RollDiceTest
         var map = new SevenXSevenMap();
         var game = new Monopoly("Test", map, Utils.MockDice(2, 1));
         var player = new Player("A", 1000);
-        game.AddPlayer(player);
+        game.AddPlayer(player, "F3", Direction.Up);
         game.Initial();
-        game.SetPlayerToBlock(player, "F3", Direction.Up);
 
         // Act
         game.PlayerRollDice(player.Id);
