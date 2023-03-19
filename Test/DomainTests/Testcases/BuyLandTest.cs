@@ -25,9 +25,8 @@ public class BuyLandTest
         var map = new SevenXSevenMap();
         var game = new Monopoly("Test", map);
         var playerA = new Player("A", 5000);
-        game.AddPlayer(playerA);
+        game.AddPlayer(playerA, "F4", Direction.Up);
         game.Initial();
-        game.SetPlayerToBlock(playerA, "F4", Direction.Up);
 
         // Act
         // 玩家A進行購買F4
@@ -62,7 +61,6 @@ public class BuyLandTest
         var playerA = new Player("A", 500);
         game.AddPlayer(playerA);
         game.Initial();
-        game.SetPlayerToBlock(playerA, "F4", Direction.Up);
 
         // Act
         //顯示錯誤訊息"金額不足"
@@ -98,7 +96,6 @@ public class BuyLandTest
         game.AddPlayer(playerA);
         game.AddPlayer(playerB);
         game.Initial();
-        game.SetPlayerToBlock(playerA, "F4", Direction.Up);
         Land F4 = (Land)map.FindBlockById("F4");
         playerB.AddLandContract(new(playerB, F4));
 
@@ -138,7 +135,6 @@ public class BuyLandTest
         var playerA = new Player("A", 5000);
         game.AddPlayer(playerA);
         game.Initial();
-        game.SetPlayerToBlock(playerA, "F2", Direction.Up);
 
         // Act
         // 玩家B進行購買F4

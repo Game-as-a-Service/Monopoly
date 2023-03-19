@@ -27,26 +27,20 @@ public class PayTollTest
         var player_a = new Player("A", 1000);
         var player_b = new Player("B", 1000);
 
-        game.AddPlayer(player_b);
+        game.AddPlayer(player_b, "A4");
         game.AddPlayer(player_a);
 
         game.Initial();
 
         // A擁有A4
         Land A4 = (Land)map.FindBlockById("A4");
-        game.SetPlayerToBlock(player_a, "A4", Map.Direction.Down);
         player_a.AddLandContract(new(player_a, A4));
 
-        // B的回合移動到A4
-        game.SetPlayerToBlock(player_b, "A2", Map.Direction.Right);
-        game.PlayerRollDice(player_b.Id); // point:2
-
         Land location = (Land)game.GetPlayerPosition(player_b.Id);
-
-        decimal amount = 0;
         Player? payee = game.GetOwner(location);
 
-        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out amount);
+
+        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out decimal amount);
         Assert.AreEqual(true, enoughMoney);
 
         if (enoughMoney)
@@ -74,6 +68,7 @@ public class PayTollTest
         """)]
     public void 玩家付過路費_有2房_有1同地段()
     {
+        // Arrange
         var map = new SevenXSevenMap();
         var game = new Monopoly("Test", map, Utils.MockDice(2));
 
@@ -82,32 +77,28 @@ public class PayTollTest
         var player_a = new Player("A", 1000);
         var player_b = new Player("B", 2000);
 
-        game.AddPlayer(player_b);
         game.AddPlayer(player_a);
+        game.AddPlayer(player_b, "A4");
 
         game.Initial();
 
+        game.CurrentPlayer = player_b;
+
         // A擁有A1, A4, A4有2房子
-        game.SetPlayerToBlock(player_a, "A1", Map.Direction.Right);
         Land A1 = (Land)map.FindBlockById("A1");
         player_a.AddLandContract(new(player_a, A1));
 
-        game.SetPlayerToBlock(player_a, "A4", Map.Direction.Down);
         Land A4 = (Land)map.FindBlockById("A4");
         player_a.AddLandContract(new(player_a, A4));
         A4.Upgrade();
         A4.Upgrade();
 
-        // B的回合移動到A4
-        game.SetPlayerToBlock(player_b, "A2", Map.Direction.Right);
-        game.PlayerRollDice(player_b.Id); // point:2
-
+        //Act
         Land location = (Land)game.GetPlayerPosition(player_b.Id);
 
-        decimal amount = 0;
         Player? payee = game.GetOwner(location);
 
-        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out amount);
+        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out decimal amount);
         Assert.AreEqual(true, enoughMoney);
 
         if (enoughMoney)
@@ -143,27 +134,22 @@ public class PayTollTest
         var player_a = new Player("A", 1000);
         var player_b = new Player("B", 1000);
 
-        game.AddPlayer(player_a);
-        game.AddPlayer(player_b);
+        game.AddPlayer(player_a, "A1", Map.Direction.Right);
+        game.AddPlayer(player_b, "Jail", Map.Direction.Left);
 
         game.Initial();
 
         //A1是B的土地，價值1000元
         Land A1 = (Land)map.FindBlockById("A1");
-        game.SetPlayerToBlock(player_b, "A1", Map.Direction.Right);
         player_b.AddLandContract(new(player_b, A1));
 
-        // B在監獄
-        game.SetPlayerToBlock(player_b, "Jail", Map.Direction.Left);
-
-        game.PlayerRollDice(player_a.Id); // point:1
-
         Land location = (Land)game.GetPlayerPosition(player_a.Id);
-
-        decimal amount = 0;
         Player? payee = game.GetOwner(location);
 
-        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out amount);
+        // Act
+        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out decimal amount);
+
+        // Assert
         Assert.AreEqual(false, enoughMoney);
         Assert.AreEqual(0, amount);
     }
@@ -176,7 +162,7 @@ public class PayTollTest
                 A在A1上，持有1000元
                 B持有1000元
                 B在停車場
-                A1是B的土地，價值500元
+                A1是B的土地，價值1000元
         When:   A付過路費
         Then:   A無須付過路費
         """)]
@@ -191,27 +177,23 @@ public class PayTollTest
         var player_a = new Player("A", 1000);
         var player_b = new Player("B", 1000);
 
-        game.AddPlayer(player_a);
-        game.AddPlayer(player_b);
+        game.AddPlayer(player_a, "A1");
+        game.AddPlayer(player_b, "ParkingLot");
 
         game.Initial();
 
         //A1是B的土地，價值1000元
         Land A1 = (Land)map.FindBlockById("A1");
-        game.SetPlayerToBlock(player_b, "A1", Map.Direction.Right);
         player_b.AddLandContract(new(player_b, A1));
 
-        // B在監獄
-        game.SetPlayerToBlock(player_b, "ParkingLot", Map.Direction.Left);
-
-        game.PlayerRollDice(player_a.Id); // point:1
-
+        
         Land location = (Land)game.GetPlayerPosition(player_a.Id);
-
-        decimal amount = 0;
         Player? payee = game.GetOwner(location);
 
-        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out amount);
+        // Act
+        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out decimal amount);
+
+        // Assert
         Assert.AreEqual(false, enoughMoney);
         Assert.AreEqual(0, amount);
     }

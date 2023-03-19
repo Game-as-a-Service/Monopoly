@@ -21,9 +21,8 @@ public class SelectDirectionTest
         var map = new SevenXSevenMap();
         var game = new Monopoly("Test", map);
         var player = new Player("A");
-        game.AddPlayer(player);
+        game.AddPlayer(player, "ParkingLot", Map.Direction.Down);
         game.Initial();
-        game.SetPlayerToBlock(player, "ParkingLot", Map.Direction.Down);
 
         // Act
         game.PlayerSelectDirection(player, Map.Direction.Left);
@@ -52,9 +51,8 @@ public class SelectDirectionTest
         var map = new SevenXSevenMap();
         var game = new Monopoly("Test", map);
         var player = new Player("A");
-        game.AddPlayer(player);
+        game.AddPlayer(player, "ParkingLot", Map.Direction.Down);
         game.Initial();
-        game.SetPlayerToBlock(player, "ParkingLot", Map.Direction.Down);
         var chess = game.CurrentPlayer!.Chess;
         game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 3);
 
@@ -85,9 +83,8 @@ public class SelectDirectionTest
         var map = new SevenXSevenMap();
         var game = new Monopoly("Test", map);
         var player = new Player("A");
-        game.AddPlayer(player);
+        game.AddPlayer(player, "ParkingLot", Map.Direction.Down);
         game.Initial();
-        game.SetPlayerToBlock(player, "ParkingLot", Map.Direction.Down);
         var chess = game.CurrentPlayer!.Chess;
         game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 4);
 
