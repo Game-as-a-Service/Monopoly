@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Domain.Common;
+using Domain.Events;
 using Microsoft.AspNetCore.SignalR;
 using Server.Hubs;
 
@@ -13,11 +14,28 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
     {
         _hubContext = hubContext;
     }
-
+    // 這裡暫時採用
+    // 1. 不同的event，使用不同的發送方式
+    // 2. 傳送到所有使用者
+    // 3. 之後要視不同的Event發送到不同的Client。
+    //    像是個人的錯誤，只傳送到特定使用者
+    //    像是遊戲的狀態，傳送到Group Id為Game Id的所有玩家
     public async Task PublishAsync(IEnumerable<DomainEvent> events)
     {
-        // 不同的事件，推送给不同的客戶端
-        // 若事件的內容物相同，SignalR會認為是同一種型態(跨網路傳輸的資料，不會有型態的資訊)
-        await _hubContext.Clients.All.GameCreatedEvent(events.First());
+        foreach (var e in events)
+        {
+            if (e is GameCreatedEvent gce) 
+            {
+                await _hubContext.Clients.All.GameCreatedEvent(gce.GameId);
+            }
+            else if (e is PlayerRolledDiceEvent prde)
+            {
+                await _hubContext.Clients.All.PlayerRolledDiceEvent(prde.PlayerId, prde.DiceCount);
+            }
+            else if (e is ChessMovedEvent cme)
+            {
+                await _hubContext.Clients.All.ChessMovedEvent(cme.PlayerId, cme.BlockId, cme.Direction, cme.RemainingSteps);
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Application.Common;
 using Domain.Events;
-using Microsoft.AspNetCore.SignalR.Client;
+using Server.Hubs;
 
 namespace ServerTests.AcceptanceTests;
 
@@ -22,12 +22,11 @@ public class CreateGameTest
     {
         // Arrange
         var hub = server.CreateHubConnection();
-        var verification = hub.Verify<GameCreatedEvent>("GameCreatedEvent", Timeout: 5000);
 
         // Act
-        await hub.SendAsync("CreateGame", "a");
+        await hub.SendAsync(nameof(MonopolyHub.CreateGame), "a");
 
         // Assert
-        await verification.Verify(e => e.GameId == "1");
+        hub.Verify<string>(nameof(IMonopolyResponses.GameCreatedEvent), GameId => GameId == "1");
     }
 }

@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Events;
 using Domain.Interfaces;
 using Domain.Maps;
 using static Domain.Map;
@@ -32,6 +33,7 @@ public class Monopoly: AbstractAggregateRoot
         Chess chess = new(player, _map, block, direction);
         player.Chess = chess;
         player.Chess.SetBlock(blockId, direction);
+        player.Monopoly = this;
         _players.Add(player);
     }
 
@@ -95,6 +97,7 @@ public class Monopoly: AbstractAggregateRoot
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
         IDice[] dices = player.RollDice(Dices);
+        AddDomainEvent(new PlayerRolledDiceEvent(Id, playerId, dices.Sum(d => d.Value)));
     }
 
     public void EndAuction()

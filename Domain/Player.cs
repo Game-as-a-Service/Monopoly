@@ -18,6 +18,7 @@ public class Player
     }
 
     public PlayerState State { get; private set; }
+    public Monopoly Monopoly { get; internal set; }
     public string Id { get; }
     public decimal Money { get; set; }
 
@@ -70,8 +71,8 @@ public class Player
         {
             dice.Roll();
         }
-        chess.Move(dices.Sum(dice => dice.Value));
-
+        var events = chess.Move(dices.Sum(dice => dice.Value));
+        Monopoly.AddDomainEvent(events);
         return dices;
     }
 

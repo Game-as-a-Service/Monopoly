@@ -25,7 +25,7 @@ public class MonopolyHubTest
         .ClientsGroupMock
         .Verify(
            x => x.SendCoreAsync(
-                "PlayerRollDice",
+                nameof(MonopolyHub.PlayerRollDice),
                 new object[] { "p1", 6 },
                 It.IsAny<CancellationToken>())
         );
