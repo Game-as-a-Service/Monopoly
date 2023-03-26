@@ -16,6 +16,11 @@ public abstract class AbstractAggregateRoot
         domainEvents.Add(domainEvent);
     }
 
+    public void AddDomainEvent(List<DomainEvent> domainEvents)
+    {
+        this.domainEvents.AddRange(domainEvents);
+    }
+
     public void ClearEvent()
     {
         domainEvents.Clear();

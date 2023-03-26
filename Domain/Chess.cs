@@ -1,4 +1,6 @@
-﻿using Domain.Exceptions;
+﻿using Domain.Common;
+using Domain.Events;
+using Domain.Exceptions;
 using static Domain.Map;
 
 namespace Domain;
@@ -30,8 +32,9 @@ public class Chess
     /// 從 RemainingSteps 開始移動
     /// 直到移動次數為0
     /// </summary>
-    private void Move()
+    private List<DomainEvent> Move()
     {
+        List<DomainEvent> events = new(); 
         while (RemainingSteps > 0)
         {
             var nextBlock = CurrentBlock.GetDirectionBlock(CurrentDirection) ?? throw new Exception("找不到下一個區塊");
@@ -51,13 +54,15 @@ public class Chess
             // 只剩一個方向
             // 代表棋子會繼續往這個方向移動
             currentDirection = directions.First();
+            events.Add(new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps));
         }
+        return events;
     }
 
-    public void Move(int moveCount)
+    public List<DomainEvent> Move(int moveCount)
     {
         remainingSteps = moveCount;
-        Move();
+        return Move();
     }
 
     internal void ChangeDirection(Direction direction)
