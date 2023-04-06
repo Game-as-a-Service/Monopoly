@@ -73,23 +73,36 @@ public class Land : Block
         house++;
     }
 
-    public bool CalculateToll(Player payer, Player payee, out decimal amount)
+    public void PayToll(Player payer)
     {
         // payer 應該付過路費給 payee
         // 計算過路費
 
-        if (payee.Chess.CurrentBlock.Id == "Jail" || payee.Chess.CurrentBlock.Id == "ParkingLot")
+        Player? payee = landContract.Owner;
+
+        if (payer.EndRoundFlag)
         {
-            amount = 0;
-            return false;
+            throw new Exception("玩家不需要支付過路費");
+        }
+        else if (payee!.Chess.CurrentBlock.Id == "Jail" || payee.Chess.CurrentBlock.Id == "ParkingLot")
+        {
+            throw new Exception("不需要支付過路費：Owner is in the " + payee.Chess.CurrentBlock.Id);
         }
         else
         {
             int lotCount = payee.LandContractList.Count(t => t.Land.Lot == lot);
 
-            amount = _price * RATE_OF_HOUSE[house] * RATE_OF_LOT[lotCount];
+            decimal amount = _price * RATE_OF_HOUSE[house] * RATE_OF_LOT[lotCount];
 
-            return (payer.Money > amount);
+            if (payer.Money > amount)
+            {
+                payer.EndRoundFlag = true;
+                payer.PayToll(payee, amount);
+            }
+            else
+            {
+                throw new Exception("錢包餘額不足！");
+            }
         }
     }
 
