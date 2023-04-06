@@ -36,23 +36,13 @@ public class PayTollTest
         Land A4 = (Land)map.FindBlockById("A4");
         player_a.AddLandContract(new(player_a, A4));
 
-        Land location = (Land)game.GetPlayerPosition(player_b.Id);
-        Player? payee = game.GetOwner(location);
+        //Act
+        game.PayToll(player_b);
 
-
-        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out decimal amount);
-        Assert.AreEqual(true, enoughMoney);
-
-        if (enoughMoney)
-        {
-            //Act
-            game.PayToll(player_b, player_a, amount);
-
-            // Assert
-            // 1000 * 0.05 = 50
-            Assert.AreEqual(1050, player_a.Money);
-            Assert.AreEqual(950, player_b.Money);
-        }
+        // Assert
+        // 1000 * 0.05 = 50
+        Assert.AreEqual(1050, player_a.Money);
+        Assert.AreEqual(950, player_b.Money);
     }
 
     [TestMethod]
@@ -93,22 +83,12 @@ public class PayTollTest
         A4.Upgrade();
         A4.Upgrade();
 
-        //Act
-        Land location = (Land)game.GetPlayerPosition(player_b.Id);
+        // Act
+        game.PayToll(player_b);
 
-        Player? payee = game.GetOwner(location);
-
-        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out decimal amount);
-        Assert.AreEqual(true, enoughMoney);
-
-        if (enoughMoney)
-        {
-            game.PayToll(player_b, player_a, amount);
-
-            // 1000 * 100% * 130% = 1300
-            Assert.AreEqual(2300, player_a.Money);
-            Assert.AreEqual(700, player_b.Money);
-        }
+        // 1000 * 100% * 130% = 1300
+        Assert.AreEqual(2300, player_a.Money);
+        Assert.AreEqual(700, player_b.Money);
     }
 
     [TestMethod]
@@ -143,15 +123,12 @@ public class PayTollTest
         Land A1 = (Land)map.FindBlockById("A1");
         player_b.AddLandContract(new(player_b, A1));
 
-        Land location = (Land)game.GetPlayerPosition(player_a.Id);
-        Player? payee = game.GetOwner(location);
-
         // Act
-        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out decimal amount);
+        Assert.ThrowsException<Exception>(() => game.PayToll(player_a), "不需要支付過路費：Owner is in the Jail");
 
         // Assert
-        Assert.AreEqual(false, enoughMoney);
-        Assert.AreEqual(0, amount);
+        Assert.AreEqual(1000, player_a.Money);
+        Assert.AreEqual(1000, player_b.Money);
     }
 
     [TestMethod]
@@ -186,15 +163,61 @@ public class PayTollTest
         Land A1 = (Land)map.FindBlockById("A1");
         player_b.AddLandContract(new(player_b, A1));
 
-        
-        Land location = (Land)game.GetPlayerPosition(player_a.Id);
-        Player? payee = game.GetOwner(location);
-
         // Act
-        bool enoughMoney = game.CalculateToll(location, player_b, payee!, out decimal amount);
+        Assert.ThrowsException<Exception>(() => game.PayToll(player_a), "不需要支付過路費：Owner is in the ParkingLot");
 
         // Assert
-        Assert.AreEqual(false, enoughMoney);
-        Assert.AreEqual(0, amount);
+        Assert.AreEqual(1000, player_a.Money);
+        Assert.AreEqual(1000, player_b.Money);
+    }
+
+        [TestMethod]
+    [Description(
+        """
+        Given:  玩家A, B
+                玩家A持有的金額 1000, 房地產 A1 A4, A4地價 1000, A4有2棟房子
+                玩家B持有的金額 2000
+                B的回合移動到A4
+                B扣除過路費1000 * 100% * 130% = 1300給A
+        Wheh:   B再支付一次過路費
+        Then:   B第二次支付失敗
+                玩家A持有金額為1000+1300 = 2300
+                玩家A持有金額為2000-1300 = 700
+        """)]
+    public void 玩家不能重複支付過路費()
+    {
+        // Arrange
+        var map = new SevenXSevenMap();
+        var game = new Monopoly("Test", map, Utils.MockDice(2));
+
+        // 玩家AB
+        // A餘額1000, B餘額1000
+        var player_a = new Player("A", 1000);
+        var player_b = new Player("B", 2000);
+
+        game.AddPlayer(player_a);
+        game.AddPlayer(player_b, "A4");
+
+        game.Initial();
+
+        game.CurrentPlayer = player_b;
+
+        // A擁有A1, A4, A4有2房子
+        Land A1 = (Land)map.FindBlockById("A1");
+        player_a.AddLandContract(new(player_a, A1));
+
+        Land A4 = (Land)map.FindBlockById("A4");
+        player_a.AddLandContract(new(player_a, A4));
+        A4.Upgrade();
+        A4.Upgrade();
+
+        game.PayToll(player_b);
+
+        // Act
+        Assert.ThrowsException<Exception>(() => game.PayToll(player_b), "玩家不需要支付過路費");
+
+        // 1000 * 100% * 130% = 1300
+        Assert.AreEqual(2300, player_a.Money);
+        Assert.AreEqual(700, player_b.Money);
     }
 }
