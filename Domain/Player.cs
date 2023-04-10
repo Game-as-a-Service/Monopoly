@@ -76,19 +76,28 @@ public class Player
         }
         var events = chess.Move(dices.Sum(dice => dice.Value));
 
-        Land location = (Land)chess.CurrentBlock;
+        object currentBlock = chess.CurrentBlock;
+        Land? location = currentBlock as Land;
 
-        Player? owner = location.GetOwner();
-
-        if (owner != null
-            && (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")) 
+        if (location != null)
         {
-            EndRoundFlag = false;
+            Player? owner = location.GetOwner();
+
+            if (owner != null
+                && (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")) 
+            {
+                EndRoundFlag = false;
+            }
+            else
+            {
+                EndRoundFlag = true;
+            }
         }
         else
         {
-            EndRoundFlag = true;
+           EndRoundFlag = true; 
         }
+        
 
         Monopoly.AddDomainEvent(events);
         return dices;
