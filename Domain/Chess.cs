@@ -49,7 +49,13 @@ public class Chess
             {
                 // 可選方向多於一個
                 // 代表棋子會停在這個區塊
-                throw new PlayerNeedToChooseDirectionException(player, currentBlock, directions);
+                events.Add(new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps));
+                events.Add(new PlayerNeedToChooseDirectionEvent(
+                    player.Monopoly.Id, 
+                    player.Id, 
+                    directions.Select(d => d.ToString()).ToArray()));
+                return events;
+                //throw new PlayerNeedToChooseDirectionException(player, currentBlock, directions);
             }
             // 只剩一個方向
             // 代表棋子會繼續往這個方向移動
@@ -65,7 +71,7 @@ public class Chess
         return Move();
     }
 
-    internal void ChangeDirection(Direction direction)
+    internal List<DomainEvent> ChangeDirection(Direction direction)
     {
         if (direction == currentDirection.Opposite())
         {
@@ -76,7 +82,7 @@ public class Chess
             throw new Exception("不能選擇這個方向");
         }
         currentDirection = direction;
-        Move();
+        return Move();
     }
 
     internal void SetBlock(string blockId, Direction direction)

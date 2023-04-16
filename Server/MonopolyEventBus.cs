@@ -36,6 +36,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.ChessMovedEvent(cme.PlayerId, cme.BlockId, cme.Direction, cme.RemainingSteps);
             }
+            else if (e is PlayerNeedToChooseDirectionEvent pnsde)
+            {
+                await _hubContext.Clients.All.PlayerNeedToChooseDirectionEvent(pnsde.PlayerId, pnsde.Directions);
+            }
         }
     }
 }

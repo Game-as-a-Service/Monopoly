@@ -1,3 +1,4 @@
+using Domain.Events;
 using Domain.Maps;
 
 namespace DomainTests.Testcases;
@@ -89,9 +90,12 @@ public class SelectDirectionTest
         game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 4);
 
         // Act
-        Assert.ThrowsException<PlayerNeedToChooseDirectionException>(() => game.PlayerSelectDirection(player, Map.Direction.Left));
+        game.PlayerSelectDirection(player, Map.Direction.Left);
 
         // Assert
         Assert.AreEqual("Jail", game.GetPlayerPosition("A").Id);
+        Assert.IsTrue(game.DomainEvents.Any(
+            e => e is PlayerNeedToChooseDirectionEvent));
+
     }
 }

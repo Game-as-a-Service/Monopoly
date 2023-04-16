@@ -105,7 +105,8 @@ public class Player
 
     internal void SelectDirection(Map.Direction direction)
     {
-        chess.ChangeDirection(direction);
+        var events = chess.ChangeDirection(direction);
+        Monopoly.AddDomainEvent(events);
     }
 
     internal void MortgageLandContract(string landId)

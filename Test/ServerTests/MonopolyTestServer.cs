@@ -155,6 +155,24 @@ internal class VerificationHub
     {
         Verify(methodName, args => verify((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3], (T5)args[4]), timeout);
     }
+
+    // 確認所有的Queue已經是空的了
+    public void VerifyNoElseEvent()
+    {
+        foreach (var (method, queue) in Queues)
+        {
+            var options = new JsonSerializerOptions()
+            {
+                WriteIndented = true,
+            };
+            Assert.IsTrue(queue.IsEmpty, 
+                $"""
+
+                【{method}】中還有 {queue.Count} 筆資料
+                {JsonSerializer.Serialize(queue, options)}
+                """);
+        }
+    }
 }
 
 static class TestHubExtension

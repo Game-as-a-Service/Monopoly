@@ -1,4 +1,5 @@
-﻿using Domain.Maps;
+﻿using Domain.Events;
+using Domain.Maps;
 using static Domain.Map;
 
 namespace DomainTests.Testcases;
@@ -49,11 +50,16 @@ public class RollDiceTest
         game.Initial();
 
         // Act
-        Assert.ThrowsException<PlayerNeedToChooseDirectionException>(() => game.PlayerRollDice(player.Id));
+        game.PlayerRollDice(player.Id);
 
         //Assert
         Assert.AreEqual("ParkingLot", game.GetPlayerPosition("A").Id);
         Assert.AreEqual(1, player.Chess.RemainingSteps);
+        Assert.IsTrue(game.DomainEvents.Any(
+            e => e is PlayerNeedToChooseDirectionEvent @event &&
+                            @event.PlayerId == player.Id &&
+                            @event.Directions.Count() == 3
+                            ));
     }
 
     [TestMethod]
