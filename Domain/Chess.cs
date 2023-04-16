@@ -43,6 +43,7 @@ public class Chess
             if (currentBlock is StartPoint && remainingSteps > 0) // 如果移動到起點，且還有剩餘步數，則獲得獎勵金
             {
                 player.Money += 3000;
+                events.Add(new ThroughStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money));
             }
             var directions = DirectionOptions();
             if (directions.Count > 1)

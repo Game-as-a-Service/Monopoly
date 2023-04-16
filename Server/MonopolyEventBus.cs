@@ -40,6 +40,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerNeedToChooseDirectionEvent(pnsde.PlayerId, pnsde.Directions);
             }
+            else if (e is ThroughStartEvent tse)
+            {
+                await _hubContext.Clients.All.ThroughStartEvent(tse.PlayerId, tse.GainMoney, tse.TotalMoney);
+            }
         }
     }
 }
