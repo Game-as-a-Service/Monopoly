@@ -63,6 +63,10 @@ public class Chess
             currentDirection = directions.First();
             events.Add(new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps));
         }
+        if (currentBlock is StartPoint) // 如果移動到起點， 無法獲得獎勵金
+        {
+            events.Add(new OnStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money));
+        }
         return events;
     }
 

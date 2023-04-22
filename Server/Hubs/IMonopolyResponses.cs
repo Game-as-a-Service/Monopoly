@@ -7,4 +7,5 @@ public interface IMonopolyResponses
     Task ChessMovedEvent(string playerId, string blockId, string direction, int remainingSteps);
     Task PlayerNeedToChooseDirectionEvent(string playerId, string[] directions);
     Task ThroughStartEvent(string playerId, int gainMoney,  decimal totalMoney);
+    Task OnStartEvent(string playerId, int gainMoney,  decimal totalMoney);
 }

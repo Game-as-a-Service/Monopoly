@@ -170,4 +170,49 @@ public class RollDiceTest
         Assert.AreEqual(4000, monopoly.CurrentPlayer!.Money);
 
     }
+
+    [TestMethod]
+    [Description(
+        """
+        Given:  目前玩家在F3
+                玩家持有1000元
+        When:   玩家擲骰得到3點
+        Then:   玩家移動到 起點
+                玩家剩餘步數為 0
+                玩家持有1000元
+        """)]
+    public async Task 玩家擲骰後移動棋子到起點無法獲得獎勵金()
+    {
+        // Arrange
+        Player A = new("A", 1000);
+        SetupMonopoly("1", A, "F3", Direction.Up, new[] { 3 });
+
+        var hub = server.CreateHubConnection();
+
+        // Act
+        await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
+
+        
+        // Assert
+        // A 擲了 3 點
+        // A 移動到 Station4，方向為 Up，剩下 2 步
+        // A 移動到 F4，方向為 Up，剩下 1 步
+        // A 移動到 Start，方向為 Right，剩下 0 步
+        // A 沒有獲得獎勵金，共持有1000元 
+        hub.Verify<string, int>(
+            nameof(IMonopolyResponses.PlayerRolledDiceEvent),
+            (playerId, diceCount) => playerId == "A" && diceCount == 3);
+        VerifyChessMovedEvent(hub, "A", "Station4", "Up", 2);
+        VerifyChessMovedEvent(hub, "A", "F4", "Up", 1);
+        VerifyChessMovedEvent(hub, "A", "Start", "Right", 0);
+        hub.Verify<string, int, decimal>(
+            nameof(IMonopolyResponses.OnStartEvent),
+            (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 1000);
+        hub.VerifyNoElseEvent();
+        
+        // A 共持有1000元
+        var repo = server.GetRequiredService<IRepository>();
+        var monopoly = repo.FindGameById("1");
+        Assert.AreEqual(1000, monopoly.CurrentPlayer!.Money); 
+    }
 }
