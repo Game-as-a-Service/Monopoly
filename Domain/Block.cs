@@ -57,7 +57,7 @@ public class Land : Block
 
     public decimal Price => _price; // 土地購買價格
 
-    // public int UpgradePrice => _price; // 升級價格
+    public decimal UpgradePrice => _price; // 升級價格
     // public int TollFee => _price; // 過路費
     public int House => house;
 

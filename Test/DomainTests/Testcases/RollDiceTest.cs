@@ -117,4 +117,39 @@ public class RollDiceTest
         Assert.AreEqual(0, player.Chess.RemainingSteps);
         Assert.AreEqual(1000, player.Money);
     }
+
+    [TestMethod]
+    [Description("""
+        Given:  目前玩家在A1
+                玩家持有A2
+                A2房子不足5間
+        When:   玩家擲骰得到2點
+        Then:   玩家移動到 A2
+                玩家剩餘步數為 0
+                提示可以蓋房子
+        """)]
+    public void 玩家擲骰後移動棋子到自己擁有地()
+    {
+        // Arrange
+        var map = new SevenXSevenMap();
+        var game = new Monopoly("Test", map, Utils.MockDice(1, 1));
+        var player = new Player("A", 1000);
+        game.AddPlayer(player, "A1", Direction.Right);
+        game.Initial();
+        Land A2 = (Land)map.FindBlockById("A2");
+        player.AddLandContract(new LandContract(player, A2));
+
+        // Act
+        game.PlayerRollDice(player.Id);
+
+        // Assert
+        Assert.AreEqual("A2", game.GetPlayerPosition("A").Id);
+        Assert.AreEqual(0, player.Chess.RemainingSteps);
+        Assert.IsTrue(game.DomainEvents.Any(
+                       e => e is PlayerCanBuildHouseEvent @event &&
+                               @event.PlayerId == player.Id &&
+                               @event.BlockId == "A2" &&
+                               @event.HouseCount == 0 &&
+                               @event.UpgradeMoney == A2.UpgradePrice));
+    }
 }

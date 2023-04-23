@@ -8,4 +8,5 @@ public interface IMonopolyResponses
     Task PlayerNeedToChooseDirectionEvent(string playerId, string[] directions);
     Task ThroughStartEvent(string playerId, int gainMoney,  decimal totalMoney);
     Task OnStartEvent(string playerId, int gainMoney,  decimal totalMoney);
+    Task PlayerCanBuildHouseEvent(string playerId, string blockId, int houseCount, decimal upgradeMoney);
 }

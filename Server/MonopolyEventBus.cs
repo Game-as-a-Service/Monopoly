@@ -48,6 +48,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.OnStartEvent(ose.PlayerId, ose.GainMoney, ose.TotalMoney);
             }
+            else if (e is PlayerCanBuildHouseEvent cbhe)
+            {
+                await _hubContext.Clients.All.PlayerCanBuildHouseEvent(cbhe.PlayerId, cbhe.BlockId, cbhe.HouseCount, cbhe.UpgradeMoney);
+            }
         }
     }
 }

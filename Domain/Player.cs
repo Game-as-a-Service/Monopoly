@@ -1,3 +1,4 @@
+using Domain.Events;
 using Domain.Interfaces;
 
 namespace Domain;
@@ -82,6 +83,10 @@ public class Player
         if (location != null)
         {
             Player? owner = location.GetOwner();
+            if (owner == this)
+            {
+                events.Add(new PlayerCanBuildHouseEvent(Monopoly.Id, Id, location.Id, location.House, location.UpgradePrice));
+            }
 
             if (owner != null
                 && (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")) 
