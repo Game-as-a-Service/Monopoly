@@ -26,7 +26,7 @@ public class SelectDirectionTest
         game.Initial();
 
         // Act
-        Monopoly.PlayerSelectDirection(player, Map.Direction.Left);
+        game.PlayerSelectDirection("A", "Left");
 
         // Assert
         Assert.AreEqual("ParkingLot", game.GetPlayerPosition("A").Id);
@@ -58,7 +58,7 @@ public class SelectDirectionTest
         game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 3);
 
         // Act
-        Monopoly.PlayerSelectDirection(player, Map.Direction.Left);
+        game.PlayerSelectDirection("A", "Left");
 
         // Assert
         Assert.AreEqual("B4", game.GetPlayerPosition("A").Id);
@@ -90,12 +90,41 @@ public class SelectDirectionTest
         game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 4);
 
         // Act
-        Monopoly.PlayerSelectDirection(player, Map.Direction.Left);
+        game.PlayerSelectDirection("A", "Left");
 
         // Assert
         Assert.AreEqual("Jail", game.GetPlayerPosition("A").Id);
         Assert.IsTrue(game.DomainEvents.Any(
             e => e is PlayerNeedToChooseDirectionEvent));
+    }
 
+    [TestMethod]
+    [Description(
+        """
+        Given:  玩家A目前在監獄
+                玩家A方向為Down
+                玩家A目前還能走0步
+                玩家A需要選擇方向
+        When:   玩家A選擇方向為Left
+        Then:   玩家A在監獄
+        """)]
+    public void 玩家選擇方向後會停止()
+    {
+        // Arrange
+        var map = new SevenXSevenMap();
+        var game = new Monopoly("Test", map);
+        var player = new Player("A");
+        game.AddPlayer(player, "Jail", Map.Direction.Down);
+        game.Initial();
+        var chess = game.CurrentPlayer!.Chess;
+        game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 0);
+
+        // Act
+        game.PlayerSelectDirection("A", "Left");
+
+        // Assert
+        Assert.AreEqual("Jail", game.GetPlayerPosition("A").Id);
+        Assert.IsFalse(game.DomainEvents.Any(
+            e => e is PlayerNeedToChooseDirectionEvent));
     }
 }

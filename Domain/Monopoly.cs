@@ -69,9 +69,23 @@ public class Monopoly: AbstractAggregateRoot
     // 玩家選擇方向
     // 1.不能選擇回頭的方向
     // 2.不能選擇沒有的方向
-    public static void PlayerSelectDirection(Player player, Direction direction)
+    public void PlayerSelectDirection(string playerId, string direction)
     {
-        player.SelectDirection(direction);
+        Player player = GetPlayer(playerId);
+        VerifyCurrentPlayer(player);
+        var d = GetDirection(direction);
+        player.SelectDirection(d);
+    }
+    private static Direction GetDirection(string direction)
+    {
+        return direction switch
+        {
+            "Up" => Direction.Up,
+            "Down" => Direction.Down,
+            "Left" => Direction.Left,
+            "Right" => Direction.Right,
+            _ => throw new Exception("方向錯誤")
+        };
     }
 
     public Direction GetPlayerDirection(string playerId)

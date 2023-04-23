@@ -1,5 +1,6 @@
 using Domain.Interfaces;
 using Moq;
+using Server.Hubs;
 
 namespace ServerTests;
 
@@ -17,5 +18,10 @@ public class Utils
         }
 
         return dice;
+    }
+    internal static void VerifyChessMovedEvent(VerificationHub hub, string playerId, string blockId, string direction, int remainingSteps)
+    {
+        hub.Verify<string, string, string, int>(nameof(IMonopolyResponses.ChessMovedEvent), (PlayerId, BlockId, Direction, RemainingSteps) =>
+            PlayerId == playerId && BlockId == blockId && Direction == direction && RemainingSteps == remainingSteps);
     }
 }

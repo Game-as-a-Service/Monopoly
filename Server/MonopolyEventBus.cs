@@ -52,6 +52,14 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerCanBuildHouseEvent(cbhe.PlayerId, cbhe.BlockId, cbhe.HouseCount, cbhe.UpgradeMoney);
             }
+            else if (e is PlayerChooseDirectionEvent pcde)
+            {
+                await _hubContext.Clients.All.PlayerChooseDirectionEvent(pcde.PlayerId, pcde.Direction);
+            }
+            else if (e is PlayerCannotMoveEvent pcme)
+            {
+                await _hubContext.Clients.All.PlayerCannotMoveEvent(pcme.PlayerId, pcme.SuspendRounds);
+            }
         }
     }
 }

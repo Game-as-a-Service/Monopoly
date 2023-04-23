@@ -46,12 +46,12 @@ public class RollDiceTest
         hub.Verify<string, int>(
             nameof(IMonopolyResponses.PlayerRolledDiceEvent),
             (playerId, diceCount) => playerId == "A" && diceCount == 6);
-        VerifyChessMovedEvent(hub, "A", "Start", "Right", 5);
-        VerifyChessMovedEvent(hub, "A", "A1", "Right", 4);
-        VerifyChessMovedEvent(hub, "A", "Station1", "Right", 3);
-        VerifyChessMovedEvent(hub, "A", "A2", "Right", 2);
-        VerifyChessMovedEvent(hub, "A", "A3", "Down", 1);
-        VerifyChessMovedEvent(hub, "A", "A4", "Down", 0);
+        Utils.VerifyChessMovedEvent(hub, "A", "Start", "Right", 5);
+        Utils.VerifyChessMovedEvent(hub, "A", "A1", "Right", 4);
+        Utils.VerifyChessMovedEvent(hub, "A", "Station1", "Right", 3);
+        Utils.VerifyChessMovedEvent(hub, "A", "A2", "Right", 2);
+        Utils.VerifyChessMovedEvent(hub, "A", "A3", "Down", 1);
+        Utils.VerifyChessMovedEvent(hub, "A", "A4", "Down", 0);
     }
 
     [TestMethod]
@@ -87,23 +87,23 @@ public class RollDiceTest
         hub.Verify<string, int>(
             nameof(IMonopolyResponses.PlayerRolledDiceEvent),
             (playerId, diceCount) => playerId == "A" && diceCount == 8);
-        VerifyChessMovedEvent(hub, "A", "Start", "Right", 7);
-        VerifyChessMovedEvent(hub, "A", "A1", "Right", 6);
+        Utils.VerifyChessMovedEvent(hub, "A", "Start", "Right", 7);
+        Utils.VerifyChessMovedEvent(hub, "A", "A1", "Right", 6);
         hub.Verify<string, int, decimal>(
             nameof(IMonopolyResponses.ThroughStartEvent),
             (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 18000);
-        VerifyChessMovedEvent(hub, "A", "Station1", "Right", 5);
-        VerifyChessMovedEvent(hub, "A", "A2", "Right", 4);
-        VerifyChessMovedEvent(hub, "A", "A3", "Down", 3);
-        VerifyChessMovedEvent(hub, "A", "A4", "Down", 2);
-        VerifyChessMovedEvent(hub, "A", "ParkingLot", "Down", 1);
+        Utils.VerifyChessMovedEvent(hub, "A", "Station1", "Right", 5);
+        Utils.VerifyChessMovedEvent(hub, "A", "A2", "Right", 4);
+        Utils.VerifyChessMovedEvent(hub, "A", "A3", "Down", 3);
+        Utils.VerifyChessMovedEvent(hub, "A", "A4", "Down", 2);
+        Utils.VerifyChessMovedEvent(hub, "A", "ParkingLot", "Down", 1);
         hub.Verify<string, string[]>(
             nameof(IMonopolyResponses.PlayerNeedToChooseDirectionEvent),
             (playerId, directions) => playerId == "A" && directions.OrderBy(x => x).SequenceEqual(new[] { "Right", "Down", "Left" }.OrderBy(x => x)));
         hub.VerifyNoElseEvent();
     }
 
-    private void SetupMonopoly(string gameId, Player player, string initialBlockId, Direction initialDirection, int[] dices, string[] landContracts = default!)
+    private void SetupMonopoly(string gameId, Player player, string initialBlockId, Direction initialDirection, int[] dices, string[] landContracts = default!, int remainingSteps = 0)
     {
         var repo = server.GetRequiredService<IRepository>();
         var map = new SevenXSevenMap();
@@ -122,13 +122,6 @@ public class RollDiceTest
         game.Initial();
         repo.Save(game);
     }
-
-    static void VerifyChessMovedEvent(VerificationHub hub, string playerId, string blockId, string direction, int remainingSteps)
-    {
-        hub.Verify<string, string, string, int>(nameof(IMonopolyResponses.ChessMovedEvent), (PlayerId, BlockId, Direction, RemainingSteps) =>
-            PlayerId == playerId && BlockId == blockId && Direction == direction && RemainingSteps == remainingSteps);
-    }
-
 
     [TestMethod]
     [Description(
@@ -164,10 +157,10 @@ public class RollDiceTest
         hub.Verify<string, int>(
             nameof(IMonopolyResponses.PlayerRolledDiceEvent),
             (playerId, diceCount) => playerId == "A" && diceCount == 4);
-        VerifyChessMovedEvent(hub, "A", "Station4", "Up", 3);
-        VerifyChessMovedEvent(hub, "A", "F4", "Up", 2);
-        VerifyChessMovedEvent(hub, "A", "Start", "Right", 1);
-        VerifyChessMovedEvent(hub, "A", "A1", "Right", 0);
+        Utils.VerifyChessMovedEvent(hub, "A", "Station4", "Up", 3);
+        Utils.VerifyChessMovedEvent(hub, "A", "F4", "Up", 2);
+        Utils.VerifyChessMovedEvent(hub, "A", "Start", "Right", 1);
+        Utils.VerifyChessMovedEvent(hub, "A", "A1", "Right", 0);
         hub.Verify<string, int, decimal>(
             nameof(IMonopolyResponses.ThroughStartEvent),
             (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 4000);
@@ -211,9 +204,9 @@ public class RollDiceTest
         hub.Verify<string, int>(
             nameof(IMonopolyResponses.PlayerRolledDiceEvent),
             (playerId, diceCount) => playerId == "A" && diceCount == 3);
-        VerifyChessMovedEvent(hub, "A", "Station4", "Up", 2);
-        VerifyChessMovedEvent(hub, "A", "F4", "Up", 1);
-        VerifyChessMovedEvent(hub, "A", "Start", "Right", 0);
+        Utils.VerifyChessMovedEvent(hub, "A", "Station4", "Up", 2);
+        Utils.VerifyChessMovedEvent(hub, "A", "F4", "Up", 1);
+        Utils.VerifyChessMovedEvent(hub, "A", "Start", "Right", 0);
         hub.Verify<string, int, decimal>(
             nameof(IMonopolyResponses.OnStartEvent),
             (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 1000);
@@ -250,11 +243,13 @@ public class RollDiceTest
         hub.Verify<string, int>(
                        nameof(IMonopolyResponses.PlayerRolledDiceEvent),
                                   (playerId, diceCount) => playerId == "A" && diceCount == 2);
-        VerifyChessMovedEvent(hub, "A", "Station1", "Right", 1);
-        VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
+        Utils.VerifyChessMovedEvent(hub, "A", "Station1", "Right", 1);
+        Utils.VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
         hub.Verify<string, string, int, decimal>(
                        nameof(IMonopolyResponses.PlayerCanBuildHouseEvent),
                                   (playerId, blockId, houseCount, upgradeMoney) => playerId == "A" && blockId == "A2" && houseCount == 0 && upgradeMoney == 1000);
         hub.VerifyNoElseEvent();
     }
+    
+    
 }

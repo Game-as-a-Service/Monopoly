@@ -123,3 +123,10 @@ public class StartPoint : Block
     {
     }
 }
+
+public class Jail : Block
+{
+    public Jail(string id) : base(id)
+    {
+    }
+}

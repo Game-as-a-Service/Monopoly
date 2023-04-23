@@ -67,6 +67,10 @@ public class Chess
         {
             events.Add(new OnStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money));
         }
+        if (currentBlock is Jail) // 
+        {
+            events.Add(new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, 2));
+        }
         return events;
     }
 
@@ -87,7 +91,9 @@ public class Chess
             throw new Exception("不能選擇這個方向");
         }
         currentDirection = direction;
-        return Move();
+        List<DomainEvent> events = new() { new PlayerChooseDirectionEvent(player.Monopoly.Id, player.Id, direction.ToString())};
+        events.AddRange(Move());
+        return events;
     }
 
     internal void SetBlock(string blockId, Direction direction)
