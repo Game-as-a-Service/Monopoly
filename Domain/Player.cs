@@ -28,9 +28,8 @@ public class Player
     public Chess Chess { get => chess; set => chess = value; }
     public Auction Auction => auction;
     public IList<Mortgage> Mortgage => mortgages.AsReadOnly();
-    public bool EndRoundFlag { get; set; }
+    public bool EndRoundFlag { get; set; } 
     // false: 回合尚不能結束，true: 玩家可結束回合
-
 
     public void UpdateState()
     {
@@ -77,19 +76,16 @@ public class Player
         }
         var events = chess.Move(dices.Sum(dice => dice.Value));
 
-        object currentBlock = chess.CurrentBlock;
-        Land? location = currentBlock as Land;
-
-        if (location != null)
+        if (chess.CurrentBlock is Land land)
         {
-            Player? owner = location.GetOwner();
-            if (owner == this)
+            Player? owner = land.GetOwner();
+            if (owner == this) 
             {
-                events.Add(new PlayerCanBuildHouseEvent(Monopoly.Id, Id, location.Id, location.House, location.UpgradePrice));
+                events.Add(new PlayerCanBuildHouseEvent(Monopoly.Id, Id, land.Id, land.House, land.UpgradePrice));
             }
 
             if (owner != null
-                && (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")) 
+                && (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot"))
             {
                 EndRoundFlag = false;
             }
@@ -100,9 +96,9 @@ public class Player
         }
         else
         {
-           EndRoundFlag = true; 
+            EndRoundFlag = true;
         }
-        
+
 
         Monopoly.AddDomainEvent(events);
         return dices;

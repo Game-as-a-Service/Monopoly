@@ -69,7 +69,7 @@ public class Monopoly: AbstractAggregateRoot
     // 玩家選擇方向
     // 1.不能選擇回頭的方向
     // 2.不能選擇沒有的方向
-    public void PlayerSelectDirection(Player player, Direction direction)
+    public static void PlayerSelectDirection(Player player, Direction direction)
     {
         player.SelectDirection(direction);
     }
@@ -102,7 +102,7 @@ public class Monopoly: AbstractAggregateRoot
 
     public void EndAuction()
     {
-        CurrentPlayer.Auction.End();
+        CurrentPlayer?.Auction.End();
     }
 
     public void PlayerSellLandContract(string playerId, string landId)
@@ -115,7 +115,7 @@ public class Monopoly: AbstractAggregateRoot
     public void PlayerBid(string playerId, int price)
     {
         Player player = GetPlayer(playerId);
-        CurrentPlayer.Auction.Bid(player, price);
+        CurrentPlayer?.Auction.Bid(player, price);
     }
 
     public void MortgageLandContract(string playerId, string landId)
@@ -145,12 +145,7 @@ public class Monopoly: AbstractAggregateRoot
 
     private Player GetPlayer(string id)
     {
-        var player = _players.Find(p => p.Id == id);
-        if (player is null)
-        {
-            throw new Exception("找不到玩家");
-        }
-
+        var player = _players.Find(p => p.Id == id) ?? throw new Exception("找不到玩家");
         return player;
     }
 
@@ -175,7 +170,7 @@ public class Monopoly: AbstractAggregateRoot
         if (player.Chess.CurrentBlock.Id != BlockId) throw new Exception("必須在購買的土地上才可以購買");
 
         //判斷是否為空土地
-        if (this.FindPlayerByLandId(BlockId) != null) throw new Exception("非空地");
+        if (FindPlayerByLandId(BlockId) != null) throw new Exception("非空地");
 
         //判斷格子購買金額足夠
         var land = _map.FindBlockById(BlockId) as Land;

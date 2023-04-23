@@ -26,7 +26,7 @@ public class SelectDirectionTest
         game.Initial();
 
         // Act
-        game.PlayerSelectDirection(player, Map.Direction.Left);
+        Monopoly.PlayerSelectDirection(player, Map.Direction.Left);
 
         // Assert
         Assert.AreEqual("ParkingLot", game.GetPlayerPosition("A").Id);
@@ -58,7 +58,7 @@ public class SelectDirectionTest
         game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 3);
 
         // Act
-        game.PlayerSelectDirection(player, Map.Direction.Left);
+        Monopoly.PlayerSelectDirection(player, Map.Direction.Left);
 
         // Assert
         Assert.AreEqual("B4", game.GetPlayerPosition("A").Id);
@@ -90,7 +90,7 @@ public class SelectDirectionTest
         game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 4);
 
         // Act
-        game.PlayerSelectDirection(player, Map.Direction.Left);
+        Monopoly.PlayerSelectDirection(player, Map.Direction.Left);
 
         // Assert
         Assert.AreEqual("Jail", game.GetPlayerPosition("A").Id);
