@@ -28,7 +28,7 @@ public class Player
     public Chess Chess { get => chess; set => chess = value; }
     public Auction Auction => auction;
     public IList<Mortgage> Mortgage => mortgages.AsReadOnly();
-    public bool EndRoundFlag { get; set; } 
+    public bool EndRoundFlag { get; set; }
     // false: 回合尚不能結束，true: 玩家可結束回合
 
     public void UpdateState()
@@ -74,29 +74,35 @@ public class Player
         {
             dice.Roll();
         }
-        var events = chess.Move(dices.Sum(dice => dice.Value));
+        var events = chess.Move(dices.Sum(dice => dice.Value));
+        EndRoundFlag = true;
 
+        //TODO 感覺要套策略
         if (chess.CurrentBlock is Land land)
         {
             Player? owner = land.GetOwner();
-            if (owner == this) 
+            if (owner is null) //TODO 空地 購買事件
             {
-                events.Add(new PlayerCanBuildHouseEvent(Monopoly.Id, Id, land.Id, land.House, land.UpgradePrice));
-            }
 
-            if (owner != null
-                && (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot"))
+            }
+            else if (owner == this)
             {
+                events.Add(new PlayerCanBuildHouseEvent(Monopoly.Id, this.Id, land.Id, land.House, land.UpgradePrice));
+            }
+            else if (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")
+            {
+                events.Add(new PlayerPayTollEvent(Monopoly.Id, this.Id, owner.Id, land.CalcullateToll(owner)));
                 EndRoundFlag = false;
             }
-            else
-            {
-                EndRoundFlag = true;
-            }
         }
-        else
+        else if (Chess.CurrentBlock is StartPoint) // 如果移動到起點， 無法獲得獎勵金
         {
-            EndRoundFlag = true;
+            events.Add(new OnStartEvent(Monopoly.Id, Id, 3000, Money));
+        }
+
+        else if (Chess.CurrentBlock is Jail) // 如果移動到監獄
+        {
+            events.Add(new PlayerCannotMoveEvent(Monopoly.Id, Id, 2));
         }
 
 

@@ -194,7 +194,7 @@ public class RollDiceTest
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
 
-        
+
         // Assert
         // A 擲了 3 點
         // A 移動到 Station4，方向為 Up，剩下 2 步
@@ -211,11 +211,11 @@ public class RollDiceTest
             nameof(IMonopolyResponses.OnStartEvent),
             (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 1000);
         hub.VerifyNoElseEvent();
-        
+
         // A 共持有1000元
         var repo = server.GetRequiredService<IRepository>();
         var monopoly = repo.FindGameById("1");
-        Assert.AreEqual(1000, monopoly.CurrentPlayer!.Money); 
+        Assert.AreEqual(1000, monopoly.CurrentPlayer!.Money);
     }
 
     [TestMethod]
@@ -250,6 +250,60 @@ public class RollDiceTest
                                   (playerId, blockId, houseCount, upgradeMoney) => playerId == "A" && blockId == "A2" && houseCount == 0 && upgradeMoney == 1000);
         hub.VerifyNoElseEvent();
     }
-    
-    
+
+    [TestMethod]
+    [Description("""
+                Given
+                    目前玩家A在A1
+                    玩家B持有A2(無房子)
+                When
+                    玩家擲骰得到2點
+                Then
+                    玩家A移動到 A2
+                    玩家剩餘步數為 0
+                    提示需要付過路費
+                """)]
+    public async Task 玩家擲骰後移動棋子到他人擁有地()
+    {
+        // Arrange
+        Player A = new("A");
+        Player B = new("B");
+
+
+        //TODO 這裡要重構
+        #region 要重構
+        //SetupMonopoly("1", new Player("A"), "A1", Direction.Right, new[] { 2 });
+        //SetupMonopoly("1", new Player("B"), "A1", Direction.Right, new[] { 2 }, new[] { "A2" });
+
+        var repo = server.GetRequiredService<IRepository>();
+        var map = new SevenXSevenMap();
+        var game = new Monopoly("1", map, Utils.MockDice(new[] { 2 }));
+
+        game.AddPlayer(A, "A1", Direction.Right);
+        game.AddPlayer(B, "A1", Direction.Right);
+
+        Land? land = map.FindBlockById("A2") as Land;
+        B.AddLandContract(new(B, land));
+
+        game.Initial();
+        repo.Save(game);
+        #endregion
+
+        var hub = server.CreateHubConnection();
+        // Act
+        await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
+        // Assert
+        // A 擲了 2 點
+        // A 移動到 A2，方向為 Right，剩下 0 步
+        // A 需要支付過路費
+        hub.Verify<string, int>(
+                       nameof(IMonopolyResponses.PlayerRolledDiceEvent),
+                                  (playerId, diceCount) => playerId == "A" && diceCount == 2);
+        Utils.VerifyChessMovedEvent(hub, "A", "Station1", "Right", 1);
+        Utils.VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
+        hub.Verify<string, string, decimal>(
+                       nameof(IMonopolyResponses.PlayerPayTollEvent),
+                                  (playerId, ownId, toll) => playerId == "A" && ownId == "B" && toll == 50);
+        hub.VerifyNoElseEvent();
+    }
 }

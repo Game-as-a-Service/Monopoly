@@ -11,4 +11,5 @@ public interface IMonopolyResponses
     Task PlayerCanBuildHouseEvent(string playerId, string blockId, int houseCount, decimal upgradeMoney);
     Task PlayerChooseDirectionEvent(string playerId, string direction);
     Task PlayerCannotMoveEvent(string playerId, int suspendRounds);
+    Task PlayerPayTollEvent(string playerId, string ownerId, decimal toll);
 }

@@ -1,6 +1,5 @@
 ﻿using Domain.Common;
 using Domain.Events;
-using Domain.Exceptions;
 using static Domain.Map;
 
 namespace Domain;
@@ -34,7 +33,7 @@ public class Chess
     /// </summary>
     private List<DomainEvent> Move()
     {
-        List<DomainEvent> events = new(); 
+        List<DomainEvent> events = new();
         while (RemainingSteps > 0)
         {
             var nextBlock = CurrentBlock.GetDirectionBlock(CurrentDirection) ?? throw new Exception("找不到下一個區塊");
@@ -52,8 +51,8 @@ public class Chess
                 // 代表棋子會停在這個區塊
                 events.Add(new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps));
                 events.Add(new PlayerNeedToChooseDirectionEvent(
-                    player.Monopoly.Id, 
-                    player.Id, 
+                    player.Monopoly.Id,
+                    player.Id,
                     directions.Select(d => d.ToString()).ToArray()));
                 return events;
                 //throw new PlayerNeedToChooseDirectionException(player, currentBlock, directions);
@@ -63,14 +62,7 @@ public class Chess
             currentDirection = directions.First();
             events.Add(new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps));
         }
-        if (currentBlock is StartPoint) // 如果移動到起點， 無法獲得獎勵金
-        {
-            events.Add(new OnStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money));
-        }
-        if (currentBlock is Jail) // 
-        {
-            events.Add(new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, 2));
-        }
+
         return events;
     }
 
@@ -91,7 +83,7 @@ public class Chess
             throw new Exception("不能選擇這個方向");
         }
         currentDirection = direction;
-        List<DomainEvent> events = new() { new PlayerChooseDirectionEvent(player.Monopoly.Id, player.Id, direction.ToString())};
+        List<DomainEvent> events = new() { new PlayerChooseDirectionEvent(player.Monopoly.Id, player.Id, direction.ToString()) };
         events.AddRange(Move());
         return events;
     }

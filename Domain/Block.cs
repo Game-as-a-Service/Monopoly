@@ -90,9 +90,7 @@ public class Land : Block
         }
         else
         {
-            int lotCount = payee.LandContractList.Count(t => t.Land.Lot == lot);
-
-            decimal amount = _price * RATE_OF_HOUSE[house] * RATE_OF_LOT[lotCount];
+            decimal amount = CalcullateToll(payee);
 
             if (payer.Money > amount)
             {
@@ -104,6 +102,13 @@ public class Land : Block
                 throw new Exception("錢包餘額不足！");
             }
         }
+    }
+
+    public decimal CalcullateToll(Player payee)
+    {
+        int lotCount = payee.LandContractList.Count(t => t.Land.Lot == lot);
+
+        return _price * RATE_OF_HOUSE[house] * RATE_OF_LOT[lotCount]; 
     }
 
     public override Player? GetOwner()

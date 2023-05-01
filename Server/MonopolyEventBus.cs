@@ -24,7 +24,7 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
     {
         foreach (var e in events)
         {
-            if (e is GameCreatedEvent gce) 
+            if (e is GameCreatedEvent gce)
             {
                 await _hubContext.Clients.All.GameCreatedEvent(gce.GameId);
             }
@@ -59,6 +59,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             else if (e is PlayerCannotMoveEvent pcme)
             {
                 await _hubContext.Clients.All.PlayerCannotMoveEvent(pcme.PlayerId, pcme.SuspendRounds);
+            }
+            else if (e is PlayerPayTollEvent ppte)
+            {
+                await _hubContext.Clients.All.PlayerPayTollEvent(ppte.PlayerId, ppte.ownerId, ppte.toll);
             }
         }
     }
