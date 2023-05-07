@@ -1,6 +1,9 @@
+using Domain;
 using Domain.Interfaces;
+using Domain.Maps;
 using Moq;
 using Server.Hubs;
+using static Domain.Map;
 
 namespace ServerTests;
 
@@ -23,5 +26,101 @@ public class Utils
     {
         hub.Verify<string, string, string, int>(nameof(IMonopolyResponses.ChessMovedEvent), (PlayerId, BlockId, Direction, RemainingSteps) =>
             PlayerId == playerId && BlockId == blockId && Direction == direction && RemainingSteps == remainingSteps);
+    }
+
+    public class MonopolyBuilder
+    {
+        public string GameId { get; private set; }
+
+        public List<MonopolyPlayer> Players { get; private set; } = new();
+
+        public Monopoly Game { get; private set; }
+
+        public int[] Dices { get; private set; }
+
+        public string CurrentPlayer { get; private set; }
+
+        public MonopolyBuilder(string id)
+        {
+            GameId = id;
+        }
+
+        public MonopolyBuilder WithPlayer(MonopolyPlayer player)
+        {
+            Players.Add(player);
+            return this;
+        }
+        public MonopolyBuilder WithMockDice(int[] dices)
+        {
+            Dices = dices;
+            return this;
+        }
+
+        public MonopolyBuilder WithCurrentPlayer(string playerId)
+        {
+            CurrentPlayer = playerId;
+            return this;
+        }
+
+        public Monopoly Build()
+        {
+            var map = new SevenXSevenMap();
+            var monopoly = new Monopoly(GameId, map, MockDice(Dices));
+            Players.ForEach(p =>
+            {
+                var player = new Player(p.Id, p.Money);
+                var block = map.FindBlockById(p.BlockId);
+                var direction = (Direction)Enum.Parse(typeof(Direction), p.Direction);
+                player.Chess = new Chess(player, map, block, direction);
+                p.LandContracts.ForEach(l =>
+                {
+                    player.AddLandContract(new LandContract(player, (Land)map.FindBlockById(l)));
+                });
+                monopoly.AddPlayer(player, p.BlockId, direction);
+                if (CurrentPlayer == player.Id)
+                {
+                    monopoly.CurrentPlayer = player;
+                }
+            });
+            //monopoly.Initial();
+            return monopoly;
+        }
+    }
+
+    public class MonopolyPlayer
+    {
+        public string Id { get; set; }
+        public decimal Money { get; set; }
+        public string BlockId { get; set; }
+        public string Direction { get; set; }
+        public List<string> LandContracts { get; set; }
+
+        public MonopolyPlayer(string id)
+        {
+            Id = id;
+            Money = 15000;
+            BlockId = "StartPoint";
+            Direction = "Right";
+            LandContracts = new();
+        }
+
+        public MonopolyPlayer WithMoney(decimal money)
+        {
+            Money = money;
+            return this;
+        }
+
+        public MonopolyPlayer WithPosition(string blockId, string direction)
+        {
+            BlockId = blockId;
+            Direction = direction;
+            return this;
+        }
+
+        public MonopolyPlayer WithLandContract(string landId)
+        {
+            LandContracts.Add(landId);
+            return this;
+        }
     }
 }

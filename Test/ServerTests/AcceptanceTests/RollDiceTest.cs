@@ -3,6 +3,7 @@ using Domain;
 using Domain.Maps;
 using Server.Hubs;
 using static Domain.Map;
+using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
 
@@ -269,25 +270,21 @@ public class RollDiceTest
         Player A = new("A");
         Player B = new("B");
 
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithPosition("A1", Direction.Right.ToString())
+        )
+        .WithPlayer(
+            new MonopolyPlayer(B.Id)
+            .WithPosition("A1", Direction.Right.ToString())
+            .WithLandContract("A2")
+        )
+        .WithMockDice(new[] { 2 })
+        .WithCurrentPlayer("A");
 
-        //TODO 這裡要重構
-        #region 要重構
-        //SetupMonopoly("1", new Player("A"), "A1", Direction.Right, new[] { 2 });
-        //SetupMonopoly("1", new Player("B"), "A1", Direction.Right, new[] { 2 }, new[] { "A2" });
-
-        var repo = server.GetRequiredService<IRepository>();
-        var map = new SevenXSevenMap();
-        var game = new Monopoly("1", map, Utils.MockDice(new[] { 2 }));
-
-        game.AddPlayer(A, "A1", Direction.Right);
-        game.AddPlayer(B, "A1", Direction.Right);
-
-        Land? land = map.FindBlockById("A2") as Land;
-        B.AddLandContract(new(B, land));
-
-        game.Initial();
-        repo.Save(game);
-        #endregion
+        var monopoly = monopolyBuilder.Build();
+        server.GetRequiredService<IRepository>().Save(monopoly);
 
         var hub = server.CreateHubConnection();
         // Act
