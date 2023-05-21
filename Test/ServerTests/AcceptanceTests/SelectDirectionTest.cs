@@ -32,7 +32,17 @@ public class SelectDirectionTest
     {
         // Arrange
         Player A = new("A", 1000);
-        SetupMonopoly("1", A, "Jail", Direction.Down, new[] { 2 }, remainingSteps: 0);
+
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("Jail", Direction.Down.ToString())
+        )
+        .WithMockDice(new[] { 2 })
+        .WithCurrentPlayer(nameof(A));
+
+        monopolyBuilder.Save(server);
 
         var hub = server.CreateHubConnection();
 
