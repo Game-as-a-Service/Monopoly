@@ -29,7 +29,17 @@ public class RollDiceTest
     {
         // Arrange
         Player A = new("A");
-        SetupMonopoly("1", A, "F4", Direction.Up, new[] { 6 });
+
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("F4", Direction.Up.ToString())
+        )
+        .WithMockDice(new[] { 6 })
+        .WithCurrentPlayer(nameof(A));
+
+        monopolyBuilder.Save(server);
 
         var hub = server.CreateHubConnection();
 
@@ -68,7 +78,17 @@ public class RollDiceTest
     {
         // Arrange
         Player A = new("A");
-        SetupMonopoly("1", A, "F4", Direction.Up, new[] { 2, 6 });
+
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("F4", Direction.Up.ToString())
+        )
+        .WithMockDice(new[] { 2, 6 })
+        .WithCurrentPlayer(nameof(A));
+
+        monopolyBuilder.Save(server);
 
         var hub = server.CreateHubConnection();
 
@@ -141,7 +161,18 @@ public class RollDiceTest
     {
         // Arrange
         Player A = new("A", 1000);
-        SetupMonopoly("1", A, "F3", Direction.Up, new[] { 4 });
+        //SetupMonopoly("1", A, "F3", Direction.Up, new[] { 4 });
+
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("F3", Direction.Up.ToString())
+        )
+        .WithMockDice(new[] { 4 })
+        .WithCurrentPlayer(nameof(A));
+
+        monopolyBuilder.Save(server);
 
         var hub = server.CreateHubConnection();
 
@@ -188,7 +219,18 @@ public class RollDiceTest
     {
         // Arrange
         Player A = new("A", 1000);
-        SetupMonopoly("1", A, "F3", Direction.Up, new[] { 3 });
+        //SetupMonopoly("1", A, "F3", Direction.Up, new[] { 3 });
+
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("F3", Direction.Up.ToString())
+        )
+        .WithMockDice(new[] { 3 })
+        .WithCurrentPlayer(nameof(A));
+
+        monopolyBuilder.Save(server);
 
         var hub = server.CreateHubConnection();
 
@@ -233,7 +275,19 @@ public class RollDiceTest
     {
         // Arrange
         Player A = new("A");
-        SetupMonopoly("1", A, "A1", Direction.Right, new[] { 2 }, new[] { "A2" });
+
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("A1", Direction.Right.ToString())
+            .WithLandContract("A2")
+        )
+        .WithMockDice(new[] { 2 })
+        .WithCurrentPlayer(nameof(A));
+
+        monopolyBuilder.Save(server);
+
         var hub = server.CreateHubConnection();
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
@@ -273,18 +327,19 @@ public class RollDiceTest
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
             .WithPosition("A1", Direction.Right.ToString())
         )
         .WithPlayer(
             new MonopolyPlayer(B.Id)
+            .WithMoney(B.Money)
             .WithPosition("A1", Direction.Right.ToString())
             .WithLandContract("A2")
         )
         .WithMockDice(new[] { 2 })
         .WithCurrentPlayer("A");
 
-        var monopoly = monopolyBuilder.Build();
-        server.GetRequiredService<IRepository>().Save(monopoly);
+        monopolyBuilder.Save(server);
 
         var hub = server.CreateHubConnection();
         // Act

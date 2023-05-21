@@ -85,6 +85,12 @@ public class Utils
             //monopoly.Initial();
             return monopoly;
         }
+
+        internal void Save(MonopolyTestServer server)
+        {
+            var monopoly = this.Build();
+            server.GetRequiredService<IRepository>().Save(monopoly);
+        }
     }
 
     public class MonopolyPlayer
