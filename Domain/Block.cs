@@ -135,3 +135,10 @@ public class Jail : Block
     {
     }
 }
+
+public class ParkingLot : Block
+{
+    public ParkingLot(string id) : base(id)
+    {
+    }
+}

@@ -121,9 +121,6 @@ public class RollDiceTest
         hub.Verify<string, string[]>(
             nameof(IMonopolyResponses.PlayerNeedToChooseDirectionEvent),
             (playerId, directions) => playerId == "A" && directions.OrderBy(x => x).SequenceEqual(new[] { "Right", "Down", "Left" }.OrderBy(x => x)));
-        hub.Verify<string, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerCanBuyLandEvent),
-                                  (playerId, blockId, landMoney) => playerId == "A" && blockId == "ParkingLot" && landMoney == 1000);
         hub.VerifyNoElseEvent();
     }
 
