@@ -81,9 +81,9 @@ public class Player
         if (chess.CurrentBlock is Land land)
         {
             Player? owner = land.GetOwner();
-            if (owner is null) //TODO 空地 購買事件
+            if (owner is null)
             {
-
+                events.Add(new PlayerCanBuyLandEvent(Monopoly.Id, this.Id, land.Id, land.Price));
             }
             else if (owner == this)
             {

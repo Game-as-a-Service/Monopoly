@@ -121,6 +121,9 @@ public class RollDiceTest
         hub.Verify<string, string[]>(
             nameof(IMonopolyResponses.PlayerNeedToChooseDirectionEvent),
             (playerId, directions) => playerId == "A" && directions.OrderBy(x => x).SequenceEqual(new[] { "Right", "Down", "Left" }.OrderBy(x => x)));
+        hub.Verify<string, string, decimal>(
+                       nameof(IMonopolyResponses.PlayerCanBuyLandEvent),
+                                  (playerId, blockId, landMoney) => playerId == "A" && blockId == "ParkingLot" && landMoney == 1000);
         hub.VerifyNoElseEvent();
     }
 
@@ -196,6 +199,9 @@ public class RollDiceTest
         hub.Verify<string, int, decimal>(
             nameof(IMonopolyResponses.ThroughStartEvent),
             (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 4000);
+        hub.Verify<string, string, decimal>(
+                       nameof(IMonopolyResponses.PlayerCanBuyLandEvent),
+                                  (playerId, blockId, landMoney) => playerId == "A" && blockId == "A1" && landMoney == 1000);
         hub.VerifyNoElseEvent();
 
         // Assert A 有 4000 元
@@ -358,4 +364,48 @@ public class RollDiceTest
                                   (playerId, ownId, toll) => playerId == "A" && ownId == "B" && toll == 50);
         hub.VerifyNoElseEvent();
     }
+
+
+    [TestMethod]
+    [Description("""
+                Given:  目前玩家在A1
+                When:   玩家擲骰得到2點
+                Then:   玩家移動到 A2
+                        玩家剩餘步數為 0
+                        提示可以購買空地
+                """)]
+    public async Task 玩家擲骰後移動棋子到空地()
+    {
+        // Arrange
+        Player A = new("A");
+
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("A1", Direction.Right.ToString())
+        )
+        .WithMockDice(new[] { 2 })
+        .WithCurrentPlayer(nameof(A));
+
+        monopolyBuilder.Save(server);
+
+        var hub = server.CreateHubConnection();
+        // Act
+        await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
+        // Assert
+        // A 擲了 2 點
+        // A 移動到 A2，方向為 Right，剩下 0 步
+        // A 可以購買空地
+        hub.Verify<string, int>(
+                       nameof(IMonopolyResponses.PlayerRolledDiceEvent),
+                                  (playerId, diceCount) => playerId == "A" && diceCount == 2);
+        Utils.VerifyChessMovedEvent(hub, "A", "Station1", "Right", 1);
+        Utils.VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
+        hub.Verify<string, string, decimal>(
+                       nameof(IMonopolyResponses.PlayerCanBuyLandEvent),
+                                  (playerId, blockId, landMoney) => playerId == "A" && blockId == "A2" && landMoney == 1000);
+        hub.VerifyNoElseEvent();
+    }
+
 }

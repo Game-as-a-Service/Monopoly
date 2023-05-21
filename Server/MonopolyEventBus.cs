@@ -52,6 +52,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerCanBuildHouseEvent(cbhe.PlayerId, cbhe.BlockId, cbhe.HouseCount, cbhe.UpgradeMoney);
             }
+            else if (e is PlayerCanBuyLandEvent cble)
+            {
+                await _hubContext.Clients.All.PlayerCanBuyLandEvent(cble.PlayerId, cble.BlockId, cble.landMoney);
+            }
             else if (e is PlayerChooseDirectionEvent pcde)
             {
                 await _hubContext.Clients.All.PlayerChooseDirectionEvent(pcde.PlayerId, pcde.Direction);
