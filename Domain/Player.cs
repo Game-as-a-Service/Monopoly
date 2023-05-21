@@ -1,4 +1,3 @@
-using Domain.Events;
 using Domain.Interfaces;
 
 namespace Domain;
@@ -70,41 +69,14 @@ public class Player
 
     internal IDice[] RollDice(IDice[] dices)
     {
+        EndRoundFlag = true;
+
         foreach (var dice in dices)
         {
             dice.Roll();
         }
-        var events = chess.Move(dices.Sum(dice => dice.Value));
-        EndRoundFlag = true;
 
-        //TODO 感覺要套策略
-        if (chess.CurrentBlock is Land land)
-        {
-            Player? owner = land.GetOwner();
-            if (owner is null)
-            {
-                events.Add(new PlayerCanBuyLandEvent(Monopoly.Id, this.Id, land.Id, land.Price));
-            }
-            else if (owner == this)
-            {
-                events.Add(new PlayerCanBuildHouseEvent(Monopoly.Id, this.Id, land.Id, land.House, land.UpgradePrice));
-            }
-            else if (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")
-            {
-                events.Add(new PlayerPayTollEvent(Monopoly.Id, this.Id, owner.Id, land.CalcullateToll(owner)));
-                EndRoundFlag = false;
-            }
-        }
-        else if (Chess.CurrentBlock is StartPoint) // 如果移動到起點， 無法獲得獎勵金
-        {
-            events.Add(new OnStartEvent(Monopoly.Id, Id, 3000, Money));
-        }
-
-        else if (Chess.CurrentBlock is Jail) // 如果移動到監獄
-        {
-            events.Add(new PlayerCannotMoveEvent(Monopoly.Id, Id, 2));
-        }
-
+        var events = chess.Move(dices.Sum(dice => dice.Value));        events.AddRange(chess.GetLandEvent());
 
         Monopoly.AddDomainEvent(events);
         return dices;

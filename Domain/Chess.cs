@@ -72,7 +72,7 @@ public class Chess
         return Move();
     }
 
-    internal List<DomainEvent> ChangeDirection(Direction direction)
+    public List<DomainEvent> ChangeDirection(Direction direction)
     {
         if (direction == currentDirection.Opposite())
         {
@@ -85,7 +85,46 @@ public class Chess
         currentDirection = direction;
         List<DomainEvent> events = new() { new PlayerChooseDirectionEvent(player.Monopoly.Id, player.Id, direction.ToString()) };
         events.AddRange(Move());
+        events.AddRange(GetLandEvent());
         return events;
+    }
+
+    public IEnumerable<DomainEvent> GetLandEvent()
+    {
+        if (RemainingSteps != 0) yield break;
+
+        //TODO 感覺要套策略
+        if (CurrentBlock is Land land)
+        {
+            Player? owner = land.GetOwner();
+            if (owner is null)
+            {
+                yield return new PlayerCanBuyLandEvent(player.Monopoly.Id, player.Id, land.Id, land.Price);
+            }
+            else if (owner == player)
+            {
+                yield return new PlayerCanBuildHouseEvent(player.Monopoly.Id, player.Id, land.Id, land.House, land.UpgradePrice);
+            }
+            else if (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")
+            {
+                yield return new PlayerPayTollEvent(player.Monopoly.Id, player.Id, owner.Id, land.CalcullateToll(owner));
+                player.EndRoundFlag = false;
+            }
+        }
+        else if (CurrentBlock is StartPoint) // 如果移動到起點， 無法獲得獎勵金
+        {
+            yield return new OnStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money);
+        }
+
+        else if (CurrentBlock is Jail) // 如果移動到監獄
+        {
+            yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, 2);
+        }
+
+        else if (CurrentBlock is ParkingLot) // 如果移動到停車場
+        {
+            yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, 1);
+        }
     }
 
     internal void SetBlock(string blockId, Direction direction)
