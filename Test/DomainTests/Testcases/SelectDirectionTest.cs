@@ -107,6 +107,7 @@ public class SelectDirectionTest
                 玩家A需要選擇方向
         When:   玩家A選擇方向為Left
         Then:   玩家A在監獄
+                玩家A沒有需要選擇方向的事件
         """)]
     public void 玩家選擇方向後會停止()
     {

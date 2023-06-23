@@ -68,6 +68,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerPayTollEvent(ppte.PlayerId, ppte.ownerId, ppte.toll);
             }
+            else if (e is PlayerBuyBlockEvent pbbe)
+            {
+                await _hubContext.Clients.All.PlayerBuyBlockEvent(pbbe.PlayerId, pbbe.BlockId);
+            }
         }
     }
 }

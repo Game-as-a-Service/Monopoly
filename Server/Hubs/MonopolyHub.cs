@@ -14,8 +14,14 @@ public class MonopolyHub : Hub<IMonopolyResponses>
     {
         await usecase.ExecuteAsync(new RollDiceRequest(gameId, userId));
     }
+
     public async Task PlayerChooseDirection(string gameId, string userId, string direction, ChooseDirectionUsecase usecase)
     {
         await usecase.ExecuteAsync(new ChooseDirectionRequest(gameId, userId, direction));
+    }
+
+    public async Task PlayerBuyLand(string gameId, string userId, string blockId, BuyBlockUsecase usecase)
+    {
+        await usecase.ExecuteAsync(new BuyBlockRequest(gameId, userId, blockId));
     }
 }
