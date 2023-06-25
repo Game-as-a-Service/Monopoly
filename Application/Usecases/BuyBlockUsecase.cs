@@ -19,7 +19,7 @@ public class BuyBlockUsecase : Usecase<BuyBlockRequest>
         var game = Repository.FindGameById(request.GameId);
 
         //改
-        game.PlayerRollDice(request.PlayerId);
+        game.BuyLand(request.PlayerId, request.LandID);
 
         //存
         Repository.Save(game);

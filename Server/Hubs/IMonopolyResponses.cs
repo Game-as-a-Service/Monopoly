@@ -14,4 +14,7 @@ public interface IMonopolyResponses
     Task PlayerCannotMoveEvent(string playerId, int suspendRounds);
     Task PlayerPayTollEvent(string playerId, string ownerId, decimal toll);
     Task PlayerBuyBlockEvent(string playerId, string blockId);
+    Task PlayerBuyBlockMissedLandEvent(string playerId, string blockId);
+    Task PlayerBuyBlockOccupiedByOtherPlayerEvent(string playerId, string blockId);
+    Task PlayerBuyBlockInsufficientFundsEvent(string playerId, string blockId, decimal landMoney);
 }

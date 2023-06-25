@@ -66,7 +66,7 @@ public class Utils
         public Monopoly Build()
         {
             var map = new SevenXSevenMap();
-            var monopoly = new Monopoly(GameId, map, MockDice(Dices));
+            var monopoly = new Monopoly(GameId, map, (Dices is null ? null : MockDice(Dices)));
             Players.ForEach(p =>
             {
                 var player = new Player(p.Id, p.Money);

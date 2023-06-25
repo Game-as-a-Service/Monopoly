@@ -72,6 +72,18 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerBuyBlockEvent(pbbe.PlayerId, pbbe.BlockId);
             }
+            else if (e is PlayerBuyBlockMissedLandEvent pbbmle)
+            {
+                await _hubContext.Clients.All.PlayerBuyBlockMissedLandEvent(pbbmle.PlayerId, pbbmle.BlockId);
+            }
+            else if (e is PlayerBuyBlockOccupiedByOtherPlayerEvent pbbobope)
+            {
+                await _hubContext.Clients.All.PlayerBuyBlockOccupiedByOtherPlayerEvent(pbbobope.PlayerId, pbbobope.BlockId);
+            }
+            else if (e is PlayerBuyBlockInsufficientFundsEvent pbbife)
+            {
+                await _hubContext.Clients.All.PlayerBuyBlockInsufficientFundsEvent(pbbife.PlayerId, pbbife.BlockId, pbbife.landMoney);
+            }
         }
     }
 }
