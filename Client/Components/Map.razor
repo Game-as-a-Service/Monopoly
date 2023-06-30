@@ -1,0 +1,20 @@
+
+<div class="d-flex flex-column">
+    @foreach (var row in Value)
+    {
+        <div class="d-flex">
+            @foreach(var block in row)
+            {
+                if (!string.IsNullOrEmpty(block.Image))
+                {
+                    <MudImage Style="@block.ImageStyle" Class="ma-1"
+                      ObjectFit="ObjectFit.Fill" Src=@($"images/gamepage/{block.Image}.svg") Width="133" Height="148" />
+                }
+                else
+                {
+                    <MudPaper Class="ma-1" Elevation="0" Width="133px" Height="148px" />
+                }
+            }
+        </div>
+    }
+</div>
