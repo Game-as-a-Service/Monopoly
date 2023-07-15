@@ -171,9 +171,9 @@ public class PayTollTest
         Assert.AreEqual(1000, player_b.Money);
     }
 
-        [TestMethod]
+    [TestMethod]
     [Description(
-        """
+    """
         Given:  玩家A, B
                 玩家A持有的金額 1000, 房地產 A1 A4, A4地價 1000, A4有2棟房子
                 玩家B持有的金額 2000

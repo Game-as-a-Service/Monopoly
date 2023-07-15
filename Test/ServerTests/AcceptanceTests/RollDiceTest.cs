@@ -205,7 +205,6 @@ public class RollDiceTest
         var repo = server.GetRequiredService<IRepository>();
         var monopoly = repo.FindGameById("1");
         Assert.AreEqual(4000, monopoly.CurrentPlayer!.Money);
-
     }
 
     [TestMethod]
@@ -240,13 +239,12 @@ public class RollDiceTest
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
 
-
         // Assert
         // A 擲了 3 點
         // A 移動到 Station4，方向為 Up，剩下 2 步
         // A 移動到 F4，方向為 Up，剩下 1 步
         // A 移動到 Start，方向為 Right，剩下 0 步
-        // A 沒有獲得獎勵金，共持有1000元 
+        // A 沒有獲得獎勵金，共持有1000元
         hub.Verify<string, int>(
             nameof(IMonopolyResponses.PlayerRolledDiceEvent),
             (playerId, diceCount) => playerId == "A" && diceCount == 3);
@@ -362,7 +360,6 @@ public class RollDiceTest
         hub.VerifyNoElseEvent();
     }
 
-
     [TestMethod]
     [Description("""
                 Given:  目前玩家在A1
@@ -404,5 +401,4 @@ public class RollDiceTest
                                   (playerId, blockId, landMoney) => playerId == "A" && blockId == "A2" && landMoney == 1000);
         hub.VerifyNoElseEvent();
     }
-
 }

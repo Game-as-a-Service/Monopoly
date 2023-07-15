@@ -63,14 +63,13 @@ public class BuyLandTest
         game.Initial();
 
         // Act
-        //顯示錯誤訊息"金額不足"
-        Assert.ThrowsException<Exception>(() => game.BuyLand(playerA, "F4"), "金額不足");
+        game.BuyLand(playerA, "F4");
 
         // Assert
         // 玩家A持有金額為500
         // 玩家A無持有的房地產
         Assert.AreEqual(500, playerA.Money);
-        Assert.AreEqual(0, playerA.LandContractList.Count());
+        Assert.AreEqual(0, playerA.LandContractList.Count);
     }
 
     [TestMethod]
@@ -101,20 +100,19 @@ public class BuyLandTest
 
         // Act
         // 玩家B進行購買F4
-        Assert.ThrowsException<Exception>(() => game.BuyLand(playerA, "F4"), "非空地");
+        game.BuyLand(playerA, "F4");
 
         // Assert
         // 玩家A持有金額為5000
         // 玩家A無持有的房地產
         Assert.AreEqual(5000, playerA.Money);
-        Assert.AreEqual(0, playerA.LandContractList.Count());
+        Assert.AreEqual(0, playerA.LandContractList.Count);
         // 玩家B持有金額為5000
         // 玩家B持有的房地產F4
         Assert.AreEqual(5000, playerB.Money);
-        Assert.AreEqual(1, playerB.LandContractList.Count());
+        Assert.AreEqual(1, playerB.LandContractList.Count);
         Assert.IsTrue(playerB.LandContractList.Any(pa => pa.Land.Id == "F4"));
     }
-
 
     [TestMethod]
     [Description(
@@ -138,12 +136,12 @@ public class BuyLandTest
 
         // Act
         // 玩家B進行購買F4
-        Assert.ThrowsException<Exception>(() => game.BuyLand(playerA, "F4"), "必須在購買的土地上才可以購買");
+        game.BuyLand(playerA, "F4");
 
         // Assert
         // 玩家A持有金額為5000
         // 玩家A無持有的房地產
         Assert.AreEqual(5000, playerA.Money);
-        Assert.AreEqual(0, playerA.LandContractList.Count());
+        Assert.AreEqual(0, playerA.LandContractList.Count);
     }
 }

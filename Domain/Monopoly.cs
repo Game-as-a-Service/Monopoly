@@ -76,6 +76,7 @@ public class Monopoly : AbstractAggregateRoot
         var d = GetDirection(direction);
         player.SelectDirection(d);
     }
+
     private static Direction GetDirection(string direction)
     {
         return direction switch
@@ -173,7 +174,6 @@ public class Monopoly : AbstractAggregateRoot
 
     #endregion Private Functions
 
-
     /// <summary>
     /// 購買土地
     /// </summary>
@@ -194,6 +194,7 @@ public class Monopoly : AbstractAggregateRoot
         var domainEvent = new List<DomainEvent>();
 
         #region 檢核
+
         //判斷是否踩在該土地
         if (player.Chess.CurrentBlock.Id != BlockId)
         {
@@ -212,7 +213,8 @@ public class Monopoly : AbstractAggregateRoot
         {
             domainEvent.Add(new PlayerBuyBlockInsufficientFundsEvent(Id, player.Id, BlockId, land.Price));
         }
-        #endregion
+
+        #endregion 檢核
 
         if (domainEvent.Count <= 0)
         {

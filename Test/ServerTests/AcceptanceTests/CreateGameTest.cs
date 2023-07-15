@@ -1,5 +1,4 @@
 ﻿using Application.Common;
-using Domain.Events;
 using Server.Hubs;
 
 namespace ServerTests.AcceptanceTests;

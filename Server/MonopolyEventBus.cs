@@ -14,6 +14,7 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
     {
         _hubContext = hubContext;
     }
+
     // 這裡暫時採用
     // 1. 不同的event，使用不同的發送方式
     // 2. 傳送到所有使用者

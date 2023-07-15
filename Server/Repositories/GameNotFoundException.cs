@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace Server.Repositories
+﻿namespace Server.Repositories
 {
     [Serializable]
     internal class GameNotFoundException : Exception

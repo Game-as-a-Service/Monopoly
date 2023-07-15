@@ -115,12 +115,10 @@ public class Chess
         {
             yield return new OnStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money);
         }
-
         else if (CurrentBlock is Jail) // 如果移動到監獄
         {
             yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, 2);
         }
-
         else if (CurrentBlock is ParkingLot) // 如果移動到停車場
         {
             yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, 1);

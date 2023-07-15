@@ -116,6 +116,4 @@ public class AuctionTest
         game.PlayerSellLandContract(a.Id, "A1");
         return game;
     }
-
-    
 }

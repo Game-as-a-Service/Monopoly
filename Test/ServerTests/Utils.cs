@@ -23,6 +23,7 @@ public class Utils
 
         return dice;
     }
+
     internal static void VerifyChessMovedEvent(VerificationHub hub, string playerId, string blockId, string direction, int remainingSteps)
     {
         hub.Verify<string, string, string, int>(nameof(IMonopolyResponses.ChessMovedEvent), (PlayerId, BlockId, Direction, RemainingSteps) =>
@@ -51,6 +52,7 @@ public class Utils
             Players.Add(player);
             return this;
         }
+
         public MonopolyBuilder WithMockDice(int[] dices)
         {
             Dices = dices;

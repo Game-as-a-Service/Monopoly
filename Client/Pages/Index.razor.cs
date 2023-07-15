@@ -7,7 +7,8 @@ public partial class Index
 {
     [Inject] private IDialogService DialogService { get; set; }
 
-    string state = "Message box hasn't been opened yet";
+    private string state = "Message box hasn't been opened yet";
+
     private async void OnButtonClicked()
     {
         bool? result = await DialogService.ShowMessageBox(

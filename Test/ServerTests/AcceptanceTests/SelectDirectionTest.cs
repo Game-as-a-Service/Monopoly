@@ -5,6 +5,7 @@ using static Domain.Map;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
+
 [TestClass]
 public class SelectDirectionTest
 {

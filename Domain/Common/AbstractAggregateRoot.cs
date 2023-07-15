@@ -1,6 +1,6 @@
 ﻿namespace Domain.Common;
 
-public abstract class AbstractAggregateRoot 
+public abstract class AbstractAggregateRoot
 {
     private readonly List<DomainEvent> domainEvents;
 

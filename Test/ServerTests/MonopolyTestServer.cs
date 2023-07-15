@@ -39,6 +39,7 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
         return new VerificationHub(hub);
     }
 }
+
 internal class VerificationHub
 {
     private readonly HubConnection Connection;
@@ -85,7 +86,7 @@ internal class VerificationHub
 
                     // 這裡應該要把 result(object[])轉成T，但目前只有一個參數
                     Assert.IsTrue(verify(result),
-                        $"\n回傳結果為 {JsonSerializer.Serialize(result, options)}"); 
+                        $"\n回傳結果為 {JsonSerializer.Serialize(result, options)}");
                     break;
                 }
                 else
@@ -135,22 +136,27 @@ internal class VerificationHub
     {
         await Connection.SendCoreAsync(method, args);
     }
+
     public void Verify<T1>(string methodName, Func<T1, bool> verify, int timeout = 5000)
     {
         Verify(methodName, args => verify((T1)args[0]), timeout);
     }
+
     public void Verify<T1, T2>(string methodName, Func<T1, T2, bool> verify, int timeout = 5000)
     {
         Verify(methodName, args => verify((T1)args[0], (T2)args[1]), timeout);
     }
+
     public void Verify<T1, T2, T3>(string methodName, Func<T1, T2, T3, bool> verify, int timeout = 5000)
     {
         Verify(methodName, args => verify((T1)args[0], (T2)args[1], (T3)args[2]), timeout);
     }
+
     public void Verify<T1, T2, T3, T4>(string methodName, Func<T1, T2, T3, T4, bool> verify, int timeout = 5000)
     {
         Verify(methodName, args => verify((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3]), timeout);
     }
+
     public void Verify<T1, T2, T3, T4, T5>(string methodName, Func<T1, T2, T3, T4, T5, bool> verify, int timeout = 5000)
     {
         Verify(methodName, args => verify((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3], (T5)args[4]), timeout);
@@ -165,7 +171,7 @@ internal class VerificationHub
             {
                 WriteIndented = true,
             };
-            Assert.IsTrue(queue.IsEmpty, 
+            Assert.IsTrue(queue.IsEmpty,
                 $"""
 
                 【{method}】中還有 {queue.Count} 筆資料
@@ -175,7 +181,7 @@ internal class VerificationHub
     }
 }
 
-static class TestHubExtension
+internal static class TestHubExtension
 {
     public static IDisposable On(this HubConnection hubConnection, string methodName, Type[] parameterTypes, Action<object?[]> handler)
     {
