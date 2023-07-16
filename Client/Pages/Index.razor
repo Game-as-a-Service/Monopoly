@@ -1,3 +1,16 @@
 ﻿@page "/"
-<MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="OnButtonClicked">Delete</MudButton>
-<MudChip>@(state ?? "123")</MudChip>
+@inject ILocalStorageService _localStorageService
+@inject NavigationManager _navigationManager
+<MudTextField Variant="Variant.Outlined" Label="遊戲Id" @bind-Value="GameId" />
+<MudTextField Variant="Variant.Outlined" Label="JWT" @bind-Value="JWT" Lines="5" />
+<MudButton Color="Color.Primary" OnClick="SetIdAndRedirection">加入遊戲</MudButton>
+
+@code {
+    string GameId { get; set; } = "";
+    string JWT { get; set; } = "";
+    public void SetIdAndRedirection()
+    {
+        _localStorageService.SetItemAsync("JWT", JWT);
+        _navigationManager.NavigateTo($"/{GameId}");
+    }
+}

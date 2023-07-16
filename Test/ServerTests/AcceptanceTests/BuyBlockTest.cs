@@ -31,7 +31,8 @@ public class BuyBlockTest
         // Arrange
         Player A = new("A", 5000);
 
-        var monopolyBuilder = new MonopolyBuilder("1")
+        const string gameId = "1";
+        var monopolyBuilder = new MonopolyBuilder(gameId)
         .WithPlayer(
             new MonopolyPlayer(A.Id)
             .WithMoney(A.Money)
@@ -41,11 +42,11 @@ public class BuyBlockTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
 
-        await hub.SendAsync(nameof(MonopolyHub.PlayerBuyLand), "1", "A", "F4");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerBuyLand), gameId, "A", "F4");
 
         // Assert
         // A 購買土地
@@ -71,7 +72,7 @@ public class BuyBlockTest
     {
         // Arrange
         Player A = new("A", 500);
-
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -82,11 +83,11 @@ public class BuyBlockTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
 
-        await hub.SendAsync(nameof(MonopolyHub.PlayerBuyLand), "1", "A", "F4");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerBuyLand), gameId, "A", "F4");
 
         // Assert
         // A 購買土地金額不足
@@ -116,6 +117,7 @@ public class BuyBlockTest
         Player A = new("A", 5000);
         Player B = new("B", 5000);
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -132,11 +134,11 @@ public class BuyBlockTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
 
-        await hub.SendAsync(nameof(MonopolyHub.PlayerBuyLand), "1", "A", "F4");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerBuyLand), gameId, "A", "F4");
 
         // Assert
         // A 購買土地非空地
@@ -162,6 +164,7 @@ public class BuyBlockTest
         // Arrange
         Player A = new("A", 5000);
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -172,11 +175,11 @@ public class BuyBlockTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
 
-        await hub.SendAsync(nameof(MonopolyHub.PlayerBuyLand), "1", "A", "F4");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerBuyLand), gameId, "A", "F4");
 
         // Assert
         // A 購買土地非腳下的土地

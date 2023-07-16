@@ -23,11 +23,12 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
         return Server.Services.CreateScope().ServiceProvider.GetRequiredService<T>();
     }
 
-    public VerificationHub CreateHubConnection()
+    public async Task<VerificationHub> CreateHubConnectionAsync(string gameId)
     {
         var uri = new UriBuilder(Client.BaseAddress!)
         {
-            Path = "/monopoly"
+            Path = $"/monopoly",
+            Query = $"gameid={gameId}"
         }.Uri;
         var hub = new HubConnectionBuilder()
             .WithUrl(uri, opt =>
@@ -35,7 +36,15 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
                 opt.HttpMessageHandlerFactory = _ => Server.CreateHandler();
             })
             .Build();
-        hub.StartAsync();
+        try
+        {
+            await hub.StartAsync();
+        }
+        catch (Exception ex)
+        {
+            Assert.Fail($"連線失敗{ex.Message}");
+        }
+
         return new VerificationHub(hub);
     }
 }

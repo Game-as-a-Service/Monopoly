@@ -27,4 +27,16 @@ public class CreateGameUsecase : Usecase<CreateGameRequest>
         // 推
         await EventBus.PublishAsync(domainEvents);
     }
+
+    public string Execute(CreateGameRequest request)
+    {
+        // 查
+        // 改
+        Monopoly game = new(request.GameId);
+
+        // 存
+        string id = Repository.Save(game);
+
+        return id;
+    }
 }

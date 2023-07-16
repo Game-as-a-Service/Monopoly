@@ -1,5 +1,6 @@
 ﻿using Application.Common;
 using Server.Hubs;
+using System.Net.Http.Json;
 
 namespace ServerTests.AcceptanceTests;
 
@@ -7,25 +8,28 @@ namespace ServerTests.AcceptanceTests;
 public class CreateGameTest
 {
     private MonopolyTestServer server;
-    private IRepository repository;
 
     [TestInitialize]
     public void Setup()
     {
         server = new MonopolyTestServer();
-        repository = server.GetRequiredService<IRepository>();
     }
 
     [TestMethod]
     public async Task 建立遊戲()
     {
         // Arrange
-        var hub = server.CreateHubConnection();
+        // call API POST "/"
+        // Body: ["A", "B"]
+        var gameId = "1";
+        string expected = $"https://localhost:7047/{gameId}";
+        string[] jsonContent = new[] { "A", "B" };
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.CreateGame), "a");
+        var response = await server.Client.PostAsJsonAsync("/", jsonContent);
 
         // Assert
-        hub.Verify<string>(nameof(IMonopolyResponses.GameCreatedEvent), GameId => GameId == "1");
+        var data = await response.Content.ReadAsStringAsync();
+        Assert.AreEqual(expected, data);
     }
 }

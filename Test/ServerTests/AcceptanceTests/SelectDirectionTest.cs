@@ -34,6 +34,7 @@ public class SelectDirectionTest
         // Arrange
         Player A = new("A", 1000);
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -45,7 +46,7 @@ public class SelectDirectionTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerChooseDirection), "1", "A", "Left");
@@ -82,6 +83,7 @@ public class SelectDirectionTest
         // Arrange
         Player A = new("A", 1000);
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -93,7 +95,7 @@ public class SelectDirectionTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerChooseDirection), "1", "A", "Left");

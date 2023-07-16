@@ -30,6 +30,7 @@ public class RollDiceTest
         // Arrange
         Player A = new("A");
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -41,10 +42,10 @@ public class RollDiceTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), gameId, "A");
 
         // Assert
         // A 擲了 6 點
@@ -79,6 +80,7 @@ public class RollDiceTest
         // Arrange
         Player A = new("A");
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -90,10 +92,10 @@ public class RollDiceTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), gameId, "A");
 
         //Assert
         // A 擲了 8 點
@@ -161,8 +163,8 @@ public class RollDiceTest
     {
         // Arrange
         Player A = new("A", 1000);
-        //SetupMonopoly("1", A, "F3", Direction.Up, new[] { 4 });
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -174,7 +176,7 @@ public class RollDiceTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
@@ -221,8 +223,8 @@ public class RollDiceTest
     {
         // Arrange
         Player A = new("A", 1000);
-        //SetupMonopoly("1", A, "F3", Direction.Up, new[] { 3 });
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -234,7 +236,7 @@ public class RollDiceTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
@@ -277,6 +279,7 @@ public class RollDiceTest
         // Arrange
         Player A = new("A");
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -289,7 +292,7 @@ public class RollDiceTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
         // Assert
@@ -325,6 +328,7 @@ public class RollDiceTest
         Player A = new("A");
         Player B = new("B");
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -342,7 +346,7 @@ public class RollDiceTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
         // Assert
@@ -373,6 +377,7 @@ public class RollDiceTest
         // Arrange
         Player A = new("A");
 
+        const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new MonopolyPlayer(A.Id)
@@ -384,7 +389,7 @@ public class RollDiceTest
 
         monopolyBuilder.Save(server);
 
-        var hub = server.CreateHubConnection();
+        var hub = await server.CreateHubConnectionAsync(gameId);
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
         // Assert
