@@ -5,7 +5,7 @@ namespace Server.Repositories;
 
 public class InMemoryRepository : IRepository
 {
-    private static readonly Dictionary<string, Monopoly> Games = new();
+    private readonly Dictionary<string, Monopoly> Games = new();
 
     public Monopoly FindGameById(string id)
     {
