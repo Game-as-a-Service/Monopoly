@@ -22,7 +22,7 @@ public interface IMonopolyResponses
 
     Task PlayerCannotMoveEvent(string playerId, int suspendRounds);
 
-    Task PlayerPayTollEvent(string playerId, string ownerId, decimal toll);
+    Task PlayerNeedsToPayTollEvent(string playerId, string ownerId, decimal toll);
 
     Task PlayerBuyBlockEvent(string playerId, string blockId);
 
@@ -31,4 +31,10 @@ public interface IMonopolyResponses
     Task PlayerBuyBlockOccupiedByOtherPlayerEvent(string playerId, string blockId);
 
     Task PlayerBuyBlockInsufficientFundsEvent(string playerId, string blockId, decimal landMoney);
+
+    Task PlayerPayTollEvent(string payerId, decimal payerMoney, string payee, decimal payeeMoney);
+
+    Task PlayerDoesntNeedToPayTollEvent(string payerId, decimal payerMoney);
+
+    Task PlayerTooPoorToPayTollEvent(string payerId, decimal payerMoney, decimal toll);
 }

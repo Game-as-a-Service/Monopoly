@@ -359,7 +359,7 @@ public class RollDiceTest
         Utils.VerifyChessMovedEvent(hub, "A", "Station1", "Right", 1);
         Utils.VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
         hub.Verify<string, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerPayTollEvent),
+                       nameof(IMonopolyResponses.PlayerNeedsToPayTollEvent),
                                   (playerId, ownId, toll) => playerId == "A" && ownId == "B" && toll == 50);
         hub.VerifyNoElseEvent();
     }

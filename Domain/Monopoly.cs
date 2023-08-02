@@ -140,11 +140,14 @@ public class Monopoly : AbstractAggregateRoot
         player.MortgageLandContract(landId);
     }
 
-    public void PayToll(Player payer)
+    public void PayToll(string payerId)
     {
+        Player payer = GetPlayer(payerId);
         Land location = (Land)GetPlayerPosition(payer.Id);
 
-        location.PayToll(payer);
+        var domainEvent = location.PayToll(payer);
+
+        AddDomainEvent(domainEvent);
     }
 
     #region Private Functions

@@ -37,7 +37,7 @@ public class PayTollTest
         player_a.AddLandContract(new(player_a, A4));
 
         //Act
-        game.PayToll(player_b);
+        game.PayToll(player_b.Id);
 
         // Assert
         // 1000 * 0.05 = 50
@@ -84,7 +84,7 @@ public class PayTollTest
         A4.Upgrade();
 
         // Act
-        game.PayToll(player_b);
+        game.PayToll(player_b.Id);
 
         // 1000 * 100% * 130% = 1300
         Assert.AreEqual(2300, player_a.Money);
@@ -124,7 +124,7 @@ public class PayTollTest
         player_b.AddLandContract(new(player_b, A1));
 
         // Act
-        Assert.ThrowsException<Exception>(() => game.PayToll(player_a), "不需要支付過路費：Owner is in the Jail");
+        game.PayToll(player_a.Id);
 
         // Assert
         Assert.AreEqual(1000, player_a.Money);
@@ -164,7 +164,7 @@ public class PayTollTest
         player_b.AddLandContract(new(player_b, A1));
 
         // Act
-        Assert.ThrowsException<Exception>(() => game.PayToll(player_a), "不需要支付過路費：Owner is in the ParkingLot");
+        game.PayToll(player_a.Id);
 
         // Assert
         Assert.AreEqual(1000, player_a.Money);
@@ -211,10 +211,10 @@ public class PayTollTest
         A4.Upgrade();
         A4.Upgrade();
 
-        game.PayToll(player_b);
+        game.PayToll(player_b.Id);
 
         // Act
-        Assert.ThrowsException<Exception>(() => game.PayToll(player_b), "玩家不需要支付過路費");
+        game.PayToll(player_b.Id);
 
         // 1000 * 100% * 130% = 1300
         Assert.AreEqual(2300, player_a.Money);

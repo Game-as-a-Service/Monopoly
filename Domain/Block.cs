@@ -74,20 +74,23 @@ public class Land : Block
         house++;
     }
 
-    public void PayToll(Player payer)
+    public List<Common.DomainEvent> PayToll(Player payer)
     {
         // payer 應該付過路費給 payee
         // 計算過路費
 
         Player? payee = landContract.Owner;
+        List<Common.DomainEvent> domainEvents = new();
 
         if (payer.EndRoundFlag)
         {
-            throw new Exception("玩家不需要支付過路費");
+            //throw new Exception("玩家不需要支付過路費");
+            domainEvents.Add(new Events.PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
         }
         else if (payee!.Chess.CurrentBlock.Id == "Jail" || payee.Chess.CurrentBlock.Id == "ParkingLot")
         {
-            throw new Exception("不需要支付過路費：Owner is in the " + payee.Chess.CurrentBlock.Id);
+            //throw new Exception("不需要支付過路費：Owner is in the " + payee.Chess.CurrentBlock.Id);
+            domainEvents.Add(new Events.PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
         }
         else
         {
@@ -97,12 +100,15 @@ public class Land : Block
             {
                 payer.EndRoundFlag = true;
                 payer.PayToll(payee, amount);
+                domainEvents.Add(new Events.PlayerPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, payee.Id, payee.Money));
             }
             else
             {
-                throw new Exception("錢包餘額不足！");
+                //throw new Exception("錢包餘額不足！");
+                domainEvents.Add(new Events.PlayerTooPoorToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, amount));
             }
         }
+        return domainEvents;
     }
 
     public decimal CalcullateToll(Player payee)

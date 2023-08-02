@@ -65,9 +65,9 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerCannotMoveEvent(pcme.PlayerId, pcme.SuspendRounds);
             }
-            else if (e is PlayerPayTollEvent ppte)
+            else if (e is PlayerNeedsToPayTollEvent pntpte)
             {
-                await _hubContext.Clients.All.PlayerPayTollEvent(ppte.PlayerId, ppte.ownerId, ppte.toll);
+                await _hubContext.Clients.All.PlayerNeedsToPayTollEvent(pntpte.PlayerId, pntpte.ownerId, pntpte.toll);
             }
             else if (e is PlayerBuyBlockEvent pbbe)
             {
@@ -84,6 +84,18 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             else if (e is PlayerBuyBlockInsufficientFundsEvent pbbife)
             {
                 await _hubContext.Clients.All.PlayerBuyBlockInsufficientFundsEvent(pbbife.PlayerId, pbbife.BlockId, pbbife.landMoney);
+            }
+            else if(e is PlayerPayTollEvent ppte)
+            {
+                await _hubContext.Clients.All.PlayerPayTollEvent(ppte.PlayerId, ppte.PlayerMoney, ppte.ownerId, ppte.ownerMoney);
+            }
+            else if(e is PlayerDoesntNeedToPayTollEvent pdnpte)
+            {
+                await _hubContext.Clients.All.PlayerDoesntNeedToPayTollEvent(pdnpte.PlayerId, pdnpte.PlayerMoney);
+            }
+            else if(e is PlayerTooPoorToPayTollEvent ptppte)
+            {
+                await _hubContext.Clients.All.PlayerTooPoorToPayTollEvent(ptppte.PlayerId, ptppte.PlayerMoney, ptppte.toll);
             }
         }
     }

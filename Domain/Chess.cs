@@ -107,7 +107,7 @@ public class Chess
             }
             else if (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")
             {
-                yield return new PlayerPayTollEvent(player.Monopoly.Id, player.Id, owner.Id, land.CalcullateToll(owner));
+                yield return new PlayerNeedsToPayTollEvent(player.Monopoly.Id, player.Id, owner.Id, land.CalcullateToll(owner));
                 player.EndRoundFlag = false;
             }
         }

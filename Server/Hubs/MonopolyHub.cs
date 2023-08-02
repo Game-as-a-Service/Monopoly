@@ -28,6 +28,11 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new BuyBlockRequest(gameId, userId, blockId));
     }
 
+    public async Task PlayerPayToll(string gameId, string userId, PayTollUsecase usecase)
+    {
+        await usecase.ExecuteAsync(new PayTollRequest(gameId, userId));
+    }
+
     public MonopolyHub(IRepository repository)
     {
         _repository = repository;
