@@ -10,7 +10,7 @@ public class WhoAmIHub: Hub
     {
         // JWT 的 claims should be in principal
         var principal = Context.User;
-        var claims = principal!.Claims.Select(x => $"{x.Type}: {x.Value}").ToList();
+        var claims = principal!.Claims.Select(x => $"{x.Type}:{x.Value}").ToList();
         await Clients.Caller.SendAsync("WhoAmI", claims);
     }
 }

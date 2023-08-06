@@ -2,13 +2,14 @@
 <div class="d-flex flex-column">
     @foreach (var row in Value)
     {
-        <div class="d-flex">
+        <div class="d-flex flex-grow-1">
             @foreach(var block in row)
             {
                 if (!string.IsNullOrEmpty(block.Image))
                 {
-                    <MudImage Style="@block.ImageStyle" Class="ma-1"
-                      ObjectFit="ObjectFit.Fill" Src=@($"images/gamepage/{block.Image}.svg") Width="133" Height="148" />
+                    <MudPaper Class="ma-1" Style=@($"background-image: url(images/gamepage/{@block.Image}.svg);") Elevation="0" Width="133px" Height="148px" />
+                    @*<MudImage Style="@block.ImageStyle" Class="ma-1" Fluid="true"
+                      ObjectFit="ObjectFit.Contain" Src=@($"images/gamepage/{block.Image}.svg") />*@
                 }
                 else
                 {

@@ -26,7 +26,7 @@ public partial class Map : ComponentBase
 
     internal abstract record Block(string Id, string? Image = null, string? ImageStyle = null);
 
-    internal record EmptyBlock() : Block("Empty Block");
+    internal record EmptyBlock() : Block("Empty Block", "empty");
 
     internal record Road(string Id, RoadType RoadType) : Block(Id, $"road {RoadType}");
 
