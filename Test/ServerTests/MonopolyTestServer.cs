@@ -1,9 +1,21 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
+using Server.DataModels;
 using Server.Hubs;
+using Server.Services;
 using System.Collections.Concurrent;
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text.Json;
 
 namespace ServerTests;
@@ -23,7 +35,7 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
         return Server.Services.CreateScope().ServiceProvider.GetRequiredService<T>();
     }
 
-    public async Task<VerificationHub> CreateHubConnectionAsync(string gameId)
+    public async Task<VerificationHub> CreateHubConnectionAsync(string gameId, string playerId)
     {
         var uri = new UriBuilder(Client.BaseAddress!)
         {
@@ -33,19 +45,46 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
         var hub = new HubConnectionBuilder()
             .WithUrl(uri, opt =>
             {
-                opt.HttpMessageHandlerFactory = _ => Server.CreateHandler();
+                opt.AccessTokenProvider = async () =>
+                {
+                    var options = GetRequiredService<IOptionsMonitor<JwtBearerOptions>>();
+                    
+                    var jwtToken = GetRequiredService<MockJwtTokenService>()
+                        .GenerateJwtToken(options.Get("Bearer").Audience, playerId);
+                    return await Task.FromResult(jwtToken);
+                };
+                opt.HttpMessageHandlerFactory = _ => Server.CreateHandler();                
             })
             .Build();
-        try
-        {
-            await hub.StartAsync();
-        }
-        catch (Exception ex)
-        {
-            Assert.Fail($"連線失敗{ex.Message}");
-        }
+        VerificationHub verificationHub = new(hub);
+        await hub.StartAsync();
 
-        return new VerificationHub(hub);
+        return verificationHub;
+    }
+
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.ConfigureTestServices(services =>
+        {
+            services.AddSingleton<MockJwtTokenService>();
+            services.RemoveAll<IPlatformService>();
+            services.RemoveAll<IOptions<JwtBearerOptions>>();
+
+            services.AddSingleton<IPlatformService, MockPlatformService>();
+            services.AddOptions<JwtBearerOptions>("Bearer")
+                .Configure<MockJwtTokenService>((options, jwtToken) =>
+                {
+                    var config = new OpenIdConnectConfiguration()
+                    {
+                        Issuer = jwtToken.Issuer
+                    };
+
+                    config.SigningKeys.Add(jwtToken.SecurityKey);
+                    options.Configuration = config;
+                    options.Authority = null;
+                });
+        });
     }
 }
 
@@ -100,13 +139,23 @@ internal class VerificationHub
                 }
                 else
                 {
+                    // 如果已經斷開連線測試失敗
+                    if (Connection.State == HubConnectionState.Disconnected)
+                    {
+                        Queues[nameof(IMonopolyResponses.PlayerJoinGameFailedEvent)].TryPeek(out var errorMessages);
+                        Assert.Fail(
+                            $"""
+                            已經斷開連線
+                            訊息:
+                            {string.Join("\n", errorMessages!)}
+                            """);
+                    }
                     // 計算已經等待的時間
                     var elapsedMilliseconds = (DateTime.Now - startTime).TotalMilliseconds;
                     if (elapsedMilliseconds >= timeout)
                     {
-                        Assert.Fail(
+                        Assert.Fail(                                                                   
                             $"""
-
                             超出預期時間 {timeout} ms，預期得到 Event【{methodName}】
                             可以嘗試檢查下面的問題:
                             1. 在 EventBus 中，缺少 Event 的傳送
@@ -176,6 +225,10 @@ internal class VerificationHub
     {
         foreach (var (method, queue) in Queues)
         {
+            if (method == nameof(IMonopolyResponses.PlayerJoinGameEvent))
+            {
+                continue;
+            }
             var options = new JsonSerializerOptions()
             {
                 WriteIndented = true,
@@ -200,5 +253,53 @@ internal static class TestHubExtension
             currentHandler(parameters);
             return Task.CompletedTask;
         }, handler);
+    }
+}
+
+internal class MockJwtTokenService
+{
+    public string Issuer { get; }
+    public SecurityKey SecurityKey { get; }
+
+    private readonly SigningCredentials _signingCredentials;
+    private readonly JwtSecurityTokenHandler _tokenHandler = new();
+    private static readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
+    private static readonly byte[] _key = new byte[64];
+
+    public MockJwtTokenService()
+    {
+        Issuer = Guid.NewGuid().ToString();
+
+        _rng.GetBytes(_key);
+        SecurityKey = new SymmetricSecurityKey(_key) { KeyId = Guid.NewGuid().ToString() };
+        _signingCredentials = new SigningCredentials(SecurityKey, SecurityAlgorithms.HmacSha256);
+    }
+
+    public string GenerateJwtToken(string? audience, string playerId)
+    {
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Issuer = Issuer,
+            Audience = audience,
+            Expires = DateTime.UtcNow.AddMinutes(20),
+            SigningCredentials = _signingCredentials,
+            Subject = new ClaimsIdentity(new Claim[] { new("Id", playerId) }),
+        };
+        var token = _tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
+        return _tokenHandler.WriteToken(token);
+    }
+}
+
+public class MockPlatformService : IPlatformService
+{
+    public Task<UserInfo> GetUserInfo(string tokenString)
+    {
+        var jwt = new JwtSecurityToken(tokenString);
+
+        var id = jwt.Claims.First(x => x.Type == "Id").Value;
+
+        var userinfo = new UserInfo(id, "", "");
+
+        return Task.FromResult(userinfo);
     }
 }

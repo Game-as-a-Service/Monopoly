@@ -1,17 +1,15 @@
 using Application.Common;
 using Application.Usecases;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace Server.Hubs;
 
+[Authorize]
 public class MonopolyHub : Hub<IMonopolyResponses>
 {
     private readonly IRepository _repository;
-
-    public async Task CreateGame(string userId, CreateGameUsecase usecase)
-    {
-        await usecase.ExecuteAsync(new CreateGameRequest(null, userId));
-    }
 
     public async Task PlayerRollDice(string gameId, string userId, RollDiceUsecase usecase)
     {
@@ -41,19 +39,27 @@ public class MonopolyHub : Hub<IMonopolyResponses>
     public override Task OnConnectedAsync()
     {
         HttpContext httpContext = Context.GetHttpContext()!;
-        var gameId = httpContext.Request.Query["gameid"];
-        try
+        var gameIdStringValues = httpContext.Request.Query["gameid"];
+        if (gameIdStringValues.Count == 0)
         {
-            _repository.FindGameById(gameId);
+            Clients.Caller.PlayerJoinGameFailedEvent("Not pass game id");
+            Context.Abort();
         }
-        catch
+        string gameId = gameIdStringValues.ToString();
+        string userId = Context.User!.FindFirst(x => x.Type == ClaimTypes.Sid)!.Value;
+        if (!_repository.IsExist(gameId))
         {
-            if (gameId.Count == 0)
-            {
-                throw new Exception("沒有傳遞遊戲Id");
-            }
-            throw new GameNotFoundException($"找不到ID為{gameId}的遊戲");
+            Clients.Caller.PlayerJoinGameFailedEvent($"Can not find the game that id is {gameId}");
+            Context.Abort();
         }
+        var game = _repository.FindGameById(gameId);
+        if (!game.Players.Any(p => p.Id == userId))
+        {
+            Clients.Caller.PlayerJoinGameFailedEvent($"Can not find the player whose id is {userId}");
+            Context.Abort();
+        }
+        Groups.AddToGroupAsync(Context.ConnectionId, gameId);
+        Clients.Group(gameId).PlayerJoinGameEvent(userId!);
         return base.OnConnectedAsync();
     }
 

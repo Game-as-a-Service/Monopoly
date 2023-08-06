@@ -17,6 +17,11 @@ public class InMemoryRepository : IRepository
         return game;
     }
 
+    public bool IsExist(string id)
+    {
+        return Games.ContainsKey(id);
+    }
+
     public string Save(Monopoly game)
     {
         game.Id ??= (Games.Count + 1).ToString();

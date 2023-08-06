@@ -28,6 +28,8 @@ public class Player
     public Auction Auction => auction;
     public IList<Mortgage> Mortgage => mortgages.AsReadOnly();
     public bool EndRoundFlag { get; set; }
+    public bool IsHost { get; set; }
+
     // false: 回合尚不能結束，true: 玩家可結束回合
 
     public void UpdateState()
@@ -76,7 +78,8 @@ public class Player
             dice.Roll();
         }
 
-        var events = chess.Move(dices.Sum(dice => dice.Value));        events.AddRange(chess.GetLandEvent());
+        var events = chess.Move(dices.Sum(dice => dice.Value));
+        events.AddRange(chess.GetLandEvent());
 
         Monopoly.AddDomainEvent(events);
         return dices;

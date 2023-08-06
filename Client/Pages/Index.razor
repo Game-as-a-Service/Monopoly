@@ -1,16 +1,123 @@
 ﻿@page "/"
-@inject ILocalStorageService _localStorageService
 @inject NavigationManager _navigationManager
-<MudTextField Variant="Variant.Outlined" Label="遊戲Id" @bind-Value="GameId" />
-<MudTextField Variant="Variant.Outlined" Label="JWT" @bind-Value="JWT" Lines="5" />
-<MudButton Color="Color.Primary" OnClick="SetIdAndRedirection">加入遊戲</MudButton>
+@inject ILocalStorageService _localStorageService
+@using Microsoft.AspNetCore.SignalR.Client;
+@using System.Text.Json;
+@using System.Security.Claims;
+@using System.Net.Http.Headers;
+<MudStack>
+    @foreach (var item in Users)
+    {
+        <MudPaper Class="pa-3" Outlined Elevation="5">@item.Id</MudPaper>
+    }
+</MudStack>
+<MudTextField @bind-Value="Token" Label="Jwt Token" Variant="Variant.Outlined"
+        Adornment="Adornment.End" 
+        AdornmentIcon="@Icons.Material.Filled.Add"
+        AdornmentColor="Color.Info"
+        OnAdornmentClick="AddUser" />
+<MudButton OnClick="CreateGame" Variant="Variant.Filled" Color="Color.Primary">Create Game</MudButton>
+<MudTextField @bind-Value="GameId" Label="Game Id" Variant="Variant.Outlined"
+        Adornment="Adornment.End"
+        AdornmentIcon="@Icons.Material.Filled.PlayArrow"
+        OnAdornmentClick="JoinGame" />
+<MudStack Row Style="height:100vh" >
+    @foreach (var game in games)
+    {
+        <iframe src="/@game.Id?access_token=@game.Token"></iframe>
+    }
+</MudStack>
 
 @code {
-    string GameId { get; set; } = "";
-    string JWT { get; set; } = "";
-    public void SetIdAndRedirection()
+    private string Token { get; set; } = string.Empty;
+    private List<string> Messages { get; set; } = new();
+    private List<User> Users { get; set; } = new();
+    private string UserId { get; set; } = string.Empty;
+    private string GameId { get; set; } = string.Empty;
+    private List<GameData> games = new();
+    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+
+    private async void CreateGame()
     {
-        _localStorageService.SetItemAsync("JWT", JWT);
-        _navigationManager.NavigateTo($"/{GameId}");
+        CreateGameBodyPayload bodyPayload = new(Users.Select(user => new Player(user.Id)).ToArray());
+        var url = "https://localhost:3826";
+        var httpClient = new HttpClient();
+        var host = Users.FirstOrDefault();
+        if (host is null)
+        {
+            Snackbar.Add("請先加入使用者", Severity.Error);
+            return;
+        }
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", host.Token);
+        var response = await httpClient.PostAsJsonAsync($"{url}/create-game", bodyPayload);
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            Snackbar.Add($"遊戲建立成功! Url: {content}", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add($"遊戲建立失敗! {response.StatusCode}", Severity.Error);
+        }
     }
+
+    private async void AddUser()
+    {
+        HubConnection hubConnection = new HubConnectionBuilder()
+            .WithAutomaticReconnect()
+            .WithUrl("https://localhost:3826/whoami", opt =>
+            {
+                opt.AccessTokenProvider = () => Task.FromResult<string?>(Token);
+            })
+            .Build();
+        hubConnection.Closed += async (exception) =>
+        {
+            if (exception == null)
+            {
+                Snackbar.Add("中斷連線", Severity.Error);
+            }
+            else
+            {
+                Snackbar.Add($"中斷連線: {exception.Message}", Severity.Error);
+            }
+            await Task.CompletedTask;
+        };
+        var tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
+        hubConnection.On<List<string>>("WhoAmI", data =>
+        {
+            var userId = data.Single(d => d.StartsWith(ClaimTypes.Sid)).Substring(ClaimTypes.Sid.Length + 1);
+            tcs.SetResult(userId);
+        });
+
+        try
+        {
+            await hubConnection.StartAsync();
+            Snackbar.Add("連線成功!", Severity.Success);
+            await hubConnection.SendAsync("WhoAmI");
+            var tcst = await tcs.Task;
+            Users.Add(new(tcst, Token));
+            await hubConnection.StopAsync();
+            Token = string.Empty;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private void JoinGame()
+    {
+        Users.ForEach(user =>
+        {
+            games.Add(new(GameId, user.Token));
+        });
+        StateHasChanged();
+    }
+
+    private record CreateGameBodyPayload(Player[] Players);
+    private record Player(string Id);
+
+    record GameData(string Id, string Token);
+    record User(string Id, string Token);
 }

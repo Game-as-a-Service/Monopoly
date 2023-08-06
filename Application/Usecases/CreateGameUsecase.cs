@@ -5,7 +5,7 @@ using Domain.Events;
 
 namespace Application.Usecases;
 
-public record CreateGameRequest(string GameId, string PlayerId) : Request(GameId, PlayerId);
+public record CreateGameRequest(string HostId, string[] PlayerIds) : Request(null!, HostId);
 
 public class CreateGameUsecase : Usecase<CreateGameRequest>
 {
@@ -15,17 +15,7 @@ public class CreateGameUsecase : Usecase<CreateGameRequest>
 
     public override async Task ExecuteAsync(CreateGameRequest request)
     {
-        // 查
-        // 改
-        Monopoly game = new(request.GameId);
-
-        // 存
-        string id = Repository.Save(game);
-        List<DomainEvent> domainEvents = game.DomainEvents.ToList();
-        domainEvents.Add(new GameCreatedEvent(id));
-
-        // 推
-        await EventBus.PublishAsync(domainEvents);
+        throw new NotImplementedException();
     }
 
     public string Execute(CreateGameRequest request)
@@ -33,6 +23,15 @@ public class CreateGameUsecase : Usecase<CreateGameRequest>
         // 查
         // 改
         Monopoly game = new(request.GameId);
+        request.PlayerIds.ToList().ForEach(playerId =>
+        {
+            Player player = new(playerId);
+            if (playerId == request.HostId)
+            {
+                player.IsHost = true;
+            }
+            game.AddPlayer(player);
+        });
 
         // 存
         string id = Repository.Save(game);

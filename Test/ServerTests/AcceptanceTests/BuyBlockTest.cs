@@ -42,7 +42,7 @@ public class BuyBlockTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
 
@@ -83,7 +83,7 @@ public class BuyBlockTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
 
@@ -134,7 +134,7 @@ public class BuyBlockTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
 
@@ -175,7 +175,7 @@ public class BuyBlockTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
 

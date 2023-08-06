@@ -19,6 +19,10 @@ public class Monopoly : AbstractAggregateRoot
 
     public IDictionary<Player, int> PlayerRankDictionary => _playerRankDictionary.AsReadOnly();
 
+    public ICollection<Player> Players => _players.AsReadOnly();
+
+    public string Host => _players.Find(p => p.IsHost)!.Id;
+
     // 初始化遊戲
     public Monopoly(string id, Map? map = null, IDice[]? dices = null)
     {

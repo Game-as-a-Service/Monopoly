@@ -46,7 +46,7 @@ public class SelectDirectionTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerChooseDirection), "1", "A", "Left");
@@ -95,7 +95,7 @@ public class SelectDirectionTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerChooseDirection), "1", "A", "Left");

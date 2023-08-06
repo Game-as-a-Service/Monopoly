@@ -23,7 +23,7 @@ public static class DependencyInjection
         {
             if (type.BaseType?.IsGenericType == true && type.BaseType?.GetGenericTypeDefinition() == useCaseType)
             {
-                services.AddTransient(type, type);
+                services.AddScoped(type, type);
             }
         }
 

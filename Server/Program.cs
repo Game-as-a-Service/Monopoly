@@ -2,20 +2,24 @@
 using Application.Common;
 using Application.Usecases;
 using Domain.Common;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Server;
+using Server.DataModels;
 using Server.Hubs;
 using Server.Repositories;
+using Server.Services;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IRepository, InMemoryRepository>();
-builder.Services.AddSingleton<IEventBus<DomainEvent>, MonopolyEventBus>();
+builder.Services.AddScoped<IEventBus<DomainEvent>, MonopolyEventBus>();
 builder.Services.AddMonopolyApplication();
 builder.Services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = true;
 });
+
 builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
         builder =>
         {
@@ -25,17 +29,45 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
                    .AllowCredentials();
         }));
 
+// 如果 Bind Options 時需要依賴注入
+builder.Services.AddScoped<IPlatformService, PlatformService>()
+                .AddSingleton<PlatformJwtEvents>();
+builder.Services
+    .AddOptions<JwtBearerOptions>("Bearer")
+    .Configure<PlatformJwtEvents>((opt, jwtEvents) =>
+    {
+        builder.Configuration.Bind(nameof(JwtBearerOptions), opt);
+        opt.Events = jwtEvents;
+    });
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer");
+
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
+
 var app = builder.Build();
 
 app.UseCors("CorsPolicy");
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseResponseCompression();
 app.MapHub<MonopolyHub>("/monopoly");
+app.MapHub<WhoAmIHub>("/whoami");
 
 // 開始遊戲
-app.MapPost("/", ([FromBody] string[] playerIds) =>
+app.MapPost("/create-game", async (context) =>
 {
-    CreateGameUsecase createGameUsecase = app.Services.GetRequiredService<CreateGameUsecase>();
-    string gameId = createGameUsecase.Execute(new CreateGameRequest(null, playerIds[0]));
-    return $@"https://localhost:7047/{gameId}";
-});
+    string hostId = context.User.FindFirst(ClaimTypes.Sid)!.Value;
+    CreateGameBodyPayload payload = (await context.Request.ReadFromJsonAsync<CreateGameBodyPayload>())!;
+    CreateGameUsecase createGameUsecase = app.Services.CreateScope().ServiceProvider.GetRequiredService<CreateGameUsecase>();
+    string gameId = createGameUsecase.Execute(new CreateGameRequest(hostId, payload.Players.Select(x => x.Id).ToArray()));
+
+    var url = $@"https://localhost:7047/{gameId}";
+
+    await context.Response.WriteAsync(url);
+}).RequireAuthorization();
 
 app.Run();

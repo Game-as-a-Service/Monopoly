@@ -50,7 +50,7 @@ public class PayTollTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerPayToll), gameId, "A");
@@ -98,7 +98,7 @@ public class PayTollTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerPayToll), gameId, "A");
@@ -146,7 +146,7 @@ public class PayTollTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerPayToll), gameId, "A");
@@ -193,7 +193,7 @@ public class PayTollTest
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId);
+        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.PlayerPayToll), gameId, "A");
