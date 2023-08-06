@@ -2,6 +2,7 @@ name: Deploy to GitHub Pages
 
 # 設定值
 env:
+  GitHub_Pages_PathName: "Monopoly" # 網址目錄名稱 (EX: https://app.github.io/Monopoly/ 的Monopoly部分
   FRONTEND_PUBLISH_Name: "Client" # 前端專案目錄名稱(必須同專案名稱)
 
 on:
@@ -39,7 +40,7 @@ jobs:
 
       # 修改index.html的base href -- 從"/"改為"/TodoBlazor/"
       - name: Change base-tag in index.html from / to TodoBlazor
-        run: sed -i 's/<base href="\/" \/>/<base href="\/BlazorApp\/" \/>/g' release/wwwroot/index.html
+        run: sed -i 's/<base href="\/" \/>/<base href="\/${{ env.GitHub_Pages_PathName }}\/" \/>/g' release/wwwroot/index.html
 
       # 複製index.html內容到404.html
       - name: copy index.html to 404.html
