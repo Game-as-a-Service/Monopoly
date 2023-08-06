@@ -154,6 +154,13 @@ public class Monopoly : AbstractAggregateRoot
         AddDomainEvent(domainEvent);
     }
 
+    public void BuildHouse(string playerId)
+    {
+        Player player = GetPlayer(playerId);
+
+        AddDomainEvent(player.BuildHouse());
+    }
+
     #region Private Functions
 
     private void AddPlayerToRankList(Player player)

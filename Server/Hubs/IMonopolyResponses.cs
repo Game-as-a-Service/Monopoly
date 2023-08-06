@@ -40,4 +40,12 @@ public interface IMonopolyResponses
     Task PlayerDoesntNeedToPayTollEvent(string payerId, decimal payerMoney);
 
     Task PlayerTooPoorToPayTollEvent(string payerId, decimal payerMoney, decimal toll);
+
+    Task PlayerBuildHouseEvent(string playerId, string blockId, decimal playerMoney, int house);
+
+    Task PlayerCannotBuildHouseEvent(string PlayerId, string BlockId);
+
+    Task PlayerTooPoorToBuildHouseEvent(string PlayerId, string BlockId, decimal PlayerMoney, decimal UpgradePrice);
+
+    Task HouseMaxEvent(string PlayerId, string BlockId, int House);
 }

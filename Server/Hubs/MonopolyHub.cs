@@ -31,6 +31,11 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new PayTollRequest(gameId, userId));
     }
 
+    public async Task PlayerBuildHouse(string gameId, string userId, BuildHouseUsecase usecase)
+    {
+        await usecase.ExecuteAsync(new BuildHouseRequest(gameId, userId));
+    }
+
     public MonopolyHub(IRepository repository)
     {
         _repository = repository;

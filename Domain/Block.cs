@@ -1,3 +1,6 @@
+using Domain.Events;
+using Domain.Common;
+
 namespace Domain;
 
 public abstract class Block
@@ -50,6 +53,7 @@ public class Land : Block
 {
     private static readonly decimal[] RATE_OF_HOUSE = new decimal[] { 0.05m, 0.4m, 1, 3, 6, 10 };
     private static readonly decimal[] RATE_OF_LOT = new decimal[] { 0, 1, 1.3m, 2, 4, 8, 16 };
+    private static readonly int MAX_HOUSE = 5;
 
     private LandContract landContract;
     private readonly decimal _price;
@@ -74,23 +78,23 @@ public class Land : Block
         house++;
     }
 
-    public List<Common.DomainEvent> PayToll(Player payer)
+    public List<DomainEvent> PayToll(Player payer)
     {
         // payer 應該付過路費給 payee
         // 計算過路費
 
         Player? payee = landContract.Owner;
-        List<Common.DomainEvent> domainEvents = new();
+        List<DomainEvent> domainEvents = new();
 
         if (payer.EndRoundFlag)
         {
             //throw new Exception("玩家不需要支付過路費");
-            domainEvents.Add(new Events.PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
+            domainEvents.Add(new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
         }
         else if (payee!.Chess.CurrentBlock.Id == "Jail" || payee.Chess.CurrentBlock.Id == "ParkingLot")
         {
             //throw new Exception("不需要支付過路費：Owner is in the " + payee.Chess.CurrentBlock.Id);
-            domainEvents.Add(new Events.PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
+            domainEvents.Add(new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
         }
         else
         {
@@ -100,12 +104,12 @@ public class Land : Block
             {
                 payer.EndRoundFlag = true;
                 payer.PayToll(payee, amount);
-                domainEvents.Add(new Events.PlayerPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, payee.Id, payee.Money));
+                domainEvents.Add(new PlayerPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, payee.Id, payee.Money));
             }
             else
             {
                 //throw new Exception("錢包餘額不足！");
-                domainEvents.Add(new Events.PlayerTooPoorToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, amount));
+                domainEvents.Add(new PlayerTooPoorToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, amount));
             }
         }
         return domainEvents;
@@ -126,6 +130,31 @@ public class Land : Block
     public override void UpdateOwner(Player Owner)
     {
         landContract.Owner = Owner;
+    }
+
+    public DomainEvent BuildHouse(Player player)
+    {
+        if(GetOwner() == player)
+        {
+            if (house == MAX_HOUSE) return new HouseMaxEvent(player.Monopoly.Id, player.Id, Id, house);
+
+            if (UpgradePrice <= player.Money)
+            {
+                player.Money -= UpgradePrice;
+                house++;
+                return new PlayerBuildHouseEvent(player.Monopoly.Id, player.Id, Id, player.Money, house);
+            }
+            else
+            {
+                return new PlayerTooPoorToBuildHouseEvent(player.Monopoly.Id, player.Id, Id, player.Money, UpgradePrice);
+            }
+            
+        }
+        else
+        {
+            return new PlayerCannotBuildHouseEvent(player.Monopoly.Id, player.Id, Id);
+        }
+        
     }
 }
 

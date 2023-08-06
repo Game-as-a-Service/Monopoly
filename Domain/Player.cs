@@ -1,4 +1,7 @@
+using Domain.Events;
+using System.Numerics;
 using Domain.Interfaces;
+using Domain.Common;
 
 namespace Domain;
 
@@ -102,5 +105,16 @@ public class Player
     {
         Money -= amount;
         payee.Money += amount;
+    }
+
+    public DomainEvent BuildHouse()
+    {
+        Block block = Chess.CurrentBlock;
+
+        if(block is Land land)
+        {
+            return land.BuildHouse(this);
+        }
+        return new PlayerCannotBuildHouseEvent(Monopoly.Id, Id, block.Id);
     }
 }

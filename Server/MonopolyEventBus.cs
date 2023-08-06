@@ -97,6 +97,22 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerTooPoorToPayTollEvent(ptppte.PlayerId, ptppte.PlayerMoney, ptppte.toll);
             }
+            else if (e is PlayerBuildHouseEvent pbhe)
+            {
+                await _hubContext.Clients.All.PlayerBuildHouseEvent(pbhe.PlayerId, pbhe.BlockId, pbhe.PlayerMoney, pbhe.House);
+            }
+            else if (e is PlayerCannotBuildHouseEvent pcbhe)
+            {
+                await _hubContext.Clients.All.PlayerCannotBuildHouseEvent(pcbhe.PlayerId, pcbhe.BlockId);
+            }
+            else if (e is PlayerTooPoorToBuildHouseEvent ptpbhe)
+            {
+                await _hubContext.Clients.All.PlayerTooPoorToBuildHouseEvent(ptpbhe.PlayerId, ptpbhe.BlockId, ptpbhe.PlayerMoney, ptpbhe.UpgradePrice);
+            }
+            else if (e is HouseMaxEvent hme)
+            {
+                await _hubContext.Clients.All.HouseMaxEvent(hme.PlayerId, hme.BlockId, hme.House);
+            }
         }
     }
 }

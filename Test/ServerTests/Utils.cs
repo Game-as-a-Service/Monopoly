@@ -78,6 +78,9 @@ public class Utils
                 p.LandContracts.ForEach(l =>
                 {
                     player.AddLandContract(new LandContract(player, (Land)map.FindBlockById(l)));
+
+                    Land land = (Land)map.FindBlockById(l);
+                    for (int i = 0; i < p.House[l]; i++) land.Upgrade();
                 });
                 monopoly.AddPlayer(player, p.BlockId, direction);
                 if (CurrentPlayer == player.Id)
@@ -103,6 +106,7 @@ public class Utils
         public string BlockId { get; set; }
         public string Direction { get; set; }
         public List<string> LandContracts { get; set; }
+        public IDictionary<string, int> House = new Dictionary<string, int>();
 
         public MonopolyPlayer(string id)
         {
@@ -126,9 +130,10 @@ public class Utils
             return this;
         }
 
-        public MonopolyPlayer WithLandContract(string landId)
+        public MonopolyPlayer WithLandContract(string landId, int house = 0)
         {
             LandContracts.Add(landId);
+            House.Add(landId, house);
             return this;
         }
     }

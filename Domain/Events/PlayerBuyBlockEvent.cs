@@ -13,3 +13,6 @@ public record PlayerBuyBlockOccupiedByOtherPlayerEvent(string GameId, string Pla
 
 public record PlayerBuyBlockInsufficientFundsEvent(string GameId, string PlayerId, string BlockId, decimal landMoney)
     : DomainEvent(GameId);
+
+public record HouseMaxEvent(string GameId, string PlayerId, string BlockId, int House)
+    : DomainEvent(GameId);
