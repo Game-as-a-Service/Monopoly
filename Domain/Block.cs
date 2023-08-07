@@ -55,8 +55,8 @@ public class Land : Block
     private static readonly decimal[] RATE_OF_LOT = new decimal[] { 0, 1, 1.3m, 2, 4, 8, 16 };
     private static readonly int MAX_HOUSE = 5;
 
-    private LandContract landContract;
-    private readonly decimal _price;
+    protected LandContract landContract;
+    protected readonly decimal _price;
     private int house;
 
     public decimal Price => _price; // 土地購買價格
@@ -73,7 +73,7 @@ public class Land : Block
         this.lot = lot;
     }
 
-    public void Upgrade()
+    public virtual void Upgrade()
     {
         house++;
     }
@@ -115,7 +115,7 @@ public class Land : Block
         return domainEvents;
     }
 
-    public decimal CalcullateToll(Player payee)
+    public virtual decimal CalcullateToll(Player payee)
     {
         int lotCount = payee.LandContractList.Count(t => t.Land.Lot == lot);
 
@@ -132,7 +132,7 @@ public class Land : Block
         landContract.Owner = Owner;
     }
 
-    public DomainEvent BuildHouse(Player player)
+    public virtual DomainEvent BuildHouse(Player player)
     {
         if(GetOwner() == player)
         {
@@ -176,5 +176,29 @@ public class ParkingLot : Block
 {
     public ParkingLot(string id) : base(id)
     {
+    }
+}
+
+public class Station : Land
+{
+    public Station(string id, decimal price = 1000, string lot = "S") : base(id, price,lot)
+    {
+    }
+
+    public override void Upgrade()
+    {
+        throw new Exception("車站不能蓋房子！");
+    }
+
+    public override decimal CalcullateToll(Player payee)
+    {
+        int lotCount = payee.LandContractList.Count(t => t.Land.Lot == lot);
+
+        return _price * lotCount;
+    }
+
+    public override DomainEvent BuildHouse(Player player)
+    {
+        return new PlayerCannotBuildHouseEvent(player.Monopoly.Id, player.Id, Id);
     }
 }

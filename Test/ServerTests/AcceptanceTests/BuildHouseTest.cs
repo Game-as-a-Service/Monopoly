@@ -95,4 +95,42 @@ public class BuildHouseTest
                                   => playId == "A" && blockId == "A1" && house == 5);
         hub.VerifyNoElseEvent();
     }
+
+    [TestMethod]
+    [Description(
+        """
+        Given:  A 持有 車站1，購買價 1000元
+                A 持有 1000元，在 車站1 上
+        When:   A 蓋房子
+        Then:   A 不能蓋房子
+        """)]
+    public async Task 車站不能蓋房子()
+    {
+        Player A = new("A", 1000);
+
+        const string gameId = "1";
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("Station1", Direction.Right.ToString())
+            .WithLandContract("Station1")
+        )
+        .WithCurrentPlayer(nameof(A));
+
+        monopolyBuilder.Save(server);
+
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+
+        // Act
+        await hub.SendAsync(nameof(MonopolyHub.PlayerBuildHouse), gameId, "A");
+
+        // Assert
+        // A 蓋房子
+        hub.Verify<string, string>(
+                       nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
+                                  (playId, blockId)
+                                  => playId == "A" && blockId == "Station1");
+        hub.VerifyNoElseEvent();
+    }
 }
