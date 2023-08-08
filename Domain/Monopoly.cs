@@ -141,7 +141,7 @@ public class Monopoly : AbstractAggregateRoot
     {
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
-        player.MortgageLandContract(landId);
+        AddDomainEvent(player.MortgageLandContract(landId));
     }
 
     public void PayToll(string payerId)

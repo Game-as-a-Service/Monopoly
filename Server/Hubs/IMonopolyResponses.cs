@@ -48,4 +48,8 @@ public interface IMonopolyResponses
     Task PlayerTooPoorToBuildHouseEvent(string PlayerId, string BlockId, decimal PlayerMoney, decimal UpgradePrice);
 
     Task HouseMaxEvent(string PlayerId, string BlockId, int House);
+
+    Task PlayerMortgageEvent(string PlayerId, decimal PlayerMoney, string BlockId, int DeadLine);
+
+    Task PlayerCannotMortgageEvent(string PlayerId, decimal PlayerMoney, string BlockId);
 }

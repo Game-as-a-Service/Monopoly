@@ -94,12 +94,30 @@ public class Player
         Monopoly.AddDomainEvent(events);
     }
 
-    internal void MortgageLandContract(string landId)
+    internal DomainEvent MortgageLandContract(string landId)
+    {
+        if(mortgages.Exists(m => m.LandContract.Land.Id == landId))
+        {
+            return new PlayerCannotMortgageEvent(Monopoly.Id, Id, Money, landId);
+        }
+        else{
+            var landContract = _landContractList.First(l => l.Land.Id == landId);
+            mortgages.Add(new Mortgage(this, landContract));
+            Money += landContract.Land.GetMortgagePrice();
+            return new PlayerMortgageEvent(Monopoly.Id, Id, Money, 
+                                            mortgages[mortgages.Count-1].LandContract.Land.Id, 
+                                            mortgages[mortgages.Count-1].Deadline);
+        }
+    }
+
+    #region 測試用
+    public void MortgageForTest(string landId)
     {
         var landContract = _landContractList.First(l => l.Land.Id == landId);
         mortgages.Add(new Mortgage(this, landContract));
-        Money += landContract.Land.Price * (decimal)0.7;
     }
+
+    #endregion
 
     public void PayToll(Player payee, decimal amount)
     {

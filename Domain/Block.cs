@@ -122,6 +122,11 @@ public class Land : Block
         return _price * RATE_OF_HOUSE[house] * RATE_OF_LOT[lotCount];
     }
 
+    public virtual decimal GetMortgagePrice()
+    {
+        return _price * (1 + house) * (decimal)0.7;
+    }
+
     public override Player? GetOwner()
     {
         return landContract.Owner;
@@ -195,6 +200,11 @@ public class Station : Land
         int lotCount = payee.LandContractList.Count(t => t.Land.Lot == lot);
 
         return _price * lotCount;
+    }
+
+    public override decimal GetMortgagePrice()
+    {
+        return _price;
     }
 
     public override DomainEvent BuildHouse(Player player)

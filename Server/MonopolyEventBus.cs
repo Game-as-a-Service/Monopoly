@@ -113,6 +113,14 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.HouseMaxEvent(hme.PlayerId, hme.BlockId, hme.House);
             }
+            else if (e is PlayerMortgageEvent pme)
+            {
+                await _hubContext.Clients.All.PlayerMortgageEvent(pme.PlayerId, pme.PlayerMoney, pme.BlockId, pme.DeadLine);
+            }
+            else if (e is PlayerCannotMortgageEvent pctme)
+            {
+                await _hubContext.Clients.All.PlayerCannotMortgageEvent(pctme.PlayerId, pctme.PlayerMoney, pctme.BlockId);
+            }
         }
     }
 }
