@@ -110,14 +110,11 @@ public class Player
         }
     }
 
-    #region 測試用
     public void MortgageForTest(string landId)
     {
         var landContract = _landContractList.First(l => l.Land.Id == landId);
         mortgages.Add(new Mortgage(this, landContract));
     }
-
-    #endregion
 
     public void PayToll(Player payee, decimal amount)
     {

@@ -52,8 +52,8 @@ public class BuildHouseTest
         // A 蓋房子
         hub.Verify<string, string, decimal, int>(
                        nameof(IMonopolyResponses.PlayerBuildHouseEvent),
-                                  (playId, blockId, playerMoney, house)
-                                  => playId == "A" && blockId == "A1" && playerMoney == 1000 && house == 2);
+                                  (playerId, blockId, playerMoney, house)
+                                  => playerId == "A" && blockId == "A1" && playerMoney == 1000 && house == 2);
         hub.VerifyNoElseEvent();
     }
 
@@ -91,8 +91,8 @@ public class BuildHouseTest
         // A 蓋房子
         hub.Verify<string, string, int>(
                        nameof(IMonopolyResponses.HouseMaxEvent),
-                                  (playId, blockId, house)
-                                  => playId == "A" && blockId == "A1" && house == 5);
+                                  (playerId, blockId, house)
+                                  => playerId == "A" && blockId == "A1" && house == 5);
         hub.VerifyNoElseEvent();
     }
 
@@ -129,8 +129,8 @@ public class BuildHouseTest
         // A 蓋房子
         hub.Verify<string, string>(
                        nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
-                                  (playId, blockId)
-                                  => playId == "A" && blockId == "Station1");
+                                  (playerId, blockId)
+                                  => playerId == "A" && blockId == "Station1");
         hub.VerifyNoElseEvent();
     }
 }
