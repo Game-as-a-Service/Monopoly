@@ -1,7 +1,9 @@
 ﻿@page "/"
+@using Client.Options;
 @using Microsoft.AspNetCore.SignalR.Client;
 @using System.Security.Claims;
 @using System.Net.Http.Headers;
+@using Microsoft.Extensions.Options;
 <MudStack>
     @foreach (var item in Users)
     {
@@ -26,18 +28,19 @@
 </MudStack>
 
 @code {
-    private string Token { get; set; } = string.Empty;
+    private string Token { get; set; } = "";
     private List<string> Messages { get; set; } = new();
     private List<User> Users { get; set; } = new();
     private string UserId { get; set; } = string.Empty;
     private string GameId { get; set; } = string.Empty;
     private List<GameData> games = new();
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IOptions<BackendApiOptions> BackendApiOptions { get; set; } = default!;
 
     private async void CreateGame()
     {
         CreateGameBodyPayload bodyPayload = new(Users.Select(user => new Player(user.Id)).ToArray());
-        var url = "https://localhost:3826";
+        var url = new Uri(new Uri(BackendApiOptions.Value.BaseUrl), "/create-game");
         var httpClient = new HttpClient();
         var host = Users.FirstOrDefault();
         if (host is null)
@@ -46,7 +49,7 @@
             return;
         }
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", host.Token);
-        var response = await httpClient.PostAsJsonAsync($"{url}/create-game", bodyPayload);
+        var response = await httpClient.PostAsJsonAsync(url, bodyPayload);
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -60,9 +63,10 @@
 
     private async void AddUser()
     {
+        var url = new Uri(new Uri(BackendApiOptions.Value.BaseUrl), "/whoami");
         HubConnection hubConnection = new HubConnectionBuilder()
             .WithAutomaticReconnect()
-            .WithUrl("https://localhost:3826/whoami", opt =>
+            .WithUrl(url, opt =>
             {
                 opt.AccessTokenProvider = () => Task.FromResult<string?>(Token);
             })

@@ -1,6 +1,8 @@
 ﻿using Client.Components;
+using Client.Options;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Options;
 using MudBlazor;
 using SharedLibrary;
 using System.Net.Http.Json;
@@ -15,6 +17,7 @@ public partial class Game
     public string AccessToken { get; set; } = default!;
 
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private IOptions<BackendApiOptions> BackendApiOptions { get; set; } = default!;
 
     private HubConnection hubConnection = default!;
     private readonly List<string> messages = new();
@@ -23,8 +26,9 @@ public partial class Game
 
     protected override async Task OnInitializedAsync()
     {
+        var url = new Uri(new Uri(BackendApiOptions.Value.BaseUrl), $"/monopoly?gameid={Id}");
         hubConnection = new HubConnectionBuilder()
-            .WithUrl($"https://localhost:3826/monopoly?gameid={Id}", options =>
+            .WithUrl(url, options =>
             {
                 options.AccessTokenProvider = async () => await Task.FromResult(AccessToken);
             })
@@ -44,9 +48,9 @@ public partial class Game
 
     private async Task GetMapFromApiAsync(string id)
     {
+        var url = new Uri(new Uri(BackendApiOptions.Value.BaseUrl), $"/map?mapid={id}");
         // map 從 Server 取得
-        var httpclient = new HttpClient();
-        var response = await httpclient.GetAsync($"https://localhost:3826/map?mapid={id}");
+        var response = await new HttpClient().GetAsync(url);
         if (!response.IsSuccessStatusCode)
         {
             Snackbar.Add($"取得地圖失敗: {response.StatusCode}", Severity.Error);
