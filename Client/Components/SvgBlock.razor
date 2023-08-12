@@ -1,13 +1,11 @@
-﻿<div style="background-image: url('@Image'); height: @Height; transform: scale(@ScaleFactor);">
-</div>
+﻿<image transform="translate(@Block.OffsetX,@Block.OffsetY)" x="@Block.X" y="@Block.Y" width="@Width" height="@Height" href=@($"./images/gamepage/{Block.ImageName}.svg") />
+
 @code {
     [Parameter]
-    public string Image { get; set; } = String.Empty;
+    public BlazorMap.Block Block { get; set; } = default!;
     [Parameter]
-    public string Width { get; set; } = String.Empty;
+    public int Width { get; set; } = String.Empty;
     [Parameter]
-    public string Height { get; set; } = String.Empty;
-    [Parameter]
-    public double ScaleFactor { get; set; } = 1.0;
+    public int Height { get; set; } = String.Empty;
 
 }

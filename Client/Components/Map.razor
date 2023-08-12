@@ -9,7 +9,7 @@
             {
                 continue;
             }
-            <image x="@block.X" y="@block.Y" width="@Data.BlockWidth" height="@Data.BlockHeight" href=@($"./images/gamepage/{block.ImageName}.svg") />
+            <SvgBlock Block="@block" Width="@Data.BlockWidth" Height="@Data.BlockHeight" ScaleFactor="@Data.ScaleFactor" />
          }
      }
 </svg>

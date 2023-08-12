@@ -31,12 +31,12 @@ public class BlazorMap
             for (int j = 0; j < data.Data[i].Length; j++)
             {
                 var monopolyBlock = data.Data[i][j];
-                var x = j * _blockWidth + _blockMargin;
-                var y = i * _blockHeight + _blockMargin;
+                var x = j * (_blockWidth + _blockMargin);
+                var y = i * (_blockHeight + _blockMargin);
                 _blocks[i][j] = monopolyBlock.Type switch
                 {
                     SharedLibrary.BlockType.None => null!,
-                    SharedLibrary.BlockType.Land => new Land(x, y, monopolyBlock.Id, monopolyBlock.ToLand().LandType.ToBlazorLandType()),
+                    SharedLibrary.BlockType.Land => CreateLand(monopolyBlock, x, y),
                     SharedLibrary.BlockType.Road => new Road(x, y, monopolyBlock.Id, monopolyBlock.ToRoad().RoadType.ToBlazorRoadType()),
                     SharedLibrary.BlockType.ParkingLot => new ParkingLot(x, y, monopolyBlock.Id),
                     SharedLibrary.BlockType.Prison => new Prison(x, y, monopolyBlock.Id),
@@ -47,13 +47,43 @@ public class BlazorMap
             }
         }
 
-        totalWidth = data.Data[0].Length * _blockWidth + data.Data[0].Length * _blockMargin - _blockMargin;
-        totalHeight = data.Data.Length * _blockHeight + data.Data.Length * _blockMargin - _blockMargin;
+        totalWidth = data.Data[0].Length * (_blockWidth + _blockMargin) - _blockMargin;
+        totalHeight = data.Data.Length * (_blockHeight + _blockMargin) - _blockMargin;
     }
 
-    public abstract record Block(int X, int Y, string Id, string ImageName);
+    /// <summary>
+    /// 根據不同方向的土地，修改座標後傳回
+    /// </summary>
+    /// <param name="block"></param>
+    /// <param name="_x">原座標X</param>
+    /// <param name="_y">原座標Y</param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
+    private static Land CreateLand(SharedLibrary.BlockBase block, int x, int y)
+    {
+        var type = block.ToLand().LandType.ToBlazorLandType();
+        double offsetX = type switch
+        {
+            LandType.Up => 0,
+            LandType.Down => 0,
+            LandType.Right => 13.08,
+            LandType.Left => -13.08,
+            _ => throw new InvalidOperationException()
+        };
+        double offsetY = type switch
+        {
+            LandType.Up => -42,
+            LandType.Down => 42,
+            LandType.Right => 0,
+            LandType.Left => 0,
+            _ => throw new InvalidOperationException()
+        };
+        return new Land(x, y, block.Id, type, offsetX, offsetY);
+    }
+
+    public abstract record Block(int X, int Y, string Id, string ImageName, double OffsetX = 0, double OffsetY = 0);
     private record Road(int X, int Y, string Id, RoadType RoadType) : Block(X, Y, Id, RoadType.GetImageName());
-    private record Land(int X, int Y, string Id, LandType LandType) : Block(X, Y, Id, LandType.GetImageName());
+    private record Land(int X, int Y, string Id, LandType LandType, double OffsetX, double OffsetY) : Block(X, Y, Id, LandType.GetImageName(), OffsetX, OffsetY);
     private record ParkingLot(int X, int Y, string Id) : Block(X, Y, Id, "parkinglot");
     private record Prison(int X, int Y, string Id) : Block(X, Y, Id, "prison");
     private record StartPoint(int X, int Y, string Id) : Block(X, Y, Id, "startpoint");

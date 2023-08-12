@@ -16,9 +16,9 @@ public partial class Game
 
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
 
-    private HubConnection? hubConnection;
+    private HubConnection hubConnection = default!;
     private readonly List<string> messages = new();
-    private BlazorMap? Data { get; set; }
+    private BlazorMap? blazorMap;
 
 
     protected override async Task OnInitializedAsync()
@@ -53,7 +53,7 @@ public partial class Game
             return;
         }
         var monopolyMap = await response.Content.ReadFromJsonAsync<MonopolyMap>(MonopolyMap.JsonSerializerOptions);
-        Data = new BlazorMap(monopolyMap!);
+        blazorMap = new BlazorMap(monopolyMap!);
         StateHasChanged();
     }
 
