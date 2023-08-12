@@ -52,4 +52,10 @@ public interface IMonopolyResponses
     Task PlayerMortgageEvent(string PlayerId, decimal PlayerMoney, string BlockId, int DeadLine);
 
     Task PlayerCannotMortgageEvent(string PlayerId, decimal PlayerMoney, string BlockId);
+
+    Task PlayerRedeemEvent(string PlayerId, decimal PlayerMoney, string BlockId);
+
+    Task PlayerTooPoorToRedeemEvent(string PlayerId, decimal PlayerMoney, string BlockId, decimal RedeemPrice);
+
+    Task LandNotInMortgageEvent(string PlayerId, string BlockId);
 }

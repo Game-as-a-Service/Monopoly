@@ -41,6 +41,11 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new MortgageRequest(gameId, userId, blockId));
     }
 
+    public async Task PlayerRedeem(string gameId, string userId, string blockId, RedeemUsecase usecase)
+    {
+        await usecase.ExecuteAsync(new RedeemRequest(gameId, userId, blockId));
+    }
+
     public MonopolyHub(IRepository repository)
     {
         _repository = repository;

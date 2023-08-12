@@ -104,17 +104,41 @@ public class Player
             var landContract = _landContractList.First(l => l.Land.Id == landId);
             mortgages.Add(new Mortgage(this, landContract));
             Money += landContract.Land.GetMortgagePrice();
-            return new PlayerMortgageEvent(Monopoly.Id, Id, Money, 
-                                            mortgages[mortgages.Count-1].LandContract.Land.Id, 
-                                            mortgages[mortgages.Count-1].Deadline);
+            return new PlayerMortgageEvent(Monopoly.Id, Id, Money,
+                                            mortgages[^1].LandContract.Land.Id,
+                                            mortgages[^1].Deadline);
         }
     }
 
-    public void MortgageForTest(string landId)
+    internal DomainEvent RedeemLandContract(string landId)
+    {
+        if(mortgages.Exists(m => m.LandContract.Land.Id == landId))
+        {
+            var landContract = _landContractList.First(l => l.Land.Id == landId);
+            if(Money >= landContract.Land.GetRedeemPrice())
+            {
+                Money -= landContract.Land.GetRedeemPrice();
+                mortgages.RemoveAll(m => m.LandContract.Land.Id == landId);
+                return new PlayerRedeemEvent(Monopoly.Id, Id, Money, landId);
+            }
+            else
+            {
+                return new PlayerTooPoorToRedeemEvent(Monopoly.Id, Id, Money, landId, landContract.Land.GetRedeemPrice());
+            }
+        }
+        else{
+            return new LandNotInMortgageEvent(Monopoly.Id, Id, landId);
+        }
+    }
+
+    #region 測試用
+    public void MortgageForTest(string landId, int deadLine)
     {
         var landContract = _landContractList.First(l => l.Land.Id == landId);
         mortgages.Add(new Mortgage(this, landContract));
+        mortgages[^1].SetDeadLine(deadLine);
     }
+    #endregion
 
     public void PayToll(Player payee, decimal amount)
     {

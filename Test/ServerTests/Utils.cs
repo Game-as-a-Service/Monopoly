@@ -84,7 +84,7 @@ public class Utils
                 });
                 p.Mortgages.ForEach(l =>
                 {
-                    player.MortgageForTest(l);
+                    player.MortgageForTest(l, p.DeadLine[l]);
                 });
                 monopoly.AddPlayer(player, p.BlockId, direction);
                 if (CurrentPlayer == player.Id)
@@ -112,6 +112,7 @@ public class Utils
         public List<string> LandContracts { get; set; }
         public List<string> Mortgages { get; set; }
         public IDictionary<string, int> House = new Dictionary<string, int>();
+        public IDictionary<string, int> DeadLine = new Dictionary<string, int>();
 
         public MonopolyPlayer(string id)
         {
@@ -143,11 +144,12 @@ public class Utils
             return this;
         }
 
-        public MonopolyPlayer WithMortgage(string landId)
+        public MonopolyPlayer WithMortgage(string landId, int deadLine = 10)
         {
             if (LandContracts.Exists(l => l == landId))
             {
                 Mortgages.Add(landId);
+                DeadLine.Add(landId, deadLine);
             }
             return this;
         }

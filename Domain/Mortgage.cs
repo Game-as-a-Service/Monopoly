@@ -15,4 +15,11 @@ public class Mortgage
 
     public LandContract LandContract => landContract;
     public int Deadline => deadline;
+
+    #region 測試用
+    public void SetDeadLine(int deadLine)
+    {
+        this.deadline = deadLine;
+    }
+    #endregion
 }

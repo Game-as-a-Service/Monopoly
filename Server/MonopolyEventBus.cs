@@ -121,6 +121,18 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerCannotMortgageEvent(pctme.PlayerId, pctme.PlayerMoney, pctme.BlockId);
             }
+            else if (e is PlayerRedeemEvent pre)
+            {
+                await _hubContext.Clients.All.PlayerRedeemEvent(pre.PlayerId, pre.PlayerMoney, pre.BlockId);
+            }
+            else if (e is PlayerTooPoorToRedeemEvent ptpre)
+            {
+                await _hubContext.Clients.All.PlayerTooPoorToRedeemEvent(ptpre.PlayerId, ptpre.PlayerMoney, ptpre.BlockId, ptpre.RedeemPrice);
+            }
+            else if (e is LandNotInMortgageEvent lnime)
+            {
+                await _hubContext.Clients.All.LandNotInMortgageEvent(lnime.PlayerId, lnime.BlockId);
+            }
         }
     }
 }
