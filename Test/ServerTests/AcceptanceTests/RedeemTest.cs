@@ -51,7 +51,7 @@ public class RedeemTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerRedeem), gameId, "A", "A1");
 
         // Assert
-        // A 抵押房地產
+        // A 贖回房地產
         hub.Verify<string, decimal, string>(
                        nameof(IMonopolyResponses.PlayerRedeemEvent),
                                 (playerId, playerMoney, blockId)
@@ -93,7 +93,7 @@ public class RedeemTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerRedeem), gameId, "A", "A1");
 
         // Assert
-        // A 抵押房地產
+        // A 贖回房地產
         hub.Verify<string, decimal, string, decimal>(
                        nameof(IMonopolyResponses.PlayerTooPoorToRedeemEvent),
                                 (playerId, playerMoney, blockId, redeemPrice)
