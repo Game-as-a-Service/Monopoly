@@ -1,15 +1,15 @@
 
 <svg width="100%" height="100%" viewBox="0 0 @Data.TotalWidth @Data.TotalHeight" version="1.1"
      xmlns="http://www.w3.org/2000/svg">
-    @foreach (var (row, row_index) in Data.Blocks.Select((item, index) => (row: item, row_index: index)))
+    @foreach (var (row, row_index) in Data.Blocks.Select((item, index) => (item, index)))
      {
-        @foreach (var (block, index) in row.Select((item, index) => (block: item, index)))
+        @foreach (var (block, index) in row.Select((item, index) => (item, index)))
          {
             if (block is null)
             {
                 continue;
             }
-            <SvgBlock Block="@block" Width="@Data.BlockWidth" Height="@Data.BlockHeight" ScaleFactor="@Data.ScaleFactor" />
+            <SvgBlock Block="@block" Width="@Data.BlockWidth" Height="@Data.BlockHeight" />
          }
      }
 </svg>
