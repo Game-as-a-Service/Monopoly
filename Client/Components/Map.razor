@@ -1,21 +1,17 @@
 
-<div class="d-flex flex-column">
-    @foreach (var row in Value)
-    {
-        <div class="d-flex flex-grow-1">
-            @foreach(var block in row)
+<svg width="50%" height="50%" viewBox="0 0 @width @height" version="1.1"
+     xmlns="http://www.w3.org/2000/svg">
+    @foreach (var (row, row_index) in Data.Select((item, index) => (row: item, row_index: index)))
+     {
+        @foreach (var (block, index) in row.Select((item, index) => (block: item, index)))
+         {
+            var x = index * _blockWidth + index;
+            var y = row_index * _blockHeight + row_index;
+            if (block is EmptyBlock)
             {
-                if (!string.IsNullOrEmpty(block.Image))
-                {
-                    <MudPaper Class="ma-1" Style=@($"background-image: url(images/gamepage/{@block.Image}.svg);") Elevation="0" Width="133px" Height="148px" />
-                    @*<MudImage Style="@block.ImageStyle" Class="ma-1" Fluid="true"
-                      ObjectFit="ObjectFit.Contain" Src=@($"images/gamepage/{block.Image}.svg") />*@
-                }
-                else
-                {
-                    <MudPaper Class="ma-1" Elevation="0" Width="133px" Height="148px" />
-                }
+                continue;
             }
-        </div>
-    }
-</div>
+            <image x="@x" y="@y" width="@_blockWidth" height="@_blockHeight" href=@($"./images/gamepage/{block.Image}.svg") />
+         }
+     }
+</svg>
