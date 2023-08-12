@@ -1,3 +1,6 @@
 ﻿@page "/{id}"
 @using Client.Components
-<Map/>
+@if (Data is not null)
+{
+    <Map Data="@Data" />
+}

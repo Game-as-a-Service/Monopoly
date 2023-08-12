@@ -3,12 +3,15 @@ using Application.Common;
 using Application.Usecases;
 using Domain.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Server;
 using Server.DataModels;
 using Server.Hubs;
 using Server.Repositories;
 using Server.Services;
+using SharedLibrary;
 using System.Security.Claims;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,5 +72,23 @@ app.MapPost("/create-game", async (context) =>
 
     await context.Response.WriteAsync(url);
 }).RequireAuthorization();
+
+app.MapGet("/map", (string mapId) =>
+{
+    string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+    string jsonFilePath = Path.Combine(projectDirectory, "Maps", $"{mapId}.json");
+    
+    if (File.Exists(jsonFilePath))
+    {
+        // read json file
+        string json = File.ReadAllText(jsonFilePath);
+        var data = MonopolyMap.Parse(json);
+        return Results.Json(data, MonopolyMap.JsonSerializerOptions);
+    }
+    else
+    {
+        return Results.NotFound();
+    }
+});
 
 app.Run();

@@ -1,0 +1,327 @@
+{
+  "Id": "1",
+  "Data": [
+    [
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "LandType": 1,
+        "Id": "A1",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "A2",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "S1",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "A3",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "A4",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "A5",
+        "Type": 1
+      },
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "Id": "",
+        "Type": 0
+      }
+    ],
+    [
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "Id": "start",
+        "Type": 5
+      },
+      {
+        "RoadType": 9,
+        "Id": "A1",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "A2",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "S1",
+        "Type": 6
+      },
+      {
+        "RoadType": 9,
+        "Id": "A3",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "A4",
+        "Type": 2
+      },
+      {
+        "RoadType": 2,
+        "Id": "A5",
+        "Type": 2
+      },
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "Id": "",
+        "Type": 0
+      }
+    ],
+    [
+      {
+        "LandType": 0,
+        "Id": "E4",
+        "Type": 1
+      },
+      {
+        "RoadType": 10,
+        "Id": "E4",
+        "Type": 2
+      },
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "LandType": 1,
+        "Id": "B1",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "B2",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "B3",
+        "Type": 1
+      },
+      {
+        "RoadType": 10,
+        "Id": null,
+        "Type": 2
+      },
+      {
+        "LandType": 1,
+        "Id": "B4",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "B5",
+        "Type": 1
+      },
+      {
+        "Id": "",
+        "Type": 0
+      }
+    ],
+    [
+      {
+        "LandType": 0,
+        "Id": "S4",
+        "Type": 1
+      },
+      {
+        "RoadType": 10,
+        "Id": "S4",
+        "Type": 6
+      },
+      {
+        "LandType": 1,
+        "Id": "E2",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "E1",
+        "Type": 1
+      },
+      {
+        "RoadType": 0,
+        "Id": "B1",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "B2",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "B3",
+        "Type": 2
+      },
+      {
+        "Id": "parkinglot",
+        "Type": 4
+      },
+      {
+        "RoadType": 9,
+        "Id": "B4",
+        "Type": 2
+      },
+      {
+        "RoadType": 2,
+        "Id": "B5",
+        "Type": 2
+      },
+      {
+        "Id": "",
+        "Type": 0
+      }
+    ],
+    [
+      {
+        "LandType": 0,
+        "Id": "E3",
+        "Type": 1
+      },
+      {
+        "RoadType": 6,
+        "Id": "E3",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "E2",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "E1",
+        "Type": 2
+      },
+      {
+        "Id": "prison",
+        "Type": 3
+      },
+      {
+        "LandType": 1,
+        "Id": "C3",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "S3",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "C2",
+        "Type": 1
+      },
+      {
+        "LandType": 1,
+        "Id": "C1",
+        "Type": 1
+      },
+      {
+        "RoadType": 10,
+        "Id": "S2",
+        "Type": 6
+      },
+      {
+        "LandType": 2,
+        "Id": "S2",
+        "Type": 1
+      }
+    ],
+    [
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "Id": "",
+        "Type": 0
+      },
+      {
+        "LandType": 0,
+        "Id": "C4",
+        "Type": 1
+      },
+      {
+        "RoadType": 6,
+        "Id": "C4",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "C3",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "S3",
+        "Type": 6
+      },
+      {
+        "RoadType": 9,
+        "Id": "C2",
+        "Type": 2
+      },
+      {
+        "RoadType": 9,
+        "Id": "C1",
+        "Type": 2
+      },
+      {
+        "RoadType": 8,
+        "Id": null,
+        "Type": 2
+      },
+      {
+        "Id": "",
+        "Type": 0
+      }
+    ]
+  ]
+}

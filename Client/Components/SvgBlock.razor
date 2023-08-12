@@ -1,8 +1,8 @@
-﻿<div style="background-image: url('@Image'); width: @Width; height: @Height; transform: scale(@ScaleFactor);">
+﻿<div style="background-image: url('@Image'); height: @Height; transform: scale(@ScaleFactor);">
 </div>
 @code {
     [Parameter]
-    public Block Image { get; set; } = String.Empty;
+    public string Image { get; set; } = String.Empty;
     [Parameter]
     public string Width { get; set; } = String.Empty;
     [Parameter]

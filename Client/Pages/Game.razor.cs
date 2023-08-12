@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Client.Components;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using MudBlazor;
+using SharedLibrary;
+using System.Net.Http.Json;
 
 namespace Client.Pages;
 
@@ -8,14 +11,15 @@ public partial class Game
 {
     [Parameter] public string Id { get; set; }
 
-    [Parameter]
-    [SupplyParameterFromQuery(Name = "access_token")]
+    [Parameter, SupplyParameterFromQuery(Name = "access_token")]
     public string AccessToken { get; set; } = default!;
 
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
 
     private HubConnection? hubConnection;
     private readonly List<string> messages = new();
+    private BlazorMap? Data { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -35,6 +39,22 @@ public partial class Game
         {
             Snackbar.Add(ex.Message, Severity.Error);
         }
+        await GetMapFromApiAsync("1");
+    }
+
+    private async Task GetMapFromApiAsync(string id)
+    {
+        // map 從 Server 取得
+        var httpclient = new HttpClient();
+        var response = await httpclient.GetAsync($"https://localhost:3826/map?mapid={id}");
+        if (!response.IsSuccessStatusCode)
+        {
+            Snackbar.Add($"取得地圖失敗: {response.StatusCode}", Severity.Error);
+            return;
+        }
+        var monopolyMap = await response.Content.ReadFromJsonAsync<MonopolyMap>(MonopolyMap.JsonSerializerOptions);
+        Data = new BlazorMap(monopolyMap!);
+        StateHasChanged();
     }
 
     private void SetupHubConnection()
