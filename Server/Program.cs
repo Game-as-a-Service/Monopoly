@@ -3,7 +3,6 @@ using Application.Common;
 using Application.Usecases;
 using Domain.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Server;
 using Server.DataModels;
 using Server.Hubs;
@@ -11,7 +10,6 @@ using Server.Repositories;
 using Server.Services;
 using SharedLibrary;
 using System.Security.Claims;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,8 +31,16 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
         }));
 
 // 如果 Bind Options 時需要依賴注入
-builder.Services.AddScoped<IPlatformService, PlatformService>()
-                .AddSingleton<PlatformJwtEvents>();
+// 如果是develop
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddScoped<IPlatformService, DevelopmentPlatformService>();
+}
+else
+{
+    builder.Services.AddScoped<IPlatformService, PlatformService>();
+}
+builder.Services.AddSingleton<PlatformJwtEvents>();
 builder.Services
     .AddOptions<JwtBearerOptions>("Bearer")
     .Configure<PlatformJwtEvents>((opt, jwtEvents) =>
@@ -90,5 +96,13 @@ app.MapGet("/map", (string mapId) =>
         return Results.NotFound();
     }
 });
+
+#if DEBUG
+app.MapGet("/tokens", () =>
+{
+    DevelopmentPlatformService platformService = (DevelopmentPlatformService)app.Services.CreateScope().ServiceProvider.GetRequiredService<IPlatformService>();
+    return Results.Json(platformService.GetTokens());
+});
+#endif
 
 app.Run();

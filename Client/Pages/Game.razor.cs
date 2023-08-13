@@ -18,6 +18,7 @@ public partial class Game
 
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IOptions<BackendApiOptions> BackendApiOptions { get; set; } = default!;
+    private Uri BackendApiBaseUri => new(BackendApiOptions.Value.BaseUrl);
 
     private HubConnection hubConnection = default!;
     private readonly List<string> messages = new();
@@ -26,7 +27,7 @@ public partial class Game
 
     protected override async Task OnInitializedAsync()
     {
-        var url = new Uri(new Uri(BackendApiOptions.Value.BaseUrl), $"/monopoly?gameid={Id}");
+        var url = new Uri(BackendApiBaseUri, $"/monopoly?gameid={Id}");
         hubConnection = new HubConnectionBuilder()
             .WithUrl(url, options =>
             {
@@ -48,7 +49,7 @@ public partial class Game
 
     private async Task GetMapFromApiAsync(string id)
     {
-        var url = new Uri(new Uri(BackendApiOptions.Value.BaseUrl), $"/map?mapid={id}");
+        var url = new Uri(BackendApiBaseUri, $"/map?mapid={id}");
         // map 從 Server 取得
         var response = await new HttpClient().GetAsync(url);
         if (!response.IsSuccessStatusCode)
