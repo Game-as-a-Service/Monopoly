@@ -142,13 +142,13 @@ internal class VerificationHub
                     // 如果已經斷開連線測試失敗
                     if (Connection.State == HubConnectionState.Disconnected)
                     {
-                        Queues[nameof(IMonopolyResponses.PlayerJoinGameFailedEvent)].TryPeek(out var errorMessages);
-                        Assert.Fail(
-                            $"""
-                            已經斷開連線
-                            訊息:
-                            {string.Join("\n", errorMessages!)}
-                            """);
+                        if(Queues[nameof(IMonopolyResponses.PlayerJoinGameFailedEvent)].TryPeek(out var errorMessages))
+                            Assert.Fail(
+                                $"""
+                                已經斷開連線
+                                訊息:
+                                {string.Join("\n", errorMessages!)}
+                                """);
                     }
                     // 計算已經等待的時間
                     var elapsedMilliseconds = (DateTime.Now - startTime).TotalMilliseconds;
