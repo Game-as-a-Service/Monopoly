@@ -1,7 +1,6 @@
 ﻿using Application.Common;
 using Domain;
 using Domain.Common;
-using Domain.Events;
 
 namespace Application.Usecases;
 

@@ -83,7 +83,7 @@ app.MapGet("/map", (string mapId) =>
 {
     string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
     string jsonFilePath = Path.Combine(projectDirectory, "Maps", $"{mapId}.json");
-    
+
     if (File.Exists(jsonFilePath))
     {
         // read json file

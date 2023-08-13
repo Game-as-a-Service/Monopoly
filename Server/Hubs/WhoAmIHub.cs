@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace Server.Hubs;
 
 [Authorize]
-public class WhoAmIHub: Hub
+public class WhoAmIHub : Hub
 {
     public async Task WhoAmI()
     {

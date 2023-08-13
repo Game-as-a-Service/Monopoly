@@ -48,12 +48,12 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
                 opt.AccessTokenProvider = async () =>
                 {
                     var options = GetRequiredService<IOptionsMonitor<JwtBearerOptions>>();
-                    
+
                     var jwtToken = GetRequiredService<MockJwtTokenService>()
                         .GenerateJwtToken(options.Get("Bearer").Audience, playerId);
                     return await Task.FromResult(jwtToken);
                 };
-                opt.HttpMessageHandlerFactory = _ => Server.CreateHandler();                
+                opt.HttpMessageHandlerFactory = _ => Server.CreateHandler();
             })
             .Build();
         VerificationHub verificationHub = new(hub);
@@ -146,7 +146,7 @@ internal class VerificationHub
                     // 如果已經斷開連線測試失敗
                     if (Connection.State == HubConnectionState.Disconnected)
                     {
-                        if(Queues[nameof(IMonopolyResponses.PlayerJoinGameFailedEvent)].TryPeek(out var errorMessages))
+                        if (Queues[nameof(IMonopolyResponses.PlayerJoinGameFailedEvent)].TryPeek(out var errorMessages))
                             Assert.Fail(
                                 $"""
                                 已經斷開連線
@@ -158,7 +158,7 @@ internal class VerificationHub
                     var elapsedMilliseconds = (DateTime.Now - startTime).TotalMilliseconds;
                     if (elapsedMilliseconds >= timeout)
                     {
-                        Assert.Fail(                                                                   
+                        Assert.Fail(
                             $"""
                             超出預期時間 {timeout} ms，預期得到 Event【{methodName}】
                             可以嘗試檢查下面的問題:

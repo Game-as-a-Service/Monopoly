@@ -13,7 +13,7 @@ public class PlatformJwtEvents : JwtBearerEvents
         {
             var queryToken = context.Request.Query["access_token"].ToString();
             var headerToken = context.HttpContext.Request.Headers.Authorization.FirstOrDefault()?.Replace("Bearer ", "");
-            
+
             var token = string.IsNullOrEmpty(queryToken) ? headerToken : queryToken;
 
             var path = context.HttpContext.Request.Path;

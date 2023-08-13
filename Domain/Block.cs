@@ -1,5 +1,5 @@
-using Domain.Events;
 using Domain.Common;
+using Domain.Events;
 
 namespace Domain;
 
@@ -142,7 +142,7 @@ public class Land : Block
 
     public virtual DomainEvent BuildHouse(Player player)
     {
-        if(GetOwner() == player)
+        if (GetOwner() == player)
         {
             if (house == MAX_HOUSE) return new HouseMaxEvent(player.Monopoly.Id, player.Id, Id, house);
 
@@ -156,13 +156,13 @@ public class Land : Block
             {
                 return new PlayerTooPoorToBuildHouseEvent(player.Monopoly.Id, player.Id, Id, player.Money, UpgradePrice);
             }
-            
+
         }
         else
         {
             return new PlayerCannotBuildHouseEvent(player.Monopoly.Id, player.Id, Id);
         }
-        
+
     }
 }
 
@@ -189,7 +189,7 @@ public class ParkingLot : Block
 
 public class Station : Land
 {
-    public Station(string id, decimal price = 1000, string lot = "S") : base(id, price,lot)
+    public Station(string id, decimal price = 1000, string lot = "S") : base(id, price, lot)
     {
     }
 
@@ -205,7 +205,7 @@ public class Station : Land
         return _price * lotCount;
     }
 
-    public override decimal GetMortgagePrice() => _price*(decimal)0.7;
+    public override decimal GetMortgagePrice() => _price * (decimal)0.7;
 
     public override decimal GetRedeemPrice() => _price;
 

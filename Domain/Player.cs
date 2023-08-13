@@ -1,7 +1,6 @@
-using Domain.Events;
-using System.Numerics;
-using Domain.Interfaces;
 using Domain.Common;
+using Domain.Events;
+using Domain.Interfaces;
 
 namespace Domain;
 
@@ -96,11 +95,12 @@ public class Player
 
     internal DomainEvent MortgageLandContract(string landId)
     {
-        if(mortgages.Exists(m => m.LandContract.Land.Id == landId))
+        if (mortgages.Exists(m => m.LandContract.Land.Id == landId))
         {
             return new PlayerCannotMortgageEvent(Monopoly.Id, Id, Money, landId);
         }
-        else{
+        else
+        {
             var landContract = _landContractList.First(l => l.Land.Id == landId);
             mortgages.Add(new Mortgage(this, landContract));
             Money += landContract.Land.GetMortgagePrice();
@@ -112,10 +112,10 @@ public class Player
 
     internal DomainEvent RedeemLandContract(string landId)
     {
-        if(mortgages.Exists(m => m.LandContract.Land.Id == landId))
+        if (mortgages.Exists(m => m.LandContract.Land.Id == landId))
         {
             var landContract = _landContractList.First(l => l.Land.Id == landId);
-            if(Money >= landContract.Land.GetRedeemPrice())
+            if (Money >= landContract.Land.GetRedeemPrice())
             {
                 Money -= landContract.Land.GetRedeemPrice();
                 mortgages.RemoveAll(m => m.LandContract.Land.Id == landId);
@@ -126,7 +126,8 @@ public class Player
                 return new PlayerTooPoorToRedeemEvent(Monopoly.Id, Id, Money, landId, landContract.Land.GetRedeemPrice());
             }
         }
-        else{
+        else
+        {
             return new LandNotInMortgageEvent(Monopoly.Id, Id, landId);
         }
     }
@@ -150,7 +151,7 @@ public class Player
     {
         Block block = Chess.CurrentBlock;
 
-        if(block is Land land)
+        if (block is Land land)
         {
             return land.BuildHouse(this);
         }

@@ -1,12 +1,10 @@
 ﻿using Application.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Server.DataModels;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Security.Claims;
 
 namespace ServerTests.AcceptanceTests;
 

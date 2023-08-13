@@ -27,7 +27,7 @@ public partial class Index
             return;
         }
 
-        foreach(var token in tokens)
+        foreach (var token in tokens)
         {
             AddUser(token);
         }

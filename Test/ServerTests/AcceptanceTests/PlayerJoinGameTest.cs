@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Server.DataModels;
-using Server.Repositories;
 using SharedLibrary;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;

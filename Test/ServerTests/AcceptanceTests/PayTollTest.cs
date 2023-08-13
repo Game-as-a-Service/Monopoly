@@ -60,7 +60,7 @@ public class PayTollTest
         // A 付過路費
         hub.Verify<string, decimal, string, decimal>(
                        nameof(IMonopolyResponses.PlayerPayTollEvent),
-                                  (playerId, playerMoney, ownerId, ownerMoney) 
+                                  (playerId, playerMoney, ownerId, ownerMoney)
                                   => playerId == "A" && playerMoney == 950 && ownerId == "B" && ownerMoney == 1050);
         hub.VerifyNoElseEvent();
     }
@@ -108,7 +108,7 @@ public class PayTollTest
         // A 付過路費
         hub.Verify<string, decimal>(
                        nameof(IMonopolyResponses.PlayerDoesntNeedToPayTollEvent),
-                                  (playerId, playerMoney) 
+                                  (playerId, playerMoney)
                                   => playerId == "A" && playerMoney == 1000);
         hub.VerifyNoElseEvent();
     }
@@ -156,7 +156,7 @@ public class PayTollTest
         // A 付過路費
         hub.Verify<string, decimal>(
                        nameof(IMonopolyResponses.PlayerDoesntNeedToPayTollEvent),
-                                  (playerId, playerMoney) 
+                                  (playerId, playerMoney)
                                   => playerId == "A" && playerMoney == 1000);
         hub.VerifyNoElseEvent();
     }
@@ -203,7 +203,7 @@ public class PayTollTest
         // A 付過路費
         hub.Verify<string, decimal, decimal>(
                        nameof(IMonopolyResponses.PlayerTooPoorToPayTollEvent),
-                                  (playerId, playerMoney, toll) 
+                                  (playerId, playerMoney, toll)
                                   => playerId == "A" && playerMoney == 30 && toll == 50);
         hub.VerifyNoElseEvent();
     }
