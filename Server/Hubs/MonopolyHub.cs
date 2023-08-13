@@ -57,22 +57,15 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         var gameIdStringValues = httpContext.Request.Query["gameid"];
         if (gameIdStringValues.Count == 0)
         {
-            Clients.Caller.PlayerJoinGameFailedEvent("Not pass game id");
-            Context.Abort();
+            throw new GameNotFoundException($"Not pass game id");
         }
         string gameId = gameIdStringValues.ToString();
         string userId = Context.User!.FindFirst(x => x.Type == ClaimTypes.Sid)!.Value;
         if (!_repository.IsExist(gameId))
         {
-            Clients.Caller.PlayerJoinGameFailedEvent($"Can not find the game that id is {gameId}");
-            Context.Abort();
+            throw new GameNotFoundException($"Can not find the game that id is {gameId}");
         }
         var game = _repository.FindGameById(gameId);
-        if (!game.Players.Any(p => p.Id == userId))
-        {
-            Clients.Caller.PlayerJoinGameFailedEvent($"Can not find the player whose id is {userId}");
-            Context.Abort();
-        }
         Groups.AddToGroupAsync(Context.ConnectionId, gameId);
         Clients.Group(gameId).PlayerJoinGameEvent(userId!);
         return base.OnConnectedAsync();

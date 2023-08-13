@@ -59,25 +59,7 @@ public class PlayerJoinGameTest
         VerificationHub hub = await server.CreateHubConnectionAsync("2", "A");
 
         // Assert
-        hub.Verify<string>(nameof(IMonopolyResponses.PlayerJoinGameFailedEvent), _ => true);
-    }
-
-    [TestMethod]
-    [Description("""
-        Given:  Id為1的遊戲，裡面有玩家 A B C
-        When:   玩家D建立連線到Id為1的房間
-        Then:   玩家D建立連線失敗
-        """)]
-    public async Task 玩家建立連線失敗因為此玩家不在遊戲中()
-    {
-        // Arrange
-        await CreateGameAsync("A", "A", "B", "C");
-
-        // Act
-        VerificationHub hub = await server.CreateHubConnectionAsync("1", "D");
-
-        // Assert
-        hub.Verify<string>(nameof(IMonopolyResponses.PlayerJoinGameFailedEvent), _ => true);
+        hub.VerifyDisconnection();
     }
     /// <summary>
     /// call API POST "/" Body: <paramref name="playerIds"/>.

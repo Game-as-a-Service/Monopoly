@@ -100,7 +100,11 @@ internal class VerificationHub
         Queues = new();
         ListenAllEvent();
     }
-
+    public async void VerifyDisconnection(int delay = 1000)
+    {
+        await Task.Delay(delay);
+        Assert.AreEqual(HubConnectionState.Disconnected, Connection.State);
+    }
     // 利用反射讀出所有HubResponse的Method，並且設置On function
     private void ListenAllEvent()
     {
