@@ -1,0 +1,11 @@
+﻿<image transform="translate(@Block.OffsetX,@Block.OffsetY)" x="@Block.X" y="@Block.Y" width="@Width" height="@Height" href=@($"./images/gamepage/{Block.ImageName}.svg") />
+
+@code {
+    [Parameter]
+    public BlazorMap.Block Block { get; set; } = default!;
+    [Parameter]
+    public int Width { get; set; } = 0;
+    [Parameter]
+    public int Height { get; set; } = 0;
+
+}

@@ -8,6 +8,7 @@ using Server.DataModels;
 using Server.Hubs;
 using Server.Repositories;
 using Server.Services;
+using SharedLibrary;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,8 +31,16 @@ builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
         }));
 
 // 如果 Bind Options 時需要依賴注入
-builder.Services.AddScoped<IPlatformService, PlatformService>()
-                .AddSingleton<PlatformJwtEvents>();
+// 如果是develop
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddScoped<IPlatformService, DevelopmentPlatformService>();
+}
+else
+{
+    builder.Services.AddScoped<IPlatformService, PlatformService>();
+}
+builder.Services.AddSingleton<PlatformJwtEvents>();
 builder.Services
     .AddOptions<JwtBearerOptions>("Bearer")
     .Configure<PlatformJwtEvents>((opt, jwtEvents) =>
@@ -69,5 +78,31 @@ app.MapPost("/create-game", async (context) =>
 
     await context.Response.WriteAsync(url);
 }).RequireAuthorization();
+
+app.MapGet("/map", (string mapId) =>
+{
+    string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+    string jsonFilePath = Path.Combine(projectDirectory, "Maps", $"{mapId}.json");
+    
+    if (File.Exists(jsonFilePath))
+    {
+        // read json file
+        string json = File.ReadAllText(jsonFilePath);
+        var data = MonopolyMap.Parse(json);
+        return Results.Json(data, MonopolyMap.JsonSerializerOptions);
+    }
+    else
+    {
+        return Results.NotFound();
+    }
+});
+
+#if DEBUG
+app.MapGet("/tokens", () =>
+{
+    DevelopmentPlatformService platformService = (DevelopmentPlatformService)app.Services.CreateScope().ServiceProvider.GetRequiredService<IPlatformService>();
+    return Results.Json(platformService.GetTokens());
+});
+#endif
 
 app.Run();

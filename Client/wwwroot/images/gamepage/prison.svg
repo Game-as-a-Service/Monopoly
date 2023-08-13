@@ -1,0 +1,24 @@
+<svg width="133" height="148" viewBox="0 0 133 148" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M133 122.056C133 130.538 133 148 123.5 148L68 148L65 148L9 148C0 148 0 130 0 122H68V122.051C81.1444 122.028 133 121.946 133 122.056Z" fill="url(#paint0_linear_275_21945)"/>
+<rect x="1.5" y="1.5" width="130" height="130.101" rx="10.5" fill="#D9D9D9" stroke="#484848" stroke-width="3"/>
+<rect x="14" y="15" width="105" height="105" stroke="#5B5B5B" stroke-width="4"/>
+<rect x="25.5" y="13.5" width="4" height="108" fill="#5B5B5B"/>
+<rect x="38.5" y="13.5" width="4" height="108" fill="#5B5B5B"/>
+<rect x="51.5" y="13.5" width="4" height="108" fill="#5B5B5B"/>
+<rect x="64.5" y="13.5" width="4" height="108" fill="#5B5B5B"/>
+<rect x="77.5" y="13.5" width="4" height="108" fill="#5B5B5B"/>
+<rect x="90.5" y="13.5" width="4" height="108" fill="#5B5B5B"/>
+<rect x="103.5" y="13.5" width="4" height="108" fill="#5B5B5B"/>
+<rect x="100" y="57" width="21" height="20" fill="#5B5B5B"/>
+<rect x="12" y="63.812" width="109" height="6.55639" fill="#5B5B5B"/>
+<rect x="107.639" y="64.2782" width="3.2782" height="8.19549" fill="#F2F2F2"/>
+<circle cx="109.278" cy="64.2782" r="3.2782" fill="#F2F2F2"/>
+<defs>
+<linearGradient id="paint0_linear_275_21945" x1="6" y1="137.077" x2="125.5" y2="137.547" gradientUnits="userSpaceOnUse">
+<stop offset="0.00517314" stop-color="#6D6D6D"/>
+<stop offset="0.0428206" stop-color="#5B5B5B"/>
+<stop offset="0.418407" stop-color="#484848"/>
+<stop offset="0.965425" stop-color="#484848"/>
+</linearGradient>
+</defs>
+</svg>

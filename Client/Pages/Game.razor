@@ -1,6 +1,10 @@
 ﻿@page "/{id}"
-<MudText>@Id</MudText>
-@foreach (var msg in messages)
-{
-    <MudText>@msg</MudText>
-}
+@using Client.Components
+<svg width="100%" height="100vh"
+     version="1.1"
+     xmlns="http://www.w3.org/2000/svg">
+
+    <Map Data="@blazorMap" Height="80%" />
+    
+</svg>
+
