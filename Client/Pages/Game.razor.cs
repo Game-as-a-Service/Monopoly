@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 using MudBlazor;
-using SharedLibrary;
+using SharedLibrary.MonopolyMap;
 using System.Net.Http.Json;
 
 namespace Client.Pages;

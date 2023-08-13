@@ -8,7 +8,7 @@ using Server.DataModels;
 using Server.Hubs;
 using Server.Repositories;
 using Server.Services;
-using SharedLibrary;
+using SharedLibrary.MonopolyMap;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);

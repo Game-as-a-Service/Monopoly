@@ -3,7 +3,7 @@ using Domain;
 using Domain.Interfaces;
 using Domain.Maps;
 using Moq;
-using Server.Hubs;
+using SharedLibrary;
 using static Domain.Map;
 
 namespace ServerTests;

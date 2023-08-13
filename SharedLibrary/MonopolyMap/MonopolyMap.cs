@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace SharedLibrary;
+namespace SharedLibrary.MonopolyMap;
 
 public class MonopolyMap
 {
@@ -66,11 +66,11 @@ public enum LandType
     Up
 }
 
-public class TestMap 
+public class TestMap
 {
     public MonopolyMap Map { get; set; }
-    public TestMap() 
-    { 
+    public TestMap()
+    {
         var emptyBlock = new EmptyBlock();
         var land = (string id, LandType landType) => new Land(id, landType);
         var road = (string id, RoadType roadType) => new Road(id, roadType);

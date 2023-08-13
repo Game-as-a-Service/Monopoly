@@ -2,6 +2,7 @@ using Application.Common;
 using Application.Usecases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using SharedLibrary;
 using System.Security.Claims;
 
 namespace Server.Hubs;

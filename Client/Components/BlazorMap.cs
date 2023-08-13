@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using SharedLibrary.MonopolyMap;
+using System.ComponentModel;
 
 namespace Client.Components;
 
@@ -21,7 +22,7 @@ public class BlazorMap
 
     public int BlockHeight => _blockHeight;
 
-    public BlazorMap(SharedLibrary.MonopolyMap data)
+    public BlazorMap(MonopolyMap data)
     {
         // 自動Mapping _data 到 _blocks
         _blocks = new Block[data.Data.Length][];
@@ -35,13 +36,13 @@ public class BlazorMap
                 var y = i * (_blockHeight + _blockMargin);
                 _blocks[i][j] = monopolyBlock.Type switch
                 {
-                    SharedLibrary.BlockType.None => null!,
-                    SharedLibrary.BlockType.Land => CreateLand(monopolyBlock, x, y),
-                    SharedLibrary.BlockType.Road => new Road(x, y, monopolyBlock.Id, monopolyBlock.ToRoad().RoadType.ToBlazorRoadType()),
-                    SharedLibrary.BlockType.ParkingLot => new ParkingLot(x, y, monopolyBlock.Id),
-                    SharedLibrary.BlockType.Prison => new Prison(x, y, monopolyBlock.Id),
-                    SharedLibrary.BlockType.StartPoint => new StartPoint(x, y, monopolyBlock.Id),
-                    SharedLibrary.BlockType.Station => new Station(x, y, monopolyBlock.Id, monopolyBlock.ToStation().RoadType.ToBlazorStationRoadType()),
+                    BlockType.None => null!,
+                    BlockType.Land => CreateLand(monopolyBlock, x, y),
+                    BlockType.Road => new Road(x, y, monopolyBlock.Id, monopolyBlock.ToRoad().RoadType.ToBlazorRoadType()),
+                    BlockType.ParkingLot => new ParkingLot(x, y, monopolyBlock.Id),
+                    BlockType.Prison => new Prison(x, y, monopolyBlock.Id),
+                    BlockType.StartPoint => new StartPoint(x, y, monopolyBlock.Id),
+                    BlockType.Station => new Station(x, y, monopolyBlock.Id, monopolyBlock.ToStation().RoadType.ToBlazorStationRoadType()),
                     _ => throw new InvalidEnumArgumentException()
                 };
             }
@@ -59,7 +60,7 @@ public class BlazorMap
     /// <param name="_y">原座標Y</param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    private static Land CreateLand(SharedLibrary.BlockBase block, int x, int y)
+    private static Land CreateLand(BlockBase block, int x, int y)
     {
         var type = block.ToLand().LandType.ToBlazorLandType();
         double offsetX = type switch
@@ -178,67 +179,67 @@ static class BlazorMapExtensions
         return GetImageName(typeof(BlazorMap.StationRoadType), stationRoadType);
     }
 
-    public static SharedLibrary.Land ToLand(this SharedLibrary.BlockBase block)
+    public static Land ToLand(this BlockBase block)
     {
-        return (SharedLibrary.Land)block;
+        return (Land)block;
     }
 
-    public static BlazorMap.LandType ToBlazorLandType(this SharedLibrary.LandType landType)
+    public static BlazorMap.LandType ToBlazorLandType(this LandType landType)
     {
         return landType switch
         {
-            SharedLibrary.LandType.Right => BlazorMap.LandType.Right,
-            SharedLibrary.LandType.Down => BlazorMap.LandType.Down,
-            SharedLibrary.LandType.Left => BlazorMap.LandType.Left,
-            SharedLibrary.LandType.Up => BlazorMap.LandType.Up,
+            LandType.Right => BlazorMap.LandType.Right,
+            LandType.Down => BlazorMap.LandType.Down,
+            LandType.Left => BlazorMap.LandType.Left,
+            LandType.Up => BlazorMap.LandType.Up,
             _ => throw new InvalidEnumArgumentException()
         };
     }
 
-    public static SharedLibrary.Road ToRoad(this SharedLibrary.BlockBase block)
+    public static Road ToRoad(this BlockBase block)
     {
-        return (SharedLibrary.Road)block;
+        return (Road)block;
     }
 
-    public static BlazorMap.RoadType ToBlazorRoadType(this SharedLibrary.RoadType roadType)
+    public static BlazorMap.RoadType ToBlazorRoadType(this RoadType roadType)
     {
         return roadType switch
         {
-            SharedLibrary.RoadType.TopLeftIntersection => BlazorMap.RoadType.TopLeftIntersection,
-            SharedLibrary.RoadType.TopIntersection => BlazorMap.RoadType.TopIntersection,
-            SharedLibrary.RoadType.TopRightIntersection => BlazorMap.RoadType.TopRightIntersection,
-            SharedLibrary.RoadType.LeftCenterIntersection => BlazorMap.RoadType.LeftCenterIntersection,
-            SharedLibrary.RoadType.CenterIntersection => BlazorMap.RoadType.CenterIntersection,
-            SharedLibrary.RoadType.RightCenterIntersection => BlazorMap.RoadType.RightCenterIntersection,
-            SharedLibrary.RoadType.BottomLeftIntersection => BlazorMap.RoadType.BottomLeftIntersection,
-            SharedLibrary.RoadType.BottomIntersection => BlazorMap.RoadType.BottomIntersection,
-            SharedLibrary.RoadType.BottomRightIntersection => BlazorMap.RoadType.BottomRightIntersection,
-            SharedLibrary.RoadType.HorizontalRoad => BlazorMap.RoadType.HorizontalRoad,
-            SharedLibrary.RoadType.VerticalRoad => BlazorMap.RoadType.VerticalRoad,
+            RoadType.TopLeftIntersection => BlazorMap.RoadType.TopLeftIntersection,
+            RoadType.TopIntersection => BlazorMap.RoadType.TopIntersection,
+            RoadType.TopRightIntersection => BlazorMap.RoadType.TopRightIntersection,
+            RoadType.LeftCenterIntersection => BlazorMap.RoadType.LeftCenterIntersection,
+            RoadType.CenterIntersection => BlazorMap.RoadType.CenterIntersection,
+            RoadType.RightCenterIntersection => BlazorMap.RoadType.RightCenterIntersection,
+            RoadType.BottomLeftIntersection => BlazorMap.RoadType.BottomLeftIntersection,
+            RoadType.BottomIntersection => BlazorMap.RoadType.BottomIntersection,
+            RoadType.BottomRightIntersection => BlazorMap.RoadType.BottomRightIntersection,
+            RoadType.HorizontalRoad => BlazorMap.RoadType.HorizontalRoad,
+            RoadType.VerticalRoad => BlazorMap.RoadType.VerticalRoad,
             _ => throw new InvalidEnumArgumentException()
         };
     }
 
-    public static SharedLibrary.Station ToStation(this SharedLibrary.BlockBase block)
+    public static Station ToStation(this BlockBase block)
     {
-        return (SharedLibrary.Station)block;
+        return (Station)block;
     }
 
-    public static BlazorMap.StationRoadType ToBlazorStationRoadType(this SharedLibrary.RoadType stationRoadType)
+    public static BlazorMap.StationRoadType ToBlazorStationRoadType(this RoadType stationRoadType)
     {
         return stationRoadType switch
         {
-            SharedLibrary.RoadType.TopLeftIntersection => BlazorMap.StationRoadType.TopLeftIntersection,
-            SharedLibrary.RoadType.TopIntersection => BlazorMap.StationRoadType.TopIntersection,
-            SharedLibrary.RoadType.TopRightIntersection => BlazorMap.StationRoadType.TopRightIntersection,
-            SharedLibrary.RoadType.LeftCenterIntersection => BlazorMap.StationRoadType.LeftCenterIntersection,
-            SharedLibrary.RoadType.CenterIntersection => BlazorMap.StationRoadType.CenterIntersection,
-            SharedLibrary.RoadType.RightCenterIntersection => BlazorMap.StationRoadType.RightCenterIntersection,
-            SharedLibrary.RoadType.BottomLeftIntersection => BlazorMap.StationRoadType.BottomLeftIntersection,
-            SharedLibrary.RoadType.BottomIntersection => BlazorMap.StationRoadType.BottomIntersection,
-            SharedLibrary.RoadType.BottomRightIntersection => BlazorMap.StationRoadType.BottomRightIntersection,
-            SharedLibrary.RoadType.HorizontalRoad => BlazorMap.StationRoadType.HorizontalRoad,
-            SharedLibrary.RoadType.VerticalRoad => BlazorMap.StationRoadType.VerticalRoad,
+            RoadType.TopLeftIntersection => BlazorMap.StationRoadType.TopLeftIntersection,
+            RoadType.TopIntersection => BlazorMap.StationRoadType.TopIntersection,
+            RoadType.TopRightIntersection => BlazorMap.StationRoadType.TopRightIntersection,
+            RoadType.LeftCenterIntersection => BlazorMap.StationRoadType.LeftCenterIntersection,
+            RoadType.CenterIntersection => BlazorMap.StationRoadType.CenterIntersection,
+            RoadType.RightCenterIntersection => BlazorMap.StationRoadType.RightCenterIntersection,
+            RoadType.BottomLeftIntersection => BlazorMap.StationRoadType.BottomLeftIntersection,
+            RoadType.BottomIntersection => BlazorMap.StationRoadType.BottomIntersection,
+            RoadType.BottomRightIntersection => BlazorMap.StationRoadType.BottomRightIntersection,
+            RoadType.HorizontalRoad => BlazorMap.StationRoadType.HorizontalRoad,
+            RoadType.VerticalRoad => BlazorMap.StationRoadType.VerticalRoad,
             _ => throw new InvalidEnumArgumentException()
         };
     }

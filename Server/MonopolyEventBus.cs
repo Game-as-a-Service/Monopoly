@@ -3,6 +3,7 @@ using Domain.Common;
 using Domain.Events;
 using Microsoft.AspNetCore.SignalR;
 using Server.Hubs;
+using SharedLibrary;
 
 namespace Server;
 

@@ -1,4 +1,4 @@
-﻿namespace Server.Hubs;
+﻿namespace SharedLibrary;
 
 public interface IMonopolyResponses
 {

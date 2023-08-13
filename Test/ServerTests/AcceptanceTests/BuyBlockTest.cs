@@ -1,5 +1,6 @@
 ﻿using Domain;
 using Server.Hubs;
+using SharedLibrary;
 using static Domain.Map;
 using static ServerTests.Utils;
 
