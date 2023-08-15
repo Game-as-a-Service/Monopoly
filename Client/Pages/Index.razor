@@ -1,18 +1,39 @@
 ﻿@page "/"
-<MudStack>
-    @foreach (var item in Users)
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h5">玩家列表</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+    @foreach (var item in users)
     {
         <MudPaper Class="pa-3" Outlined Elevation="5">@item.Id</MudPaper>
     }
-</MudStack>
+    </MudCardContent>
+</MudCard>
 <MudButton OnClick="CreateGame" Variant="Variant.Filled" Color="Color.Primary">Create Game</MudButton>
-<MudTextField @bind-Value="GameId" Label="Game Id" Variant="Variant.Outlined"
-              Adornment="Adornment.End"
-              AdornmentIcon="@Icons.Material.Filled.PlayArrow"
-              OnAdornmentClick="JoinGame" />
-<MudStack Row Style="height:100vh">
+<MudCard>
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h5">房間列表</MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+    @foreach (var id in rooms!)
+    {
+        <MudButton Class="pa-3" Color="Color.Secondary" Variant="Variant.Outlined" OnClick="() => JoinGame(id)">@id</MudButton>
+    }
+    </MudCardContent>
+</MudCard>
+<MudDivider />
+<MudText Typo="Typo.h5">遊戲視窗</MudText>
+
+<MudGrid Justify="Justify.SpaceEvenly" Style="height:100vh;width:100%;" Spacing="1">
     @foreach (var game in games)
     {
-        <iframe src="/@game.Id?access_token=@game.Token"></iframe>
+        <MudItem xs="6" Class="pa-0 border-2">
+            <iframe src="/@game.Id?access_token=@game.Token" Style="width: 100%; height: 100%;"></iframe>
+        </MudItem>
     }
-</MudStack>
+</MudGrid>

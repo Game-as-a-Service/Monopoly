@@ -17,6 +17,11 @@ public class InMemoryRepository : IRepository
         return game;
     }
 
+    public string[] GetRooms()
+    {
+        return Games.Keys.ToArray();
+    }
+
     public bool IsExist(string id)
     {
         return Games.ContainsKey(id);

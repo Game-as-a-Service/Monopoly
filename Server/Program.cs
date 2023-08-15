@@ -84,17 +84,21 @@ app.MapGet("/map", (string mapId) =>
     string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
     string jsonFilePath = Path.Combine(projectDirectory, "Maps", $"{mapId}.json");
 
-    if (File.Exists(jsonFilePath))
-    {
-        // read json file
-        string json = File.ReadAllText(jsonFilePath);
-        var data = MonopolyMap.Parse(json);
-        return Results.Json(data, MonopolyMap.JsonSerializerOptions);
-    }
-    else
+    if (!File.Exists(jsonFilePath))
     {
         return Results.NotFound();
     }
+    
+    // read json file
+    string json = File.ReadAllText(jsonFilePath);
+    var data = MonopolyMap.Parse(json);
+    return Results.Json(data, MonopolyMap.JsonSerializerOptions);
+});
+
+app.MapGet("/rooms", () =>
+{
+    var repository = app.Services.CreateScope().ServiceProvider.GetRequiredService<IRepository>();
+    return Results.Json(repository.GetRooms());
 });
 
 #if DEBUG

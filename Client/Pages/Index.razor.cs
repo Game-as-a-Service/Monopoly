@@ -11,10 +11,11 @@ namespace Client.Pages;
 
 public partial class Index
 {
-    private List<User> Users { get; set; } = new();
-    private string GameId { get; set; } = string.Empty;
+    private readonly List<User> users = new();
     private readonly List<GameData> games = new();
+    private List<string>? rooms = new();
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private IOptions<BackendApiOptions> BackendApiOptions { get; set; } = default!;
     private Uri BackendApiBaseUri => new(BackendApiOptions.Value.BaseUrl);
 
@@ -36,10 +37,10 @@ public partial class Index
 
     private async void CreateGame()
     {
-        CreateGameBodyPayload bodyPayload = new(Users.Select(user => new Player(user.Id)).ToArray());
+        CreateGameBodyPayload bodyPayload = new(users.Select(user => new Player(user.Id)).ToArray());
         var url = new Uri(BackendApiBaseUri, "/create-game");
         var httpClient = new HttpClient();
-        var host = Users.FirstOrDefault();
+        var host = users.FirstOrDefault();
         if (host is null)
         {
             Snackbar.Add("請先加入使用者", Severity.Error);
@@ -50,7 +51,8 @@ public partial class Index
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            Snackbar.Add($"遊戲建立成功! Url: {content}", Severity.Success);
+            Snackbar.Add($"遊戲建立成功! Url: {content}", Severity.Normal);
+            await RefleshRoomListAsync();
         }
         else
         {
@@ -93,7 +95,7 @@ public partial class Index
             Snackbar.Add("連線成功!", Severity.Success);
             await hubConnection.SendAsync("WhoAmI");
             var tcst = await tcs.Task;
-            Users.Add(new(tcst, token));
+            users.Add(new(tcst, token));
             await hubConnection.StopAsync();
             StateHasChanged();
         }
@@ -103,13 +105,20 @@ public partial class Index
         }
     }
 
-    private void JoinGame()
+    private async Task RefleshRoomListAsync()
+    {
+        rooms = await new HttpClient().GetFromJsonAsync<List<string>>(new Uri(BackendApiBaseUri, "/rooms"));
+        StateHasChanged();
+    }
+
+    private void JoinGame(string id)
     {
         games.Clear();
-        Users.ForEach(user =>
+        users.ForEach(user =>
         {
-            games.Add(new(GameId, user.Token));
+            games.Add(new(id, user.Token));
         });
+        NavigationManager.NavigateTo(NavigationManager.Uri + "#game-view");
         StateHasChanged();
     }
 
