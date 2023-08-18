@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace Client.Pages;
 
-public partial class Index
+public partial class DevPage
 {
     private readonly List<User> users = new();
     private readonly List<GameData> games = new();
