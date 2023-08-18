@@ -1,0 +1,26 @@
+<svg width="133" height="148" viewBox="0 0 133 148" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M133 122.056C133 130.538 133 148 123.5 148L68 148L65 148L9 148C0 148 0 130 0 122H68V122.051C81.1444 122.028 133 121.946 133 122.056Z" fill="url(#paint0_linear_275_28469)"/>
+<rect x="1.5" y="1.5" width="130" height="130" rx="10.5" fill="#F2F2F2" stroke="#484848" stroke-width="3"/>
+<rect x="15.75" y="118" width="12" height="46.5" transform="rotate(-90 15.75 118)" fill="#C19065"/>
+<rect x="15.75" y="95" width="12" height="46.5" transform="rotate(-90 15.75 95)" fill="#C19065"/>
+<rect x="15.75" y="72" width="12" height="46.5" transform="rotate(-90 15.75 72)" fill="#C19065"/>
+<rect x="15.75" y="49" width="12" height="46.5" transform="rotate(-90 15.75 49)" fill="#C19065"/>
+<rect x="15.75" y="26" width="12" height="46.5" transform="rotate(-90 15.75 26)" fill="#C19065"/>
+<rect x="47" y="124" width="116" height="6" transform="rotate(-90 47 124)" fill="#CCCCCC" stroke="#5B5B5B" stroke-width="2"/>
+<rect x="25" y="124" width="116" height="6" transform="rotate(-90 25 124)" fill="#CCCCCC" stroke="#5B5B5B" stroke-width="2"/>
+<rect x="71.75" y="118" width="12" height="46.5" transform="rotate(-90 71.75 118)" fill="#C19065"/>
+<rect x="71.75" y="95" width="12" height="46.5" transform="rotate(-90 71.75 95)" fill="#C19065"/>
+<rect x="71.75" y="72" width="12" height="46.5" transform="rotate(-90 71.75 72)" fill="#C19065"/>
+<rect x="71.75" y="49" width="12" height="46.5" transform="rotate(-90 71.75 49)" fill="#C19065"/>
+<rect x="71.75" y="26" width="12" height="46.5" transform="rotate(-90 71.75 26)" fill="#C19065"/>
+<rect x="103" y="124" width="116" height="6" transform="rotate(-90 103 124)" fill="#CCCCCC" stroke="#5B5B5B" stroke-width="2"/>
+<rect x="81" y="124" width="116" height="6" transform="rotate(-90 81 124)" fill="#CCCCCC" stroke="#5B5B5B" stroke-width="2"/>
+<defs>
+<linearGradient id="paint0_linear_275_28469" x1="6" y1="137.077" x2="125.5" y2="137.547" gradientUnits="userSpaceOnUse">
+<stop offset="0.00517314" stop-color="#6D6D6D"/>
+<stop offset="0.0428206" stop-color="#5B5B5B"/>
+<stop offset="0.418407" stop-color="#484848"/>
+<stop offset="0.965425" stop-color="#484848"/>
+</linearGradient>
+</defs>
+</svg>
