@@ -2,7 +2,7 @@ name: Backend - Build and Deploy
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, devops]
   pull_request:
   
 
