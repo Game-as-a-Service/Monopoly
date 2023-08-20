@@ -13,7 +13,7 @@ public partial class Game
 {
     [Parameter] public string Id { get; set; }
 
-    [Parameter, SupplyParameterFromQuery(Name = "access_token")]
+    [Parameter, SupplyParameterFromQuery(Name = "token")]
     public string AccessToken { get; set; } = default!;
 
     [Inject] private ISnackbar Snackbar { get; set; } = default!;

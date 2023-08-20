@@ -68,9 +68,9 @@ public class PlayerJoinGameTest
     /// <param name="playerIds">Players' Id</param>
     private async Task CreateGameAsync(string host, params string[] playerIds)
     {
-        CreateGameBodyPayload bodyPayload = new(playerIds.Select(id => new Player(id)).ToArray());
+        CreateGameBodyPayload bodyPayload = new(playerIds.Select(id => new Player(id, "")).ToArray());
         var jwt = jwtTokenService.GenerateJwtToken(jwtBearerOptions.Audience, host);
         server.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
-        HttpResponseMessage? response = await server.Client.PostAsJsonAsync("/create-game", bodyPayload);
+        HttpResponseMessage? response = await server.Client.PostAsJsonAsync("/games", bodyPayload);
     }
 }

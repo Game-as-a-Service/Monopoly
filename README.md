@@ -1,23 +1,36 @@
 # Monopoly
-
-## Intro our game
+|Branch| CI/CD Status| Frontend |
+|-|-|-|
+|develop|[![develop](https://github.com/Game-as-a-Service/Monopoly/actions/workflows/build-and-deploy.yml/badge.svg?branch=develop)](https://github.com/Game-as-a-Service/Monopoly/actions/workflows/build-and-deploy.yml)|https://werewolf-api-dev.azurewebsites.net/swagger/index.html|
+## 簡介
 > **「買地吧，因為土地已經停產了！」 -- 馬克·吐溫（Mark Twain）**
 
-![大富翁地圖|1934×2067, 60%](https://user-images.githubusercontent.com/29699103/203911488-8d0c9c89-c67c-478f-99b0-8cb72ce720f0.jpg)
-家喻戶曉的桌遊**Monopoly**，又名大富翁或地產大亨，其最早可追朔至伊莉莎白．馬吉(Elizabeth Magie)設計的地主遊戲(the Landlord’s Game)。
+> 家喻戶曉的桌遊**Monopoly**，又名大富翁或地產大亨，其最早可追朔至伊莉莎白．馬吉(Elizabeth Magie)設計的地主遊戲(the Landlord’s Game)。
 
-最初的地主遊戲有兩種玩法：「繁榮」和「壟斷」，兩種玩法旨在傳達不同的產權制度會造成不同的社會結果，她呼籲國家應對土地徵稅，稅金收入的使用應考量所有人的利益，進而達到共存共榮，「繁榮」玩法的勝利條件為：當資金最少的玩家資金翻倍時，所有人接獲勝；反之「壟斷」則是為了勸世，放任土地私有終將走向貧富差距越來越大的後果(在遊戲中的結局即是除一人外所有人皆破產)。
+> 最初的地主遊戲有兩種玩法：「繁榮」和「壟斷」，兩種玩法旨在傳達不同的產權制度會造成不同的社會結果，她呼籲國家應對土地徵稅，稅金收入的使用應考量所有人的利益，進而達到共存共榮，「繁榮」玩法的勝利條件為：當資金最少的玩家資金翻倍時，所有人接獲勝；反之「壟斷」則是為了勸世，放任土地私有終將走向貧富差距越來越大的後果(在遊戲中的結局即是除一人外所有人皆破產)。
 
-然而從Monopoly這個名字可以察覺到，現今大家所知的遊戲，只保留了「壟斷」的玩法，當時一個名叫查爾斯·達羅(Charles Darrow)的失業人士修改了遊戲規則並將遊戲賣給「帕克兄弟」(Parker Brothers，一家美國的遊戲公司)。
-
-諷刺的是，這個行為就像是「壟斷」玩法的主旨：如果想出人頭地，那就要追逐財富，碾壓對手。
-+ 參考資訊：
-	+ [她發明了史上最暢銷的桌遊「大富翁」　結局卻是名譽被盜、遊戲初衷背道而馳](https://www.upmedia.mg/news_info.php?Type=5&SerialNo=105535)
-	+ [《大富翁》遊戲初衷是想證明資本主義邪惡](https://www.bbc.com/ukchina/trad/vert-cap-41087496)
-	+ [《大富翁》遊戲初衷非「買地賺大錢」 而是諷刺邪惡的資本主義](https://www.businesstoday.com.tw/article/category/80407/post/201811170004/)
-	+ [买地吧！因为土地已经停产了](https://zhuanlan.zhihu.com/p/89021467)
+![image](https://github.com/Game-as-a-Service/Monopoly/assets/110518135/2afb3566-1d74-47ae-937d-728727d22ea0)
 
 
+在我們所開發的版本，是基於**壟斷模式**進行功能增加。當玩家們經過他人的土地，則會需要**付出過路費**，而地主們則是可以藉由**土地升級**或是**持有同個路段的土地**來讓自己的土地升值。當玩家們缺少資金，則可以藉由**拍賣**及**抵押**土地的方式獲取金錢。當遊戲的最後剩下一名玩家，則該名玩家勝利。
+
+
+## Practice Stack
+- Event Storming
+- Example Mapping
+- OOAD
+- ATDD
+- DDD
+- Clean Architecture
+
+## Tech Stack
+### 後端
+- .Net 7
+- SignalR
+
+### 前端
+- Blazor Webassembly
+- SignalR
 ### 遊戲規則概述
 + 2 - 4 人
 + 道具：

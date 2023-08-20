@@ -38,7 +38,7 @@ public partial class DevPage
     private async void CreateGame()
     {
         CreateGameBodyPayload bodyPayload = new(users.Select(user => new Player(user.Id)).ToArray());
-        var url = new Uri(BackendApiBaseUri, "/create-game");
+        var url = new Uri(BackendApiBaseUri, "/games");
         var httpClient = new HttpClient();
         var host = users.FirstOrDefault();
         if (host is null)

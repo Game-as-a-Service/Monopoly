@@ -1,6 +1,10 @@
-name: Build and Deploy
+name: Backend - Build and Deploy
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  
 
 env:
   DOTNET_VERSION: '7.0.x'
@@ -17,7 +21,7 @@ jobs:
       uses: actions/checkout@v3
     
     # Setup .NET SDK
-    - name: Setup .NET SDK ${{ env.DOTNET_VERSION }}
+    - name: setup .NET SDK ${{ env.DOTNET_VERSION }}
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
@@ -43,27 +47,21 @@ jobs:
     #    path: publish/backend
 
     # Dump GitHub Context
-    - name: Dump GitHub Context
+    - name: dump gitHub context
       run: |
         echo '```' >> $GITHUB_STEP_SUMMARY
         echo '${{ toJSON(env) }}' >> $GITHUB_STEP_SUMMARY
         echo '${{ toJSON(github) }}' >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
-  # deploy-dev:
-  #   name: Deploy Dev
-  #   if: github.ref_name == 'develop' && github.event_name == 'push'
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   environment: dev
-  #   env:
-  #     AZURE_WEBAPP_NAME: 'werewolf-api-dev'
-  #   steps:
-  #   # Download Artifact
-  #   - name: Download Artifact
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #       name: backend-app
-  #       path: ./backend-app
+  deploy:
+    name: Deploy app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
     
   #   # Display file structures
   #   - name: Display structure of downloaded files

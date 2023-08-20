@@ -66,15 +66,19 @@ app.UseResponseCompression();
 app.MapHub<MonopolyHub>("/monopoly");
 app.MapHub<WhoAmIHub>("/whoami");
 
+app.MapGet("/health", () => Results.Ok());
+
 // 開始遊戲
-app.MapPost("/create-game", async (context) =>
+app.MapPost("/games", async (context) =>
 {
     string hostId = context.User.FindFirst(ClaimTypes.Sid)!.Value;
     CreateGameBodyPayload payload = (await context.Request.ReadFromJsonAsync<CreateGameBodyPayload>())!;
     CreateGameUsecase createGameUsecase = app.Services.CreateScope().ServiceProvider.GetRequiredService<CreateGameUsecase>();
     string gameId = createGameUsecase.Execute(new CreateGameRequest(hostId, payload.Players.Select(x => x.Id).ToArray()));
 
-    var url = $@"https://localhost:7047/{gameId}";
+    string frontendBaseUrl = app.Configuration["FrontendBaseUrl"]!.ToString();
+
+    var url = $@"{frontendBaseUrl}/games/{gameId}";
 
     await context.Response.WriteAsync(url);
 }).RequireAuthorization();

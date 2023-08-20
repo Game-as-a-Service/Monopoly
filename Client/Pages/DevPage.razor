@@ -33,7 +33,7 @@
     @foreach (var game in games)
     {
         <MudItem xs="6" Class="pa-0 border-2">
-            <iframe src="/@game.Id?access_token=@game.Token" Style="width: 100%; height: 100%;"></iframe>
+            <iframe src="games/@game.Id?token=@game.Token" Style="width: 100%; height: 100%;"></iframe>
         </MudItem>
     }
 </MudGrid>

@@ -56,9 +56,9 @@ public class CreateGameTest
         // call API POST "/"
         // Body: ["A", "B"]
         CreateGameBodyPayload bodyPayload = new(new Player[] {
-                new("idA"),
-                new("idB"),
-                new("idC")
+                new("idA", "A"),
+                new("idB", "B"),
+                new("idC", "C")
             });
 
         var jwt = jwtTokenService.GenerateJwtToken(jwtBearerOptions.Audience, "idA");
@@ -67,7 +67,7 @@ public class CreateGameTest
 
         // Act
         server.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
-        HttpResponseMessage? response = await server.Client.PostAsJsonAsync("/create-game", bodyPayload);
+        HttpResponseMessage? response = await server.Client.PostAsJsonAsync("/games", bodyPayload);
 
         // Assert
         var data = await response.Content.ReadAsStringAsync();
@@ -83,13 +83,13 @@ public class CreateGameTest
     {
         // Arrange
         CreateGameBodyPayload bodyPayload = new(new Player[] {
-                new("idA"),
-                new("idB"),
-                new("idC")
+                new("idA", "A"),
+                new("idB", "B"),
+                new("idC", "C")
             });
 
         // Act
-        HttpResponseMessage? response = await server.Client.PostAsJsonAsync("/create-game", bodyPayload);
+        HttpResponseMessage? response = await server.Client.PostAsJsonAsync("/games", bodyPayload);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
