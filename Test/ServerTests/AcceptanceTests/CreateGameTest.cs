@@ -63,7 +63,7 @@ public class CreateGameTest
 
         var jwt = jwtTokenService.GenerateJwtToken(jwtBearerOptions.Audience, "idA");
         string gameId = "1";
-        string expected = $"https://localhost:7047/{gameId}";
+        string expected = $"https://localhost:7047/games/{gameId}";
 
         // Act
         server.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);

@@ -3,6 +3,9 @@ name: Backend - Build and Deploy
 on:
   push:
     branches: [main, develop, devops]
+    paths-ignore:
+        - "Client/**" #偵測目錄
+        - ".github/workflows/Front-End.yml" #偵測檔案"
   pull_request:
   
 

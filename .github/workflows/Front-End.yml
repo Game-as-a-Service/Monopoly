@@ -10,6 +10,7 @@ on:
     branches: [main, devops, feature/Front-End-To-GitHub-Pages] #偵測分支
     paths:
       - "Client/**" #偵測目錄
+      - ".github/workflows/Front-End.yml" #偵測檔案"
 
 jobs:
   deploy-to-github-pages:

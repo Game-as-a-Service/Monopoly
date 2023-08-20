@@ -78,7 +78,7 @@ app.MapPost("/games", async (context) =>
 
     string frontendBaseUrl = app.Configuration["FrontendBaseUrl"]!.ToString();
 
-    var url = $@"{frontendBaseUrl}/games/{gameId}";
+    var url = $@"{frontendBaseUrl}games/{gameId}";
 
     await context.Response.WriteAsync(url);
 }).RequireAuthorization();
