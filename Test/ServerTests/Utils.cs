@@ -42,6 +42,8 @@ public class Utils
 
         public string CurrentPlayer { get; private set; }
 
+        public string? Auction { get; private set; }
+
         public MonopolyBuilder(string id)
         {
             GameId = id;
@@ -59,9 +61,10 @@ public class Utils
             return this;
         }
 
-        public MonopolyBuilder WithCurrentPlayer(string playerId)
+        public MonopolyBuilder WithCurrentPlayer(string playerId, string? auction = null)
         {
             CurrentPlayer = playerId;
+            Auction = auction;
             return this;
         }
 
@@ -90,6 +93,10 @@ public class Utils
                 if (CurrentPlayer == player.Id)
                 {
                     monopoly.CurrentPlayer = player;
+                    if (Auction is not null)
+                    {
+                        monopoly.CurrentPlayer.AuctionLandContract(Auction);
+                    }
                 }
             });
             //monopoly.Initial();

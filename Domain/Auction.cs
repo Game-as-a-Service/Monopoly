@@ -1,4 +1,6 @@
 ﻿using Domain.Exceptions;
+using Domain.Events;
+using Domain.Common;
 
 namespace Domain;
 
@@ -37,17 +39,22 @@ public class Auction
         }
     }
 
-    internal void Bid(Player player, int price)
+    internal DomainEvent Bid(Player player, decimal price)
     {
         if (price <= highestPrice)
         {
-            throw new BidException($"出價要大於{highestPrice}");
+            return new PlayerBidFailEvent(player.Monopoly.Id, player.Id, landContract.Land.Id, highestPrice);
+            //throw new BidException($"出價要大於{highestPrice}");
         }
         else if (price > player.Money)
         {
-            throw new BidException($"現金少於{price}");
+            
+            return new PlayerTooPoorToBidEvent(player.Monopoly.Id, player.Id, player.Money, highestPrice);
+            //throw new BidException($"現金少於{price}");
         }
         highestBidder = player;
         highestPrice = price;
+        return new PlayerBidEvent(player.Monopoly.Id, player.Id, landContract.Land.Id, highestPrice);
+        
     }
 }

@@ -58,4 +58,10 @@ public interface IMonopolyResponses
     Task PlayerTooPoorToRedeemEvent(string PlayerId, decimal PlayerMoney, string BlockId, decimal RedeemPrice);
 
     Task LandNotInMortgageEvent(string PlayerId, string BlockId);
+
+    Task PlayerBidEvent(string PlayerId, string BlockId, decimal HighestPrice);
+
+    Task PlayerBidFailEvent(string PlayerId, string BlockId, decimal HighestPrice);
+
+    Task PlayerTooPoorToBidEvent(string PlayerId, decimal PlayerMoney, decimal HighestPrice);
 }

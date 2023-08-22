@@ -131,10 +131,10 @@ public class Monopoly : AbstractAggregateRoot
         player.AuctionLandContract(landId);
     }
 
-    public void PlayerBid(string playerId, int price)
+    public void PlayerBid(string playerId, decimal price)
     {
         Player player = GetPlayer(playerId);
-        CurrentPlayer?.Auction.Bid(player, price);
+        AddDomainEvent(CurrentPlayer?.Auction.Bid(player, price));
     }
 
     public void MortgageLandContract(string playerId, string landId)
