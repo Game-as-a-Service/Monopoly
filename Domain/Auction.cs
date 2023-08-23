@@ -13,7 +13,7 @@ public class Auction
     public Auction(LandContract landContract)
     {
         this.landContract = landContract;
-        highestPrice = landContract.Land.Price * (decimal)0.5;
+        highestPrice = landContract.Land.GetAuctionPrice();
     }
 
     /// <summary>
@@ -41,15 +41,15 @@ public class Auction
 
     internal DomainEvent Bid(Player player, decimal price)
     {
-        if (price <= highestPrice)
+        if (price < highestPrice || (price == highestPrice && highestBidder is not null))
         {
-            return new PlayerBidFailEvent(player.Monopoly.Id, player.Id, landContract.Land.Id, highestPrice);
+            return new PlayerBidFailEvent(player.Monopoly.Id, player.Id, landContract.Land.Id, price, highestPrice);
             //throw new BidException($"出價要大於{highestPrice}");
         }
         else if (price > player.Money)
         {
             
-            return new PlayerTooPoorToBidEvent(player.Monopoly.Id, player.Id, player.Money, highestPrice);
+            return new PlayerTooPoorToBidEvent(player.Monopoly.Id, player.Id, player.Money, price, highestPrice);
             //throw new BidException($"現金少於{price}");
         }
         highestBidder = player;

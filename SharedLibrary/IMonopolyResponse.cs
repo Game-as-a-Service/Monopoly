@@ -61,7 +61,7 @@ public interface IMonopolyResponses
 
     Task PlayerBidEvent(string PlayerId, string BlockId, decimal HighestPrice);
 
-    Task PlayerBidFailEvent(string PlayerId, string BlockId, decimal HighestPrice);
+    Task PlayerBidFailEvent(string PlayerId, string BlockId, decimal BidPrice, decimal HighestPrice);
 
-    Task PlayerTooPoorToBidEvent(string PlayerId, decimal PlayerMoney, decimal HighestPrice);
+    Task PlayerTooPoorToBidEvent(string PlayerId, decimal PlayerMoney, decimal BidPrice, decimal HighestPrice);
 }

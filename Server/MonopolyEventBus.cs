@@ -140,11 +140,11 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             }
             else if (e is PlayerBidFailEvent pbfe)
             {
-                await _hubContext.Clients.All.PlayerBidFailEvent(pbfe.PlayerId, pbfe.BlockId, pbfe.HighestPrice);
+                await _hubContext.Clients.All.PlayerBidFailEvent(pbfe.PlayerId, pbfe.BlockId, pbfe.BidPrice, pbfe.HighestPrice);
             }
             else if (e is PlayerTooPoorToBidEvent ptpbe)
             {
-                await _hubContext.Clients.All.PlayerTooPoorToBidEvent(ptpbe.PlayerId, ptpbe.PlayerMoney, ptpbe.HighestPrice);
+                await _hubContext.Clients.All.PlayerTooPoorToBidEvent(ptpbe.PlayerId, ptpbe.PlayerMoney, ptpbe.BidPrice, ptpbe.HighestPrice);
             }
         }
     }

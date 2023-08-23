@@ -130,6 +130,11 @@ public class Land : Block
         return _price * (1 + house);
     }
 
+    public virtual decimal GetAuctionPrice()
+    {
+        return _price * (1 + house) * (decimal)0.5;
+    }
+
     public override Player? GetOwner()
     {
         return landContract.Owner;
@@ -208,6 +213,8 @@ public class Station : Land
     public override decimal GetMortgagePrice() => _price * (decimal)0.7;
 
     public override decimal GetRedeemPrice() => _price;
+
+    public override decimal GetAuctionPrice() => _price * (decimal)0.5;
 
     public override DomainEvent BuildHouse(Player player)
     {
