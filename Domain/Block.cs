@@ -57,14 +57,14 @@ public class Land : Block
 
     protected LandContract landContract;
     protected readonly decimal _price;
-    private int house;
+    private int _house;
 
     public decimal Price => _price; // 土地購買價格
 
     public decimal UpgradePrice => _price; // 升級價格
 
     // public int TollFee => _price; // 過路費
-    public int House => house;
+    public int House => _house;
 
     public Land(string id, decimal price = 1000, string lot = " ") : base(id)
     {
@@ -75,7 +75,7 @@ public class Land : Block
 
     public virtual void Upgrade()
     {
-        house++;
+        _house++;
     }
 
     public DomainEvent PayToll(Player payer)
@@ -117,22 +117,22 @@ public class Land : Block
     {
         int lotCount = payee.LandContractList.Count(t => t.Land.Lot == lot);
 
-        return _price * RATE_OF_HOUSE[house] * RATE_OF_LOT[lotCount];
+        return _price * RATE_OF_HOUSE[_house] * RATE_OF_LOT[lotCount];
     }
 
     public virtual decimal GetMortgagePrice()
     {
-        return _price * (1 + house) * (decimal)0.7;
+        return _price * (1 + _house) * (decimal)0.7;
     }
 
     public virtual decimal GetRedeemPrice()
     {
-        return _price * (1 + house);
+        return _price * (1 + _house);
     }
 
     public virtual decimal GetAuctionPrice()
     {
-        return _price * (1 + house) * (decimal)0.5;
+        return _price * (1 + _house) * (decimal)0.5;
     }
 
     public override Player? GetOwner()
@@ -149,13 +149,14 @@ public class Land : Block
     {
         if (GetOwner() == player)
         {
-            if (house == MAX_HOUSE) return new HouseMaxEvent(player.Monopoly.Id, player.Id, Id, house);
+            if (_house == MAX_HOUSE) return new HouseMaxEvent(player.Monopoly.Id, player.Id, Id, _house);
 
             if (UpgradePrice <= player.Money)
             {
                 player.Money -= UpgradePrice;
-                house++;
-                return new PlayerBuildHouseEvent(player.Monopoly.Id, player.Id, Id, player.Money, house);
+                _house++;
+                player.EnableUpgrade = false;
+                return new PlayerBuildHouseEvent(player.Monopoly.Id, player.Id, Id, player.Money, _house);
             }
             else
             {

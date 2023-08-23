@@ -104,6 +104,7 @@ public class Chess
             else if (owner == player)
             {
                 yield return new PlayerCanBuildHouseEvent(player.Monopoly.Id, player.Id, land.Id, land.House, land.UpgradePrice);
+                player.EnableUpgrade = true;
             }
             else if (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")
             {

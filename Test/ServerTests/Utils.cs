@@ -44,6 +44,10 @@ public class Utils
 
         public string? Auction { get; private set; }
 
+        public bool Upgrade { get; private set; }
+
+        public bool BuyLand { get; private set; }
+
         public MonopolyBuilder(string id)
         {
             GameId = id;
@@ -61,10 +65,15 @@ public class Utils
             return this;
         }
 
-        public MonopolyBuilder WithCurrentPlayer(string playerId, string? auction = null)
+        public MonopolyBuilder WithCurrentPlayer(string playerId, 
+                                                    string? auction = null, 
+                                                    bool upgrade = false,
+                                                    bool buyLand = false)
         {
             CurrentPlayer = playerId;
             Auction = auction;
+            Upgrade = upgrade;
+            BuyLand = buyLand;
             return this;
         }
 
@@ -93,9 +102,14 @@ public class Utils
                 if (CurrentPlayer == player.Id)
                 {
                     monopoly.CurrentPlayer = player;
+                    monopoly.CurrentPlayer.EnableUpgrade = !Upgrade;
                     if (Auction is not null)
                     {
                         monopoly.CurrentPlayer.AuctionLandContract(Auction);
+                    }
+                    if (BuyLand)
+                    {
+                        monopoly.CurrentPlayer.EnableUpgrade = false;
                     }
                 }
             });

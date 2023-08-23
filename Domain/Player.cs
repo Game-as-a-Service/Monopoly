@@ -30,6 +30,7 @@ public class Player
     public Auction Auction => auction;
     public IList<Mortgage> Mortgage => mortgages.AsReadOnly();
     public bool EndRoundFlag { get; set; }
+    public bool EnableUpgrade { get; set; }
     public bool IsHost { get; set; }
 
     // false: 回合尚不能結束，true: 玩家可結束回合
@@ -74,6 +75,7 @@ public class Player
     internal IDice[] RollDice(IDice[] dices)
     {
         EndRoundFlag = true;
+        EnableUpgrade = false;
 
         foreach (var dice in dices)
         {
@@ -151,7 +153,7 @@ public class Player
     {
         Block block = Chess.CurrentBlock;
 
-        if (block is Land land)
+        if (block is Land land && EnableUpgrade)
         {
             return land.BuildHouse(this);
         }
