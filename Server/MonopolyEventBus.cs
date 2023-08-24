@@ -146,6 +146,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerTooPoorToBidEvent(ptpbe.PlayerId, ptpbe.PlayerMoney, ptpbe.BidPrice, ptpbe.HighestPrice);
             }
+            else if (e is EndAuctionEvent eae)
+            {
+                await _hubContext.Clients.All.EndAuctionEvent(eae.PlayerId, eae.PlayerMoney, eae.BlockId, eae.Owner, eae.OwnerMoney);
+            }
         }
     }
 }

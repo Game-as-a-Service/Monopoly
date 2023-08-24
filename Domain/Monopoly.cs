@@ -121,7 +121,7 @@ public class Monopoly : AbstractAggregateRoot
 
     public void EndAuction()
     {
-        CurrentPlayer?.Auction.End();
+        AddDomainEvent(CurrentPlayer?.Auction.End());
     }
 
     public void PlayerSellLandContract(string playerId, string landId)

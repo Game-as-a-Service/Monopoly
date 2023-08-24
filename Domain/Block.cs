@@ -125,6 +125,11 @@ public class Land : Block
         return _price * (1 + _house) * (decimal)0.7;
     }
 
+    public virtual decimal GetUnSoldPrice()
+    {
+        return _price * (1 + _house) * (decimal)0.7;
+    }
+
     public virtual decimal GetRedeemPrice()
     {
         return _price * (1 + _house);
@@ -212,6 +217,8 @@ public class Station : Land
     }
 
     public override decimal GetMortgagePrice() => _price * (decimal)0.7;
+
+    public override decimal GetUnSoldPrice() => _price * (decimal)0.7;
 
     public override decimal GetRedeemPrice() => _price;
 

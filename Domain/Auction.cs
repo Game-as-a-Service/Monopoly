@@ -23,7 +23,7 @@ public class Auction
     ///
     /// 流拍金額為原土地價值的 70%
     /// </summary>
-    internal void End()
+    internal DomainEvent End()
     {
         landContract.Owner.RemoveLandContract(landContract);
         if (highestBidder != null)
@@ -35,8 +35,14 @@ public class Auction
         }
         else // 流拍
         {
-            landContract.Owner.Money += landContract.Land.Price * (decimal)0.7;
+            landContract.Owner.Money += landContract.Land.GetUnSoldPrice();
         }
+        return new EndAuctionEvent(landContract.Owner.Monopoly.Id, 
+                                   landContract.Owner.Id, 
+                                   landContract.Owner.Money, 
+                                   landContract.Land.Id, 
+                                   highestBidder == null ? null : highestBidder.Id,  
+                                   highestBidder == null ? 0 : highestBidder.Money);
     }
 
     internal DomainEvent Bid(Player player, decimal price)

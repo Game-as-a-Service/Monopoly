@@ -44,6 +44,10 @@ public class Utils
 
         public string? Auction { get; private set; }
 
+        public string PlayerBid { get; private set; }
+
+        public decimal BidPrice { get; private set; }
+
         public bool Upgrade { get; private set; }
 
         public bool BuyLand { get; private set; }
@@ -74,6 +78,17 @@ public class Utils
             Auction = auction;
             Upgrade = upgrade;
             BuyLand = buyLand;
+            return this;
+        }
+
+        public MonopolyBuilder WithBid(string playerId, decimal price)
+        {
+            if (Auction is not null)
+            {
+                PlayerBid = playerId;
+                BidPrice = price;
+                
+            }
             return this;
         }
 
@@ -111,6 +126,11 @@ public class Utils
                     {
                         monopoly.CurrentPlayer.EnableUpgrade = false;
                     }
+                }
+                if (monopoly.CurrentPlayer is not null && Auction is not null 
+                    && PlayerBid == player.Id)
+                {
+                    monopoly.PlayerBid(player.Id, BidPrice);
                 }
             });
             //monopoly.Initial();
