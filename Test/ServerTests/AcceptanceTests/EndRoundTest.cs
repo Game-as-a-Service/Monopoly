@@ -150,12 +150,13 @@ public class EndRoundTest
         """
         Given:  目前輪到 A
                 A 持有 1000元
+                A 抵押 A1 剩餘 1回合
                 B 持有 1000元
                 A2 是 B 的土地，價值 1000元
                 A 移動到 A2
                 A 支付過路費
         When:   A 結束回合
-        Then:   A 結束回合, 輪到玩家 B 的回合
+        Then:   A 結束回合, 輪到玩家 B 的回合，A1 抵押到期為系統所有
         """)]
     public async Task 玩家10回合後沒贖回房地產失去房地產()
     {
@@ -195,6 +196,7 @@ public class EndRoundTest
         // A 需要支付過路費
         // A 支付過路費
         // A 結束回合
+        // A1 抵押到期
         hub.Verify<string, int>(
             nameof(IMonopolyResponses.PlayerRolledDiceEvent),
             (playerId, diceCount) => playerId == "A" && diceCount == 2);
