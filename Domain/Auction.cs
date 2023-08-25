@@ -13,7 +13,7 @@ public class Auction
     public Auction(LandContract landContract)
     {
         this.landContract = landContract;
-        highestPrice = landContract.Land.GetAuctionPrice();
+        highestPrice = landContract.Land.GetPrice("Auction");
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ public class Auction
         }
         else // 流拍
         {
-            landContract.Owner.Money += landContract.Land.GetUnSoldPrice();
+            landContract.Owner.Money += landContract.Land.GetPrice("UnSold");
         }
         return new EndAuctionEvent(landContract.Owner.Monopoly.Id, 
                                    landContract.Owner.Id, 

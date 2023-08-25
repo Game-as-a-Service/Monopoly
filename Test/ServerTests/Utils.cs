@@ -50,7 +50,7 @@ public class Utils
 
         public bool Upgrade { get; private set; }
 
-        public bool BuyLand { get; private set; }
+        public string? BuyLand { get; private set; }
 
         public MonopolyBuilder(string id)
         {
@@ -72,7 +72,7 @@ public class Utils
         public MonopolyBuilder WithCurrentPlayer(string playerId, 
                                                     string? auction = null, 
                                                     bool upgrade = false,
-                                                    bool buyLand = false)
+                                                    string? buyLand = null)
         {
             CurrentPlayer = playerId;
             Auction = auction;
@@ -122,8 +122,9 @@ public class Utils
                     {
                         monopoly.CurrentPlayer.AuctionLandContract(Auction);
                     }
-                    if (BuyLand)
+                    if (BuyLand is not null)
                     {
+                        monopoly.BuyLand(monopoly.CurrentPlayer, BuyLand);
                         monopoly.CurrentPlayer.EnableUpgrade = false;
                     }
                 }

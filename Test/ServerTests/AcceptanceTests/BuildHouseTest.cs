@@ -193,9 +193,8 @@ public class BuildHouseTest
             new MonopolyPlayer(A.Id)
             .WithMoney(A.Money)
             .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A1")
         )
-        .WithCurrentPlayer(nameof(A), buyLand : true);
+        .WithCurrentPlayer(nameof(A), buyLand : "A1");
 
         monopolyBuilder.Save(server);
 
@@ -206,6 +205,10 @@ public class BuildHouseTest
 
         // Assert
         // A 蓋房子
+        hub.Verify<string, string>(
+                       nameof(IMonopolyResponses.PlayerBuyBlockEvent),
+                                  (playerId, blockId)
+                                  => playerId == "A" && blockId == "A1");
         hub.Verify<string, string>(
                        nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
                                   (playerId, blockId)

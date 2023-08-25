@@ -57,7 +57,7 @@ public class Land : Block
 
     protected LandContract landContract;
     protected readonly decimal _price;
-    private int _house;
+    protected int _house = 0;
 
     public decimal Price => _price; // 土地購買價格
 
@@ -120,24 +120,15 @@ public class Land : Block
         return _price * RATE_OF_HOUSE[_house] * RATE_OF_LOT[lotCount];
     }
 
-    public virtual decimal GetMortgagePrice()
+    public decimal GetPrice(string use)
     {
-        return _price * (1 + _house) * (decimal)0.7;
-    }
-
-    public virtual decimal GetUnSoldPrice()
-    {
-        return _price * (1 + _house) * (decimal)0.7;
-    }
-
-    public virtual decimal GetRedeemPrice()
-    {
-        return _price * (1 + _house);
-    }
-
-    public virtual decimal GetAuctionPrice()
-    {
-        return _price * (1 + _house) * (decimal)0.5;
+        return use switch
+        {
+            "Mortgage" or "UnSold" => _price * (1 + _house) * (decimal)0.7,
+            "Redeem" => _price * (1 + _house),
+            "Auction" => _price * (1 + _house) * (decimal)0.5,
+            _ => _price * (1 + _house),
+        };
     }
 
     public override Player? GetOwner()
@@ -215,14 +206,6 @@ public class Station : Land
 
         return _price * lotCount;
     }
-
-    public override decimal GetMortgagePrice() => _price * (decimal)0.7;
-
-    public override decimal GetUnSoldPrice() => _price * (decimal)0.7;
-
-    public override decimal GetRedeemPrice() => _price;
-
-    public override decimal GetAuctionPrice() => _price * (decimal)0.5;
 
     public override DomainEvent BuildHouse(Player player)
     {

@@ -105,7 +105,7 @@ public class Player
         {
             var landContract = _landContractList.First(l => l.Land.Id == landId);
             mortgages.Add(new Mortgage(this, landContract));
-            Money += landContract.Land.GetMortgagePrice();
+            Money += landContract.Land.GetPrice("Mortgage");
             return new PlayerMortgageEvent(Monopoly.Id, Id, Money,
                                             mortgages[^1].LandContract.Land.Id,
                                             mortgages[^1].Deadline);
@@ -117,15 +117,15 @@ public class Player
         if (mortgages.Exists(m => m.LandContract.Land.Id == landId))
         {
             var landContract = _landContractList.First(l => l.Land.Id == landId);
-            if (Money >= landContract.Land.GetRedeemPrice())
+            if (Money >= landContract.Land.GetPrice("Redeem"))
             {
-                Money -= landContract.Land.GetRedeemPrice();
+                Money -= landContract.Land.GetPrice("Redeem");
                 mortgages.RemoveAll(m => m.LandContract.Land.Id == landId);
                 return new PlayerRedeemEvent(Monopoly.Id, Id, Money, landId);
             }
             else
             {
-                return new PlayerTooPoorToRedeemEvent(Monopoly.Id, Id, Money, landId, landContract.Land.GetRedeemPrice());
+                return new PlayerTooPoorToRedeemEvent(Monopoly.Id, Id, Money, landId, landContract.Land.GetPrice("Redeem"));
             }
         }
         else
