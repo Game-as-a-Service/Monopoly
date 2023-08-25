@@ -20,20 +20,20 @@
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
-    @foreach (var id in rooms!)
-    {
-        <MudButton Class="pa-3" Color="Color.Secondary" Variant="Variant.Outlined" OnClick="() => JoinGame(id)">@id</MudButton>
-    }
+        <MudDataGrid Items="@rooms">
+            <Columns>
+                <PropertyColumn Property="x => x.Id" />
+                <TemplateColumn CellClass="d-flex justify-end" Title="玩家列表" >
+                    <CellTemplate>
+                        <MudStack Row>
+                            @foreach (var player in context.Item.Players)
+                            {
+                                <MudButton Href=@($"games/{context.Item.Id}?token={player.Token}") Target="_blank" Color="Color.Primary" Variant="Variant.Filled">@player.Id</MudButton>
+                            }
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
     </MudCardContent>
 </MudCard>
-<MudDivider />
-<MudText Typo="Typo.h5">遊戲視窗</MudText>
-
-<MudGrid Justify="Justify.SpaceEvenly" Style="height:100vh;width:100%;" Spacing="1">
-    @foreach (var game in games)
-    {
-        <MudItem xs="6" Class="pa-0 border-2">
-            <iframe src="games/@game.Id?token=@game.Token" Style="width: 100%; height: 100%;"></iframe>
-        </MudItem>
-    }
-</MudGrid>

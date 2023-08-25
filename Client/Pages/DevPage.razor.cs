@@ -12,10 +12,8 @@ namespace Client.Pages;
 public partial class DevPage
 {
     private readonly List<User> users = new();
-    private readonly List<GameData> games = new();
-    private List<string>? rooms = new();
+    private List<Room>? rooms = new();
     [Inject] private ISnackbar Snackbar { get; set; } = default!;
-    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private IOptions<BackendApiOptions> BackendApiOptions { get; set; } = default!;
     private Uri BackendApiBaseUri => new(BackendApiOptions.Value.BaseUrl);
 
@@ -107,24 +105,14 @@ public partial class DevPage
 
     private async Task RefleshRoomListAsync()
     {
-        rooms = await new HttpClient().GetFromJsonAsync<List<string>>(new Uri(BackendApiBaseUri, "/rooms"));
-        StateHasChanged();
-    }
-
-    private void JoinGame(string id)
-    {
-        games.Clear();
-        users.ForEach(user =>
-        {
-            games.Add(new(id, user.Token));
-        });
-        NavigationManager.NavigateTo(NavigationManager.Uri + "#game-view");
+        var roomIds = await new HttpClient().GetFromJsonAsync<List<string>>(new Uri(BackendApiBaseUri, "/rooms"));
+        rooms = roomIds?.Select(id => new Room(id, users)).ToList();
         StateHasChanged();
     }
 
     private record CreateGameBodyPayload(Player[] Players);
     private record Player(string Id);
-
+    record Room(string Id, List<User> Players);
     record GameData(string Id, string Token);
     record User(string Id, string Token);
 }
