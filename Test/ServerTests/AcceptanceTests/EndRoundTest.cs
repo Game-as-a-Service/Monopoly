@@ -219,4 +219,78 @@ public class EndRoundTest
                                   => playerId == "A" && BlockId == "A1");
         hub.VerifyNoElseEvent();
     }
+
+    [TestMethod]
+    [Description(
+        """
+        Given:  目前輪到 A
+                A 持有 1000元
+                B 持有 1000元
+                A2 是 B 的土地，價值 1000元
+                A 移動到 A2
+                A 支付過路費
+        When:   A 結束回合
+        Then:   A 結束回合, 輪到下一個未破產玩家 C
+        """)]
+    public async Task 結束回合輪到下一個未破產玩家()
+    {
+        // Arrange
+        Player A = new("A", 1000);
+        Player B = new("B", 0);
+        Player C = new("C", 1000);
+
+        const string gameId = "1";
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("A1", Direction.Right.ToString())
+        )
+        .WithPlayer(
+            new MonopolyPlayer(B.Id)
+            .WithMoney(B.Money)
+            .WithPosition("A1", Direction.Right.ToString())
+        )
+        .WithPlayer(
+            new MonopolyPlayer(C.Id)
+            .WithMoney(C.Money)
+            .WithPosition("A1", Direction.Right.ToString())
+            .WithLandContract("A2")
+        )
+        .WithMockDice(new[] { 1, 1 })
+        .WithBankrupt(nameof(B))
+        .WithCurrentPlayer(nameof(A), rollDice : true, payToll: true);
+
+        monopolyBuilder.Save(server);
+
+        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
+
+        // Act
+        await hub.SendAsync(nameof(MonopolyHub.EndRound), gameId, "A");
+
+        // Assert
+        // A 擲了 2 點
+        // A 移動到 Station1，方向為 Right，剩下 1 步
+        // A 移動到 A2，方向為 Right，剩下 0 步
+        // A 需要支付過路費
+        // A 支付過路費
+        // A 結束回合，輪到下一個未破產玩家
+        hub.Verify<string, int>(
+            nameof(IMonopolyResponses.PlayerRolledDiceEvent),
+            (playerId, diceCount) => playerId == "A" && diceCount == 2);
+        VerifyChessMovedEvent(hub, "A", "Station1", "Right", 1);
+        VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
+        hub.Verify<string, string, decimal>(
+                       nameof(IMonopolyResponses.PlayerNeedsToPayTollEvent),
+                                  (playerId, ownId, toll) => playerId == "A" && ownId == "C" && toll == 50);
+        hub.Verify<string, decimal, string, decimal>(
+                       nameof(IMonopolyResponses.PlayerPayTollEvent),
+                                  (playerId, playerMoney, ownerId, ownerMoney)
+                                  => playerId == "A" && playerMoney == 950 && ownerId == "C" && ownerMoney == 1050);                         
+        hub.Verify<string, string>(
+                       nameof(IMonopolyResponses.EndRoundEvent),
+                                  (playerId, nextPlayer)
+                                  => playerId == "A" && nextPlayer == "C");
+        hub.VerifyNoElseEvent();
+    }
 }

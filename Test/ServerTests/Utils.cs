@@ -56,6 +56,8 @@ public class Utils
 
         public bool PayToll { get; private set; }
 
+        public string Bankrupt { get; private set; }
+
         public MonopolyBuilder(string id)
         {
             GameId = id;
@@ -70,6 +72,12 @@ public class Utils
         public MonopolyBuilder WithMockDice(int[] dices)
         {
             Dices = dices;
+            return this;
+        }
+
+        public MonopolyBuilder WithBankrupt(string player)
+        {
+            Bankrupt = player;
             return this;
         }
 
@@ -135,6 +143,10 @@ public class Utils
                         monopoly.BuyLand(monopoly.CurrentPlayer, BuyLand);
                         monopoly.CurrentPlayer.EnableUpgrade = false;
                     }
+                }
+                if (Bankrupt == player.Id)
+                {
+                    monopoly.UpdatePlayerState(player);
                 }
             });
             Players.ForEach(p =>
