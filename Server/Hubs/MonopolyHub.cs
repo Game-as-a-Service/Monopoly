@@ -57,6 +57,11 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new EndAuctionRequest(gameId, userId));
     }
 
+    public async Task EndRound(string gameId, string userId, EndRoundUsecase usecase)
+    {
+        await usecase.ExecuteAsync(new EndRoundRequest(gameId, userId));
+    }
+
     public MonopolyHub(IRepository repository)
     {
         _repository = repository;

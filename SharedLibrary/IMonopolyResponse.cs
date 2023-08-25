@@ -53,6 +53,10 @@ public interface IMonopolyResponses
 
     Task PlayerCannotMortgageEvent(string PlayerId, decimal PlayerMoney, string BlockId);
 
+    Task MortgageDueEvent(string PlayerId, string BlockId);
+
+    Task MortgageCountdownEvent(string PlayerId, string BlockId, int DeadLine);
+
     Task PlayerRedeemEvent(string PlayerId, decimal PlayerMoney, string BlockId);
 
     Task PlayerTooPoorToRedeemEvent(string PlayerId, decimal PlayerMoney, string BlockId, decimal RedeemPrice);
@@ -66,4 +70,8 @@ public interface IMonopolyResponses
     Task PlayerTooPoorToBidEvent(string PlayerId, decimal PlayerMoney, decimal BidPrice, decimal HighestPrice);
 
     Task EndAuctionEvent(string PlayerId, decimal PlayerMoney, string BlockId, string? Owner, decimal OwnerMoney);
+
+    Task EndRoundEvent(string PlayerId, string NextPlayerId);
+
+    Task EndRoundFailEvent(string PlayerId);
 }

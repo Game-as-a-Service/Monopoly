@@ -122,6 +122,14 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerCannotMortgageEvent(pctme.PlayerId, pctme.PlayerMoney, pctme.BlockId);
             }
+            else if (e is MorgageDueEvent mde)
+            {
+                await _hubContext.Clients.All.MortgageDueEvent(mde.PlayerId, mde.BlockId);
+            }
+            else if (e is MorgageCountdownEvent mce)
+            {
+                await _hubContext.Clients.All.MortgageCountdownEvent(mce.PlayerId, mce.BlockId, mce.DeadLine);
+            }
             else if (e is PlayerRedeemEvent pre)
             {
                 await _hubContext.Clients.All.PlayerRedeemEvent(pre.PlayerId, pre.PlayerMoney, pre.BlockId);
@@ -149,6 +157,14 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             else if (e is EndAuctionEvent eae)
             {
                 await _hubContext.Clients.All.EndAuctionEvent(eae.PlayerId, eae.PlayerMoney, eae.BlockId, eae.Owner, eae.OwnerMoney);
+            }
+            else if (e is EndRoundEvent ere)
+            {
+                await _hubContext.Clients.All.EndRoundEvent(ere.PlayerId, ere.NextPlayerId);
+            }
+            else if (e is EndRoundFailEvent erfe)
+            {
+                await _hubContext.Clients.All.EndRoundFailEvent(erfe.PlayerId);
             }
         }
     }

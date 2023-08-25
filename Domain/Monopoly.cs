@@ -168,6 +168,25 @@ public class Monopoly : AbstractAggregateRoot
         AddDomainEvent(player.BuildHouse());
     }
 
+    public void EndRound()
+    {
+        if(CurrentPlayer!.EndRoundFlag)
+        {
+            // 結束回合，輪到下一個玩家
+            AddDomainEvent(CurrentPlayer.EndRound());
+            string lastPlayerId = CurrentPlayer.Id;
+            do
+            {
+                CurrentPlayer = _players[(_players.IndexOf(CurrentPlayer)+1)%_players.Count];
+            } while (CurrentPlayer.State == PlayerState.Bankrupt);
+            AddDomainEvent(new EndRoundEvent(Id, lastPlayerId, CurrentPlayer.Id));
+        }
+        else
+        {
+            AddDomainEvent(new EndRoundFailEvent(Id, CurrentPlayer.Id));
+        }
+    }
+
     #region Private Functions
 
     private void AddPlayerToRankList(Player player)
@@ -192,6 +211,7 @@ public class Monopoly : AbstractAggregateRoot
             throw new Exception("不是該玩家的回合");
         }
     }
+
 
     #endregion Private Functions
 

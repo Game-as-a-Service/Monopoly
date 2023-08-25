@@ -64,6 +64,17 @@ public class Player
         return LandContractList.Where(landContract => landContract.Land.Id == id).FirstOrDefault();
     }
 
+    public List<DomainEvent> EndRound()
+    {
+        List<DomainEvent> events = new();
+        mortgages.ForEach(m=>
+        {
+            events.AddRange(m.EndRound());
+        });
+        mortgages.RemoveAll(m => m.Deadline == 0);
+        return events;
+    }
+
     public void AuctionLandContract(string id)
     {
         var landContract = _landContractList.Where(landContract => landContract.Land.Id == id).FirstOrDefault();

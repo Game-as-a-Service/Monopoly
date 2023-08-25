@@ -42,6 +42,8 @@ public class Utils
 
         public string CurrentPlayer { get; private set; }
 
+        public bool RollDice { get; private set; }
+
         public string? Auction { get; private set; }
 
         public string PlayerBid { get; private set; }
@@ -51,6 +53,8 @@ public class Utils
         public bool Upgrade { get; private set; }
 
         public string? BuyLand { get; private set; }
+
+        public bool PayToll { get; private set; }
 
         public MonopolyBuilder(string id)
         {
@@ -70,14 +74,18 @@ public class Utils
         }
 
         public MonopolyBuilder WithCurrentPlayer(string playerId, 
+                                                    bool rollDice = false,
                                                     string? auction = null, 
                                                     bool upgrade = false,
-                                                    string? buyLand = null)
+                                                    string? buyLand = null,
+                                                    bool payToll = false)
         {
             CurrentPlayer = playerId;
+            RollDice = rollDice;
             Auction = auction;
             Upgrade = upgrade;
             BuyLand = buyLand;
+            PayToll = payToll;
             return this;
         }
 
@@ -128,12 +136,22 @@ public class Utils
                         monopoly.CurrentPlayer.EnableUpgrade = false;
                     }
                 }
-                if (monopoly.CurrentPlayer is not null && Auction is not null 
-                    && PlayerBid == player.Id)
+            });
+            Players.ForEach(p =>
+            {
+                if(Auction is not null && PlayerBid == p.Id)
                 {
-                    monopoly.PlayerBid(player.Id, BidPrice);
+                    monopoly.PlayerBid(p.Id, BidPrice);
                 }
             });
+            if (RollDice)
+            {
+                monopoly.PlayerRollDice(monopoly.CurrentPlayer!.Id);
+            }
+            if (PayToll)
+            {
+                monopoly.PayToll(monopoly.CurrentPlayer!.Id);
+            }
             //monopoly.Initial();
             return monopoly;
         }
