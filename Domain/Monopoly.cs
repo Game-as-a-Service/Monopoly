@@ -139,7 +139,14 @@ public class Monopoly : AbstractAggregateRoot
     public void PlayerBid(string playerId, decimal price)
     {
         Player player = GetPlayer(playerId);
-        AddDomainEvent(CurrentPlayer?.Auction.Bid(player, price));
+        if (playerId == CurrentPlayer.Id)
+        {
+            AddDomainEvent(new CurrentPlayerCannotBidEvent(Id, playerId));
+        }
+        else
+        {
+            AddDomainEvent(CurrentPlayer?.Auction.Bid(player, price));
+        }
     }
 
     public void MortgageLandContract(string playerId, string landId)
@@ -159,6 +166,7 @@ public class Monopoly : AbstractAggregateRoot
     public void PayToll(string payerId)
     {
         Player payer = GetPlayer(payerId);
+        VerifyCurrentPlayer(payer);
         Land location = (Land)GetPlayerPosition(payer.Id);
 
         var domainEvent = location.PayToll(payer);
@@ -169,7 +177,7 @@ public class Monopoly : AbstractAggregateRoot
     public void BuildHouse(string playerId)
     {
         Player player = GetPlayer(playerId);
-
+        VerifyCurrentPlayer(player);
         AddDomainEvent(player.BuildHouse());
     }
 
@@ -232,58 +240,17 @@ public class Monopoly : AbstractAggregateRoot
     /// <param name="BlockId">購買土地ID</param>
     public void BuyLand(string playerId, string BlockId)
     {
-        BuyLand(GetPlayer(playerId), BlockId);
-    }
+        Player player = GetPlayer(playerId);
 
-    /// <summary>
-    /// 購買土地
-    /// </summary>
-    /// <param name="player">購買玩家</param>
-    /// <param name="BlockId">購買土地ID</param>
-    public void BuyLand(Player player, string BlockId)
-    {
-        var domainEvent = new List<DomainEvent>();
-
-        #region 檢核
 
         //判斷是否踩在該土地
         if (player.Chess.CurrentBlock.Id != BlockId)
         {
-            domainEvent.Add(new PlayerBuyBlockMissedLandEvent(Id, player.Id, BlockId));
+            AddDomainEvent(new PlayerBuyBlockMissedLandEvent(Id, player.Id, BlockId));
         }
-
-        //判斷是否為空土地
-        if (FindPlayerByLandId(BlockId) != null)
+        else
         {
-            domainEvent.Add(new PlayerBuyBlockOccupiedByOtherPlayerEvent(Id, player.Id, BlockId));
+            AddDomainEvent(player.BuyLand(BlockId));
         }
-
-        //判斷格子購買金額足夠
-        var land = _map.FindBlockById(BlockId) as Land;
-        if (land.Price > player.Money)
-        {
-            domainEvent.Add(new PlayerBuyBlockInsufficientFundsEvent(Id, player.Id, BlockId, land.Price));
-        }
-
-        #endregion 檢核
-
-        if (domainEvent.Count <= 0)
-        {
-            //玩家扣款
-            player.Money -= land.Price;
-
-            //過戶(?
-            var landContract = new LandContract(player, land);
-            player.AddLandContract(landContract);
-
-            domainEvent.Add(new PlayerBuyBlockEvent(Id, player.Id, BlockId));
-        }
-
-        AddDomainEvent(domainEvent);
-    }
-
-    private Player? FindPlayerByLandId(string blockId)
-    {
-        return _players.FirstOrDefault(p => p.LandContractList.Any(l => l.Land.Id.Equals(blockId)));
     }
 }

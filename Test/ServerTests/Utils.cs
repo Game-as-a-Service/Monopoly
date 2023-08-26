@@ -132,7 +132,7 @@ public class Utils
                     }
                     if (BuyLand is not null)
                     {
-                        monopoly.BuyLand(monopoly.CurrentPlayer, BuyLand);
+                        monopoly.BuyLand(monopoly.CurrentPlayer.Id, BuyLand);
                         monopoly.CurrentPlayer.EnableUpgrade = false;
                     }
                 }

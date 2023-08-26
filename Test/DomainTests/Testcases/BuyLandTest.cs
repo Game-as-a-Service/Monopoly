@@ -30,7 +30,7 @@ public class BuyLandTest
 
         // Act
         // 玩家A進行購買F4
-        game.BuyLand(playerA, "F4");
+        game.BuyLand(playerA.Id, "F4");
 
         // Assert
         // 玩家A持有金額為4000
@@ -63,7 +63,7 @@ public class BuyLandTest
         game.Initial();
 
         // Act
-        game.BuyLand(playerA, "F4");
+        game.BuyLand(playerA.Id, "F4");
 
         // Assert
         // 玩家A持有金額為500
@@ -100,7 +100,7 @@ public class BuyLandTest
 
         // Act
         // 玩家B進行購買F4
-        game.BuyLand(playerA, "F4");
+        game.BuyLand(playerA.Id, "F4");
 
         // Assert
         // 玩家A持有金額為5000
@@ -136,7 +136,7 @@ public class BuyLandTest
 
         // Act
         // 玩家B進行購買F4
-        game.BuyLand(playerA, "F4");
+        game.BuyLand(playerA.Id, "F4");
 
         // Assert
         // 玩家A持有金額為5000

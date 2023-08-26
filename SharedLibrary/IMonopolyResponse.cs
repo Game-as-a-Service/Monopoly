@@ -69,6 +69,8 @@ public interface IMonopolyResponses
 
     Task PlayerTooPoorToBidEvent(string PlayerId, decimal PlayerMoney, decimal BidPrice, decimal HighestPrice);
 
+    Task CurrentPlayerCannotBidEvent(string PlayerId);
+
     Task EndAuctionEvent(string PlayerId, decimal PlayerMoney, string BlockId, string? Owner, decimal OwnerMoney);
 
     Task EndRoundEvent(string PlayerId, string NextPlayerId);

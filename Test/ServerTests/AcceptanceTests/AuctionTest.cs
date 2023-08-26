@@ -250,4 +250,50 @@ public class AuctionTest
                                 => playerId == "A" && playerMoney == 1600 && blockId == "A1" && owner == "B" && ownerMoney == 1400);
         hub.VerifyNoElseEvent();
     }
+
+    [TestMethod]
+    [Description(
+        """
+        Given:  A 持有 A1，價值 1000元，有 2棟房
+                A 持有 2000元
+                B 持有 2000元
+                A 拍賣 A1，初始金額為 (1000 + 1000 * 2) * 50% = 1500
+        When:   A 喊價 1500
+        Then:   A 喊價 失敗
+        """)]
+    public async Task 拍賣土地的玩家不能自己喊價()
+    {
+        Player A = new("A", 2000);
+        Player B = new("B", 2000);
+
+        const string gameId = "1";
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("Start", Direction.Right.ToString())
+            .WithLandContract("A1", 2)
+        )
+        .WithPlayer(
+            new MonopolyPlayer(B.Id)
+            .WithMoney(B.Money)
+            .WithPosition("Start", Direction.Right.ToString())
+        )
+        .WithCurrentPlayer(nameof(A), auction : "A1");
+
+        monopolyBuilder.Save(server);
+
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+
+        // Act
+        await hub.SendAsync(nameof(MonopolyHub.PlayerBid), gameId, "A", 1500);
+
+        // Assert
+        // A 喊價
+        hub.Verify<string>(
+                       nameof(IMonopolyResponses.CurrentPlayerCannotBidEvent),
+                                (playerId)
+                                => playerId == "A");
+        hub.VerifyNoElseEvent();
+    }
 }

@@ -185,7 +185,7 @@ public class Player
         payee.Money += amount;
     }
 
-    public DomainEvent BuildHouse()
+    internal DomainEvent BuildHouse()
     {
         Block block = Chess.CurrentBlock;
 
@@ -194,5 +194,39 @@ public class Player
             return land.BuildHouse(this);
         }
         return new PlayerCannotBuildHouseEvent(Monopoly.Id, Id, block.Id);
+    }
+
+    internal List<DomainEvent> BuyLand(string BlockId)
+    {
+        List<DomainEvent> events = new();
+
+        //判斷是否為空土地
+        if (Chess.CurrentBlock is Land land)
+        {
+            if (land.GetOwner() is not null)
+            {
+                events.Add(new PlayerBuyBlockOccupiedByOtherPlayerEvent(Monopoly.Id, Id, BlockId));
+            }
+            else
+            {
+                //判斷格子購買金額足夠
+                if (land.Price > Money)
+                {
+                    events.Add(new PlayerBuyBlockInsufficientFundsEvent(Monopoly.Id, Id, BlockId, land.Price));
+                } 
+                else
+                {
+                    //玩家扣款
+                    Money -= land.Price;
+
+                    //過戶(?
+                    var landContract = new LandContract(this, land);
+                    AddLandContract(landContract);
+
+                    events.Add(new PlayerBuyBlockEvent(Monopoly.Id, Id, BlockId));
+                }
+            }
+        }
+        return events;
     }
 }

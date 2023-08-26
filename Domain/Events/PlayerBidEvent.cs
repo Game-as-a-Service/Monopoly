@@ -10,3 +10,6 @@ public record PlayerBidFailEvent(string GameId, string PlayerId, string BlockId,
 
 public record PlayerTooPoorToBidEvent(string GameId, string PlayerId, decimal PlayerMoney, decimal BidPrice, decimal HighestPrice)
     : DomainEvent(GameId);
+
+public record CurrentPlayerCannotBidEvent(string GameId, string PlayerId)
+    : DomainEvent(GameId);
