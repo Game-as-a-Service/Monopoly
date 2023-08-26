@@ -25,6 +25,7 @@ public class Mortgage
         if (deadline == 0)
         {
             landContract.Owner.RemoveLandContract(landContract);
+            landContract.Land.UpdateOwner(null);
             yield return new MorgageDueEvent(player.Monopoly.Id, player.Id, landContract.Land.Id);
         }
         else

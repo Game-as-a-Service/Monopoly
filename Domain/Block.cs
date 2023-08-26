@@ -154,7 +154,7 @@ public class Land : Block
         return landContract.Owner;
     }
 
-    public override void UpdateOwner(Player Owner)
+    public override void UpdateOwner(Player? Owner)
     {
         landContract.Owner = Owner;
     }

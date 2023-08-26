@@ -32,10 +32,12 @@ public class Auction
             highestBidder.Money -= highestPrice;
 
             landContract.Owner.Money += highestPrice;
+            landContract.Land.UpdateOwner(highestBidder);
         }
         else // 流拍
         {
             landContract.Owner.Money += landContract.Land.GetPrice("UnSold");
+            landContract.Land.UpdateOwner(null);
         }
         return new EndAuctionEvent(landContract.Owner.Monopoly.Id, 
                                    landContract.Owner.Id, 
