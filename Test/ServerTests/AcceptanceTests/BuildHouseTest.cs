@@ -215,4 +215,50 @@ public class BuildHouseTest
                                   => playerId == "A" && blockId == "A1");
         hub.VerifyNoElseEvent();
     }
+
+    [TestMethod]
+    [Description("""
+                Given:  目前玩家在A1
+                        玩家持有A2
+                        A2房子不足5間
+                        玩家擲骰得到2點
+                        玩家移動到 A2
+                When:   A 蓋房子
+                Then:   A 不能蓋房子
+                """)]
+    public async Task 玩家擲骰後移動棋子到自己已抵押土地()
+    {
+        // Arrange
+        Player A = new("A");
+
+        const string gameId = "1";
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("A1", Direction.Right.ToString())
+            .WithLandContract("A2")
+            .WithMortgage("A2")
+        )
+        .WithMockDice(new[] { 2 })
+        .WithCurrentPlayer(nameof(A), rollDice : true);
+
+        monopolyBuilder.Save(server);
+
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+        // Act
+        await hub.SendAsync(nameof(MonopolyHub.PlayerBuildHouse), "1", "A");
+        // Assert
+        // A 蓋房子失敗
+        hub.Verify<string, int>(
+                       nameof(IMonopolyResponses.PlayerRolledDiceEvent),
+                                  (playerId, diceCount) => playerId == "A" && diceCount == 2);
+        VerifyChessMovedEvent(hub, "A", "Station1", "Right", 1);
+        VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
+        hub.Verify<string, string>(
+                       nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
+                                  (playerId, blockId)
+                                  => playerId == "A" && blockId == "A2");
+        hub.VerifyNoElseEvent();
+    }
 }
