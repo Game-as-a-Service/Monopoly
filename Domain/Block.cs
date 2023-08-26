@@ -78,22 +78,23 @@ public class Land : Block
         _house++;
     }
 
-    public DomainEvent PayToll(Player payer)
+    public List<DomainEvent> PayToll(Player payer)
     {
         // payer 應該付過路費給 payee
         // 計算過路費
 
         Player? payee = landContract.Owner;
+        List<DomainEvent> events = new();
 
         if (payer.EndRoundFlag)
         {
             //throw new Exception("玩家不需要支付過路費");
-            return new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money);
+            events.Add(new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
         }
         else if (payee!.Chess.CurrentBlock.Id == "Jail" || payee.Chess.CurrentBlock.Id == "ParkingLot")
         {
             //throw new Exception("不需要支付過路費：Owner is in the " + payee.Chess.CurrentBlock.Id);
-            return new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money);
+            events.Add(new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
         }
         else
         {
@@ -103,14 +104,31 @@ public class Land : Block
             {
                 payer.EndRoundFlag = true;
                 payer.PayToll(payee, amount);
-                return new PlayerPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, payee.Id, payee.Money);
+                events.Add(new PlayerPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, payee.Id, payee.Money));
             }
             else
             {
-                //throw new Exception("錢包餘額不足！");
-                return new PlayerTooPoorToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, amount);
+                if(payer.LandContractList.Count - payer.Mortgage.Count == 0)
+                {
+                    // 破產
+                    foreach(var mortgage in payer.Mortgage)
+                    {
+                        payer.RemoveLandContract(mortgage.LandContract);
+                    }
+                    payer.EndRoundFlag = true;
+                    payer.PayToll(payee, payer.Money);
+                    payer.UpdateState();
+                    events.Add(new PlayerPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, payee.Id, payee.Money));
+                    events.Add(new BankruptEvent(payer.Monopoly.Id, payer.Id));
+                }
+                else
+                {
+                    //throw new Exception("錢包餘額不足！");
+                    events.Add(new PlayerTooPoorToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, amount));
+                }
             }
         }
+        return events;
     }
 
     public virtual decimal CalcullateToll(Player payee)

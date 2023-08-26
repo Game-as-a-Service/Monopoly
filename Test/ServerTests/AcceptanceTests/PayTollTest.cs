@@ -165,7 +165,7 @@ public class PayTollTest
     [Description(
         """
         Given:  目前輪到A
-                A 在 A1 上，持有 30元
+                A 在 A1 上，持有 30元，持有土地 A3
                 B 持有 1000元
                 A1 是 B 的土地，價值 1000元
         When:   A 付過路費
@@ -183,6 +183,7 @@ public class PayTollTest
             new MonopolyPlayer(A.Id)
             .WithMoney(A.Money)
             .WithPosition("A1", Direction.Right.ToString())
+            .WithLandContract("A3")
         )
         .WithPlayer(
             new MonopolyPlayer(B.Id)

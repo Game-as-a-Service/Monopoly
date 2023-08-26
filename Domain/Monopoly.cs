@@ -62,6 +62,10 @@ public class Monopoly : AbstractAggregateRoot
         {
             AddPlayerToRankList(player);
         }
+        foreach(var playerRank in _playerRankDictionary)
+        {
+            AddDomainEvent(new SettlementEvent(Id, playerRank.Key.Id, playerRank.Value));
+        }
     }
 
     public Block GetPlayerPosition(string playerId)

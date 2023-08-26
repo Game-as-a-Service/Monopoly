@@ -170,6 +170,14 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.SuspendRoundEvent(sre.PlayerId, sre.SuspendRounds);
             }
+            else if (e is BankruptEvent be)
+            {
+                await _hubContext.Clients.All.BankruptEvent(be.PlayerId);
+            }
+            else if (e is SettlementEvent se)
+            {
+                await _hubContext.Clients.All.SettlementEvent(se.PlayerId, se.Rank);
+            }
         }
     }
 }

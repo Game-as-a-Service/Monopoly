@@ -56,8 +56,6 @@ public class Utils
 
         public bool PayToll { get; private set; }
 
-        public string Bankrupt { get; private set; }
-
         public MonopolyBuilder(string id)
         {
             GameId = id;
@@ -72,12 +70,6 @@ public class Utils
         public MonopolyBuilder WithMockDice(int[] dices)
         {
             Dices = dices;
-            return this;
-        }
-
-        public MonopolyBuilder WithBankrupt(string player)
-        {
-            Bankrupt = player;
             return this;
         }
 
@@ -144,10 +136,6 @@ public class Utils
                         monopoly.CurrentPlayer.EnableUpgrade = false;
                     }
                 }
-                if (Bankrupt == player.Id)
-                {
-                    monopoly.UpdatePlayerState(player);
-                }
                 if (block is Jail)
                 {
                     player.SuspendRound("Jail");
@@ -155,6 +143,10 @@ public class Utils
                 else if (block is ParkingLot)
                 {
                     player.SuspendRound("ParkingLot");
+                }
+                if (p.Bankrupt)
+                {
+                    monopoly.UpdatePlayerState(player);
                 }
             });
             Players.ForEach(p =>
@@ -197,6 +189,8 @@ public class Utils
         public IDictionary<string, int> House = new Dictionary<string, int>();
         public IDictionary<string, int> DeadLine = new Dictionary<string, int>();
 
+        public bool Bankrupt { get; set; }
+
         public MonopolyPlayer(string id)
         {
             Id = id;
@@ -234,6 +228,12 @@ public class Utils
                 Mortgages.Add(landId);
                 DeadLine.Add(landId, deadLine);
             }
+            return this;
+        }
+
+        public MonopolyPlayer WithBankrupt()
+        {
+            Bankrupt = true;
             return this;
         }
     }

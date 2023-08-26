@@ -251,6 +251,7 @@ public class EndRoundTest
             new MonopolyPlayer(B.Id)
             .WithMoney(B.Money)
             .WithPosition("A1", Direction.Right.ToString())
+            .WithBankrupt()
         )
         .WithPlayer(
             new MonopolyPlayer(C.Id)
@@ -259,7 +260,6 @@ public class EndRoundTest
             .WithLandContract("A2")
         )
         .WithMockDice(new[] { 1, 1 })
-        .WithBankrupt(nameof(B))
         .WithCurrentPlayer(nameof(A), rollDice : true, payToll: true);
 
         monopolyBuilder.Save(server);
