@@ -41,7 +41,7 @@ public class Auction
                                    landContract.Owner.Id, 
                                    landContract.Owner.Money, 
                                    landContract.Land.Id, 
-                                   highestBidder == null ? null : highestBidder.Id,  
+                                   highestBidder?.Id,  
                                    highestBidder == null ? 0 : highestBidder.Money);
     }
 

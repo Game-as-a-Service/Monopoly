@@ -35,6 +35,7 @@ public class PayTollTest
         // A擁有A4
         Land A4 = (Land)map.FindBlockById("A4");
         player_a.AddLandContract(new(player_a, A4));
+        player_b.EndRoundFlag = false;
 
         //Act
         game.PayToll(player_b.Id);
@@ -82,6 +83,8 @@ public class PayTollTest
         player_a.AddLandContract(new(player_a, A4));
         A4.Upgrade();
         A4.Upgrade();
+
+        player_b.EndRoundFlag = false;
 
         // Act
         game.PayToll(player_b.Id);
@@ -210,6 +213,8 @@ public class PayTollTest
         player_a.AddLandContract(new(player_a, A4));
         A4.Upgrade();
         A4.Upgrade();
+
+        player_b.EndRoundFlag = false;
 
         game.PayToll(player_b.Id);
 

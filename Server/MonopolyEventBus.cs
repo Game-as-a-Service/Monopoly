@@ -166,6 +166,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.EndRoundFailEvent(erfe.PlayerId);
             }
+            else if (e is SuspendRoundEvent sre)
+            {
+                await _hubContext.Clients.All.SuspendRoundEvent(sre.PlayerId, sre.SuspendRounds);
+            }
         }
     }
 }

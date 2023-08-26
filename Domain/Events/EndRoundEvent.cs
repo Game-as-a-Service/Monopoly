@@ -7,3 +7,6 @@ public record EndRoundEvent(string GameId, string PlayerId, string NextPlayerId)
 
 public record EndRoundFailEvent(string GameId, string PlayerId)
     : DomainEvent(GameId);
+
+public record SuspendRoundEvent(string GameId, string PlayerId, int SuspendRounds)
+    : DomainEvent(GameId);

@@ -148,6 +148,14 @@ public class Utils
                 {
                     monopoly.UpdatePlayerState(player);
                 }
+                if (block is Jail)
+                {
+                    player.SuspendRound("Jail");
+                }
+                else if (block is ParkingLot)
+                {
+                    player.SuspendRound("ParkingLot");
+                }
             });
             Players.ForEach(p =>
             {
@@ -158,6 +166,9 @@ public class Utils
             });
             if (RollDice)
             {
+                monopoly.CurrentPlayer.EndRoundFlag = true;
+                monopoly.CurrentPlayer.EnableUpgrade = false;
+
                 monopoly.PlayerRollDice(monopoly.CurrentPlayer!.Id);
             }
             if (PayToll)

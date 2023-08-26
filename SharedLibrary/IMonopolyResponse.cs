@@ -74,4 +74,6 @@ public interface IMonopolyResponses
     Task EndRoundEvent(string PlayerId, string NextPlayerId);
 
     Task EndRoundFailEvent(string PlayerId);
+
+    Task SuspendRoundEvent(string PlayerId, int SuspendRounds);
 }

@@ -103,6 +103,7 @@ public class Monopoly : AbstractAggregateRoot
     {
         // 初始化目前玩家
         CurrentPlayer = _players[0];
+        CurrentPlayer.StartRound();
     }
 
     /// <summary>
@@ -178,8 +179,13 @@ public class Monopoly : AbstractAggregateRoot
             do
             {
                 CurrentPlayer = _players[(_players.IndexOf(CurrentPlayer)+1)%_players.Count];
+                CurrentPlayer.StartRound();
             } while (CurrentPlayer.State == PlayerState.Bankrupt);
             AddDomainEvent(new EndRoundEvent(Id, lastPlayerId, CurrentPlayer.Id));
+            if (CurrentPlayer.SuspendRounds > 0)
+            {
+                EndRound();
+            }
         }
         else
         {

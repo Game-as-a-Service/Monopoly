@@ -32,6 +32,7 @@ public class Player
     public bool EndRoundFlag { get; set; }
     public bool EnableUpgrade { get; set; }
     public bool IsHost { get; set; }
+    public int SuspendRounds { get; private set; } = 0;
 
     // false: 回合尚不能結束，true: 玩家可結束回合
 
@@ -64,14 +65,41 @@ public class Player
         return LandContractList.Where(landContract => landContract.Land.Id == id).FirstOrDefault();
     }
 
+    public void SuspendRound(string reason)
+    {
+        SuspendRounds = reason switch
+        {
+            "Jail" => 2,
+            "ParkingLot" => 1,
+            _ => 0,
+        };
+    }
+
     public List<DomainEvent> EndRound()
     {
         List<DomainEvent> events = new();
-        mortgages.ForEach(m=>
+
+        mortgages.ForEach(m =>
         {
             events.AddRange(m.EndRound());
         });
         mortgages.RemoveAll(m => m.Deadline == 0);
+
+        return events;
+    }
+
+    public List<DomainEvent> StartRound()
+    {
+        EndRoundFlag = true;
+        EnableUpgrade = false;
+        List<DomainEvent> events = new();
+
+        if (SuspendRounds > 0)
+        {
+            SuspendRounds--;
+            events.Add(new SuspendRoundEvent(Monopoly.Id, Id, SuspendRounds));
+        }
+
         return events;
     }
 
@@ -85,9 +113,6 @@ public class Player
 
     internal IDice[] RollDice(IDice[] dices)
     {
-        EndRoundFlag = true;
-        EnableUpgrade = false;
-
         foreach (var dice in dices)
         {
             dice.Roll();

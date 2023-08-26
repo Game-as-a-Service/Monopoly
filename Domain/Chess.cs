@@ -118,11 +118,13 @@ public class Chess
         }
         else if (CurrentBlock is Jail) // 如果移動到監獄
         {
-            yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, 2);
+            player.SuspendRound("Jail");
+            yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
         }
         else if (CurrentBlock is ParkingLot) // 如果移動到停車場
         {
-            yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, 1);
+            player.SuspendRound("ParkingLot");
+            yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
         }
     }
 
