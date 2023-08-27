@@ -31,9 +31,8 @@ public class Chess
     /// 從 RemainingSteps 開始移動
     /// 直到移動次數為0
     /// </summary>
-    private List<DomainEvent> Move()
+    private IEnumerable<DomainEvent> Move()
     {
-        List<DomainEvent> events = new();
         while (RemainingSteps > 0)
         {
             var nextBlock = CurrentBlock.GetDirectionBlock(CurrentDirection) ?? throw new Exception("找不到下一個區塊");
@@ -42,34 +41,32 @@ public class Chess
             if (currentBlock is StartPoint && remainingSteps > 0) // 如果移動到起點，且還有剩餘步數，則獲得獎勵金
             {
                 player.Money += 3000;
-                events.Add(new ThroughStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money));
+                yield return new ThroughStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money);
             }
             var directions = DirectionOptions();
             if (directions.Count > 1)
             {
                 // 可選方向多於一個
                 // 代表棋子會停在這個區塊
-                events.Add(new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps));
-                events.Add(new PlayerNeedToChooseDirectionEvent(
+                yield return new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps);
+                yield return new PlayerNeedToChooseDirectionEvent(
                     player.Monopoly.Id,
                     player.Id,
-                    directions.Select(d => d.ToString()).ToArray()));
-                return events;
+                    directions.Select(d => d.ToString()).ToArray());
+                yield break;
                 //throw new PlayerNeedToChooseDirectionException(player, currentBlock, directions);
             }
             // 只剩一個方向
             // 代表棋子會繼續往這個方向移動
             currentDirection = directions.First();
-            events.Add(new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps));
+            yield return new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps);
         }
-
-        return events;
     }
 
     public List<DomainEvent> Move(int moveCount)
     {
         remainingSteps = moveCount;
-        return Move();
+        return Move().ToList();
     }
 
     public List<DomainEvent> ChangeDirection(Direction direction)
