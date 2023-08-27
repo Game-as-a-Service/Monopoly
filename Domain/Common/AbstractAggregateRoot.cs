@@ -13,12 +13,16 @@ public abstract class AbstractAggregateRoot
 
     public void AddDomainEvent(DomainEvent domainEvent)
     {
+        if (domainEvent == null || domainEvent == DomainEvent.EmptyEvent)
+        {
+            return;
+        }
         domainEvents.Add(domainEvent);
     }
 
     public void AddDomainEvent(List<DomainEvent> domainEvents)
     {
-        this.domainEvents.AddRange(domainEvents);
+        this.domainEvents.AddRange(domainEvents.TakeWhile(x => x != DomainEvent.EmptyEvent));
     }
 
     public void ClearEvent()

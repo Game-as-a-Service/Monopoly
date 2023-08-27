@@ -119,7 +119,6 @@ public class Player
         }
 
         var events = chess.Move(dices.Sum(dice => dice.Value));
-        events.AddRange(chess.GetLandEvent());
 
         Monopoly.AddDomainEvent(events);
         return dices;

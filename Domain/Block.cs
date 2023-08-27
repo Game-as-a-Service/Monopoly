@@ -47,6 +47,9 @@ public abstract class Block
     {
         throw new Exception("此地不可購買！");
     }
+
+    public abstract DomainEvent GetEvent(Player player);
+    public abstract void DoBlockAction(Player player);
 }
 
 public class Land : Block
@@ -184,6 +187,48 @@ public class Land : Block
         }
 
     }
+
+    public override DomainEvent GetEvent(Player player)
+    {
+        Player? owner = GetOwner();
+        var land = this;
+        var CurrentBlock = player.Chess.CurrentBlock;
+        if (owner is null)
+        {
+            return new PlayerCanBuyLandEvent(player.Monopoly.Id, player.Id, land.Id, land.Price);
+        }
+        else if (owner == player)
+        {
+            if(!player.Mortgage.Any(m => m.LandContract.Land.Id == CurrentBlock.Id))
+            {
+                return new PlayerCanBuildHouseEvent(player.Monopoly.Id, player.Id, land.Id, land.House, land.UpgradePrice);
+            }
+        }
+        else if (owner!.SuspendRounds <= 0)
+        {
+            return new PlayerNeedsToPayTollEvent(player.Monopoly.Id, player.Id, owner.Id, land.CalcullateToll(owner));
+        }
+        return DomainEvent.EmptyEvent;
+    }
+
+    public override void DoBlockAction(Player player)
+    {
+        Player? owner = GetOwner();
+        var CurrentBlock = player.Chess.CurrentBlock;
+        if (owner is null)
+        {
+            return;
+        }
+        if (owner == player && !player.Mortgage.Any(m => m.LandContract.Land.Id == CurrentBlock.Id))
+        {
+            player.EnableUpgrade = true;
+        }
+        else if (owner.SuspendRounds <= 0)
+        {
+            player.EndRoundFlag = false;
+            
+        }
+    }
 }
 
 public class StartPoint : Block
@@ -191,19 +236,46 @@ public class StartPoint : Block
     public StartPoint(string id) : base(id)
     {
     }
-}
 
+    public override void DoBlockAction(Player player)
+    {
+    }
+
+    public override DomainEvent GetEvent(Player player)
+    {
+        return new OnStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money);
+    }
+}
 public class Jail : Block
 {
     public Jail(string id) : base(id)
     {
     }
-}
 
+    public override void DoBlockAction(Player player)
+    {
+        player.SuspendRound("Jail");
+    }
+
+    public override DomainEvent GetEvent(Player player)
+    {
+        return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
+    }
+}
 public class ParkingLot : Block
 {
     public ParkingLot(string id) : base(id)
     {
+    }
+
+    public override void DoBlockAction(Player player)
+    {
+        player.SuspendRound("ParkingLot");
+    }
+
+    public override DomainEvent GetEvent(Player player)
+    {
+        return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
     }
 }
 
@@ -228,5 +300,33 @@ public class Station : Land
     public override DomainEvent BuildHouse(Player player)
     {
         return new PlayerCannotBuildHouseEvent(player.Monopoly.Id, player.Id, Id);
+    }
+
+    public override DomainEvent GetEvent(Player player)
+    {
+        Player? owner = GetOwner();
+        var land = this;
+        var CurrentBlock = player.Chess.CurrentBlock;
+        if (owner is null)
+        {
+            return new PlayerCanBuyLandEvent(player.Monopoly.Id, player.Id, land.Id, land.Price);
+        }
+        else if (owner!.SuspendRounds <= 0)
+        {
+            DoBlockAction(player);
+            return new PlayerNeedsToPayTollEvent(player.Monopoly.Id, player.Id, owner.Id, land.CalcullateToll(owner));
+        }
+        return DomainEvent.EmptyEvent;
+    }
+
+    public override void DoBlockAction(Player player)
+    {
+        Player? owner = GetOwner();
+        var CurrentBlock = player.Chess.CurrentBlock;
+        if (owner!.SuspendRounds <= 0)
+        {
+            player.EndRoundFlag = false;
+            
+        }
     }
 }

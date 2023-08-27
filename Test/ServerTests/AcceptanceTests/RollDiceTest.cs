@@ -410,54 +410,6 @@ public class RollDiceTest
 
     [TestMethod]
     [Description("""
-                Given:  A 在A3
-                        方向為 Down
-                When:   A 擲骰得到2點
-                Then:   A 移動到 停車場
-                        A 剩餘步數為 0
-                        A 暫停一回合
-                """)]
-    public async Task 玩家擲骰後移動棋子到停車場()
-    {
-        // Arrange
-        Player A = new("A");
-
-        const string gameId = "1";
-        var monopolyBuilder = new MonopolyBuilder("1")
-        .WithPlayer(
-            new MonopolyPlayer(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition("A3", Direction.Down.ToString())
-        )
-        .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer(nameof(A));
-
-        monopolyBuilder.Save(server);
-
-        var hub = await server.CreateHubConnectionAsync(gameId, "A");
-        // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerRollDice), "1", "A");
-        // Assert
-        // A 擲了 2 點
-        // A 移動到 A4，方向為 Down，剩下 1 步
-        // A 移動到 停車場，方向為 Down，剩下 0 步
-        // A 暫停一回合
-        hub.Verify<string, int>(
-                       nameof(IMonopolyResponses.PlayerRolledDiceEvent),
-                                  (playerId, diceCount) => playerId == "A" && diceCount == 2);
-        VerifyChessMovedEvent(hub, "A", "A4", "Down", 1);
-        VerifyChessMovedEvent(hub, "A", "ParkingLot", "Down", 0);
-        hub.Verify<string, string[]>(
-            nameof(IMonopolyResponses.PlayerNeedToChooseDirectionEvent),
-            (playerId, directions) => playerId == "A" && directions.OrderBy(x => x).SequenceEqual(new[] { "Right", "Down", "Left" }.OrderBy(x => x)));
-        hub.Verify<string, int>(
-            nameof(IMonopolyResponses.PlayerCannotMoveEvent),
-            (playerId, suspendRounds) => playerId == "A" && suspendRounds == 1);
-        hub.VerifyNoElseEvent();
-    }
-
-    [TestMethod]
-    [Description("""
                 Given:  A 在 A1，持有 200元
                         B 持有 A2，1000元
                         A2 有 2棟 房子

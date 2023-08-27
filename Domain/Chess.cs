@@ -61,6 +61,8 @@ public class Chess
             currentDirection = directions.First();
             yield return new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlock.Id, currentDirection.ToString(), remainingSteps);
         }
+        currentBlock.DoBlockAction(player);
+        yield return currentBlock.GetEvent(player);
     }
 
     public List<DomainEvent> Move(int moveCount)
@@ -82,50 +84,7 @@ public class Chess
         currentDirection = direction;
         List<DomainEvent> events = new() { new PlayerChooseDirectionEvent(player.Monopoly.Id, player.Id, direction.ToString()) };
         events.AddRange(Move());
-        events.AddRange(GetLandEvent());
         return events;
-    }
-
-    public IEnumerable<DomainEvent> GetLandEvent()
-    {
-        if (RemainingSteps != 0) yield break;
-
-        //TODO 感覺要套策略
-        if (CurrentBlock is Land land)
-        {
-            Player? owner = land.GetOwner();
-            if (owner is null)
-            {
-                yield return new PlayerCanBuyLandEvent(player.Monopoly.Id, player.Id, land.Id, land.Price);
-            }
-            else if (owner == player)
-            {
-                if(!player.Mortgage.Any(m => m.LandContract.Land.Id == CurrentBlock.Id))
-                {
-                    yield return new PlayerCanBuildHouseEvent(player.Monopoly.Id, player.Id, land.Id, land.House, land.UpgradePrice);
-                    player.EnableUpgrade = true;
-                }
-            }
-            else if (owner!.Chess.CurrentBlock.Id != "Jail" && owner.Chess.CurrentBlock.Id != "ParkingLot")
-            {
-                yield return new PlayerNeedsToPayTollEvent(player.Monopoly.Id, player.Id, owner.Id, land.CalcullateToll(owner));
-                player.EndRoundFlag = false;
-            }
-        }
-        else if (CurrentBlock is StartPoint) // 如果移動到起點， 無法獲得獎勵金
-        {
-            yield return new OnStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money);
-        }
-        else if (CurrentBlock is Jail) // 如果移動到監獄
-        {
-            player.SuspendRound("Jail");
-            yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
-        }
-        else if (CurrentBlock is ParkingLot) // 如果移動到停車場
-        {
-            player.SuspendRound("ParkingLot");
-            yield return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
-        }
     }
 
     internal void SetBlock(string blockId, Direction direction)
