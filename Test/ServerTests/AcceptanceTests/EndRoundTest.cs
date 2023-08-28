@@ -355,7 +355,10 @@ public class EndRoundTest
         hub.Verify<string, string, decimal>(
                        nameof(IMonopolyResponses.PlayerCanBuyLandEvent),
                                   (playerId, blockId, landMoney) => playerId == "A" && blockId == "A2" && landMoney == 1000);
-
+        hub.Verify<string, int>(
+                       nameof(IMonopolyResponses.SuspendRoundEvent),
+                                  (playerId, suspendRounds)
+                                  => playerId == "B" && suspendRounds == 1);
         hub.Verify<string, string>(
                        nameof(IMonopolyResponses.EndRoundEvent),
                                   (playerId, nextPlayer)

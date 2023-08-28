@@ -122,11 +122,11 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerCannotMortgageEvent(pctme.PlayerId, pctme.PlayerMoney, pctme.BlockId);
             }
-            else if (e is MorgageDueEvent mde)
+            else if (e is MortgageDueEvent mde)
             {
                 await _hubContext.Clients.All.MortgageDueEvent(mde.PlayerId, mde.BlockId);
             }
-            else if (e is MorgageCountdownEvent mce)
+            else if (e is MortgageCountdownEvent mce)
             {
                 await _hubContext.Clients.All.MortgageCountdownEvent(mce.PlayerId, mce.BlockId, mce.DeadLine);
             }

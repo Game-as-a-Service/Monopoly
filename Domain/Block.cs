@@ -94,7 +94,7 @@ public class Land : Block
             //throw new Exception("玩家不需要支付過路費");
             events.Add(new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
         }
-        else if (payee!.Chess.CurrentBlock.Id == "Jail" || payee.Chess.CurrentBlock.Id == "ParkingLot")
+        else if (payee.SuspendRounds > 0)
         {
             //throw new Exception("不需要支付過路費：Owner is in the " + payee.Chess.CurrentBlock.Id);
             events.Add(new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
@@ -111,12 +111,12 @@ public class Land : Block
             }
             else
             {
-                if(payer.LandContractList.Count - payer.Mortgage.Count == 0)
+                if(!payer.LandContractList.Any(l => !l.Mortgage))
                 {
                     // 破產
-                    foreach(var mortgage in payer.Mortgage)
+                    foreach(var landContract in payer.LandContractList)
                     {
-                        payer.RemoveLandContract(mortgage.LandContract);
+                        payer.RemoveLandContract(landContract);
                     }
                     payer.EndRoundFlag = true;
                     payer.PayToll(payee, payer.Money);
@@ -199,7 +199,7 @@ public class Land : Block
         }
         else if (owner == player)
         {
-            if(!player.Mortgage.Any(m => m.LandContract.Land.Id == CurrentBlock.Id))
+            if(player.LandContractList.Any(l => l.Land.Id == Id && !l.Mortgage))
             {
                 return new PlayerCanBuildHouseEvent(player.Monopoly.Id, player.Id, land.Id, land.House, land.UpgradePrice);
             }
@@ -214,12 +214,11 @@ public class Land : Block
     public override void DoBlockAction(Player player)
     {
         Player? owner = GetOwner();
-        var CurrentBlock = player.Chess.CurrentBlock;
         if (owner is null)
         {
             return;
         }
-        if (owner == player && !player.Mortgage.Any(m => m.LandContract.Land.Id == CurrentBlock.Id))
+        if (player.LandContractList.Any(l => l.Land.Id == Id && !l.Mortgage))
         {
             player.EnableUpgrade = true;
         }
@@ -322,11 +321,13 @@ public class Station : Land
     public override void DoBlockAction(Player player)
     {
         Player? owner = GetOwner();
-        var CurrentBlock = player.Chess.CurrentBlock;
+        if (owner is null)
+        {
+            return;
+        }
         if (owner!.SuspendRounds <= 0)
         {
             player.EndRoundFlag = false;
-            
         }
     }
 }

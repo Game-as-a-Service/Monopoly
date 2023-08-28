@@ -51,12 +51,13 @@ public class Monopoly : AbstractAggregateRoot
 
     public void Settlement()
     {
-        // 玩家資產計算方式: 土地價格+升級價格+剩餘金額
+        // 玩家資產計算方式: 土地價格+升級價格+剩餘金額 
+        // 抵押的房地產不列入計算
 
         // 排序未破產玩家的資產並加入名次清單
         var playerList = from p in _players
                          where !p.IsBankrupt()
-                         orderby p.Money + p.LandContractList.Sum(l => (l.Land.House + 1) * l.Land.Price) ascending
+                         orderby p.Money + p.LandContractList.Where(l => !l.Mortgage).Sum(l => (l.Land.House + 1) * l.Land.Price) ascending
                          select p;
         foreach (var player in playerList)
         {
@@ -196,6 +197,7 @@ public class Monopoly : AbstractAggregateRoot
             AddDomainEvent(new EndRoundEvent(Id, lastPlayerId, CurrentPlayer.Id));
             if (CurrentPlayer.SuspendRounds > 0)
             {
+                AddDomainEvent(new SuspendRoundEvent(Id, CurrentPlayer.Id, CurrentPlayer.SuspendRounds));
                 EndRound();
             }
         }

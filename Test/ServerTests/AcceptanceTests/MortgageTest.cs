@@ -97,6 +97,42 @@ public class MortgageTest
                                 => playerId == "A" && playerMoney == 1000 && blockId == "A1");
         hub.VerifyNoElseEvent();
     }
+
+    [TestMethod]
+    [Description(
+        """
+        Given:  A 持有 5000元
+        When:   A 抵押 A1
+        Then:   A 抵押 失敗
+        """)]
+    public async Task 玩家抵押非自有房地產()
+    {
+        Player A = new("A", 5000);
+
+        const string gameId = "1";
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new MonopolyPlayer(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("Start", Direction.Right.ToString())
+        )
+        .WithCurrentPlayer(nameof(A));
+
+        monopolyBuilder.Save(server);
+
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+
+        // Act
+        await hub.SendAsync(nameof(MonopolyHub.PlayerMortgage), gameId, "A", "A1");
+
+        // Assert
+        // A 抵押房地產
+        hub.Verify<string, decimal, string>(
+                       nameof(IMonopolyResponses.PlayerCannotMortgageEvent),
+                                (playerId, playerMoney, blockId)
+                                => playerId == "A" && playerMoney == 5000 && blockId == "A1");
+        hub.VerifyNoElseEvent();
+    }
 }
 
 

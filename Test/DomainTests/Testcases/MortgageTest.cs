@@ -34,7 +34,6 @@ public class MortgageTest
         // Assert
         Assert.AreEqual(a.Money, 5700);
         Assert.IsNotNull(a.FindLandContract("A1"));
-        var mortgage = a.Mortgage.First(m => m.LandContract.Land.Id == "A1");
-        Assert.AreEqual(10, mortgage.Deadline);
+        Assert.AreEqual(10, a.LandContractList[^1].Deadline);
     }
 }

@@ -9,14 +9,12 @@ public class Player
     private Chess chess;
     private readonly List<LandContract> _landContractList = new();
     private Auction auction;
-    private readonly List<Mortgage> mortgages;
 
     public Player(string id, decimal money = 15000)
     {
         Id = id;
         State = PlayerState.Normal;
         Money = money;
-        mortgages = new List<Mortgage>();
     }
 
     public PlayerState State { get; private set; }
@@ -28,7 +26,6 @@ public class Player
 
     public Chess Chess { get => chess; set => chess = value; }
     public Auction Auction => auction;
-    public IList<Mortgage> Mortgage => mortgages.AsReadOnly();
     public bool EndRoundFlag { get; set; }
     public bool EnableUpgrade { get; set; }
     public bool IsHost { get; set; }
@@ -79,28 +76,24 @@ public class Player
     {
         List<DomainEvent> events = new();
 
-        mortgages.ForEach(m =>
+        _landContractList.ForEach(l =>
         {
-            events.AddRange(m.EndRound());
+            events.Add(l.EndRound());
         });
-        mortgages.RemoveAll(m => m.Deadline == 0);
+        _landContractList.RemoveAll(l => l.Deadline == 0);
 
         return events;
     }
 
-    public List<DomainEvent> StartRound()
+    public void StartRound()
     {
         EndRoundFlag = true;
         EnableUpgrade = false;
-        List<DomainEvent> events = new();
 
         if (SuspendRounds > 0)
         {
             SuspendRounds--;
-            events.Add(new SuspendRoundEvent(Monopoly.Id, Id, SuspendRounds));
         }
-
-        return events;
     }
 
     public void AuctionLandContract(string id)
@@ -132,30 +125,32 @@ public class Player
 
     internal DomainEvent MortgageLandContract(string landId)
     {
-        if (mortgages.Exists(m => m.LandContract.Land.Id == landId))
+        // 玩家擁有地契並尚未抵押
+        if(_landContractList.Exists(l => l.Land.Id == landId && !l.Mortgage))
         {
-            return new PlayerCannotMortgageEvent(Monopoly.Id, Id, Money, landId);
+            var landContract = _landContractList.First(l => l.Land.Id == landId);
+            landContract.GetMortgage();
+            Money += landContract.Land.GetPrice("Mortgage");
+            return new PlayerMortgageEvent(Monopoly.Id, Id, Money,
+                                            landId,
+                                            landContract.Deadline);
         }
         else
         {
-            var landContract = _landContractList.First(l => l.Land.Id == landId);
-            mortgages.Add(new Mortgage(this, landContract));
-            Money += landContract.Land.GetPrice("Mortgage");
-            return new PlayerMortgageEvent(Monopoly.Id, Id, Money,
-                                            mortgages[^1].LandContract.Land.Id,
-                                            mortgages[^1].Deadline);
+            return new PlayerCannotMortgageEvent(Monopoly.Id, Id, Money, landId);
         }
     }
 
     internal DomainEvent RedeemLandContract(string landId)
     {
-        if (mortgages.Exists(m => m.LandContract.Land.Id == landId))
+        // 玩家擁有地契並正在抵押
+        if (_landContractList.Exists(l => l.Land.Id == landId && l.Mortgage))
         {
             var landContract = _landContractList.First(l => l.Land.Id == landId);
             if (Money >= landContract.Land.GetPrice("Redeem"))
             {
+                landContract.GetRedeem();
                 Money -= landContract.Land.GetPrice("Redeem");
-                mortgages.RemoveAll(m => m.LandContract.Land.Id == landId);
                 return new PlayerRedeemEvent(Monopoly.Id, Id, Money, landId);
             }
             else
@@ -173,8 +168,8 @@ public class Player
     public void MortgageForTest(string landId, int deadLine)
     {
         var landContract = _landContractList.First(l => l.Land.Id == landId);
-        mortgages.Add(new Mortgage(this, landContract));
-        mortgages[^1].SetDeadLine(deadLine);
+        landContract.GetMortgage();
+        landContract.SetDeadLine(deadLine);
     }
     #endregion
 

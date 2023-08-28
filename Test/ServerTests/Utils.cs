@@ -117,10 +117,10 @@ public class Utils
                     Land land = (Land)map.FindBlockById(l);
                     for (int i = 0; i < p.House[l]; i++) land.Upgrade();
                 });
-                p.Mortgages.ForEach(l =>
+                foreach (var mortgage in p.Mortgages)
                 {
-                    player.MortgageForTest(l, p.DeadLine[l]);
-                });
+                    player.MortgageForTest(mortgage.Key, mortgage.Value);
+                }
                 monopoly.AddPlayer(player, p.BlockId, direction);
                 if (CurrentPlayer == player.Id)
                 {
@@ -185,10 +185,8 @@ public class Utils
         public string BlockId { get; set; }
         public string Direction { get; set; }
         public List<string> LandContracts { get; set; }
-        public List<string> Mortgages { get; set; }
+        public IDictionary<string, int> Mortgages =  new Dictionary<string, int>();
         public IDictionary<string, int> House = new Dictionary<string, int>();
-        public IDictionary<string, int> DeadLine = new Dictionary<string, int>();
-
         public bool Bankrupt { get; set; }
 
         public MonopolyPlayer(string id)
@@ -198,7 +196,6 @@ public class Utils
             BlockId = "StartPoint";
             Direction = "Right";
             LandContracts = new();
-            Mortgages = new();
         }
 
         public MonopolyPlayer WithMoney(decimal money)
@@ -225,8 +222,7 @@ public class Utils
         {
             if (LandContracts.Exists(l => l == landId))
             {
-                Mortgages.Add(landId);
-                DeadLine.Add(landId, deadLine);
+                Mortgages.Add(landId, deadLine);
             }
             return this;
         }

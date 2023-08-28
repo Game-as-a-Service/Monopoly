@@ -28,7 +28,7 @@ public class Auction
         landContract.Owner.RemoveLandContract(landContract);
         if (highestBidder != null)
         {
-            highestBidder.AddLandContract(landContract with { Owner = highestBidder });
+            highestBidder.AddLandContract(new LandContract(highestBidder, landContract.Land));
             highestBidder.Money -= highestPrice;
 
             landContract.Owner.Money += highestPrice;
