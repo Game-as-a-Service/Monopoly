@@ -27,21 +27,29 @@ public class Player
     public Chess Chess { get => chess; set => chess = value; }
     public Auction Auction => auction;
     public bool EndRoundFlag { get; set; }
+    // false: 回合尚不能結束，true: 玩家可結束回合
     public bool EnableUpgrade { get; set; }
     public bool IsHost { get; set; }
     public int SuspendRounds { get; private set; } = 0;
 
-    // false: 回合尚不能結束，true: 玩家可結束回合
+    
 
-    public void UpdateState()
+    internal DomainEvent UpdateState()
     {
-        if (Money <= 0 && LandContractList.Count == 0)
+        if (Money <= 0 && !LandContractList.Any(l => !l.Mortgage))
         {
             State = PlayerState.Bankrupt;
+            foreach(var landContract in LandContractList)
+            {
+                RemoveLandContract(landContract);
+            }
+            EndRoundFlag = true;
+            return new BankruptEvent(Monopoly.Id, Id);
         }
+        return DomainEvent.EmptyEvent;
     }
 
-    public bool IsBankrupt()
+    internal bool IsBankrupt()
     {
         return State == PlayerState.Bankrupt;
     }
@@ -52,8 +60,9 @@ public class Player
         landContract.Land.UpdateOwner(this);
     }
 
-    public void RemoveLandContract(LandContract landContract)
+    internal void RemoveLandContract(LandContract landContract)
     {
+        landContract.Land.UpdateOwner(null);
         _landContractList.Remove(landContract);
     }
 
@@ -85,7 +94,7 @@ public class Player
         return events;
     }
 
-    public void StartRound()
+    internal void StartRound()
     {
         EndRoundFlag = true;
         EnableUpgrade = false;
@@ -173,10 +182,10 @@ public class Player
     }
     #endregion
 
-    public void PayToll(Player payee, decimal amount)
+    internal void PayToll(Player owner, decimal amount)
     {
         Money -= amount;
-        payee.Money += amount;
+        owner.Money += amount;
     }
 
     internal DomainEvent BuildHouse()

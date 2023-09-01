@@ -43,7 +43,7 @@ public class Monopoly : AbstractAggregateRoot
 
     public void UpdatePlayerState(Player player)
     {
-        player.UpdateState();
+        AddDomainEvent(player.UpdateState());
 
         if (player.IsBankrupt())
             AddPlayerToRankList(player);
@@ -164,13 +164,13 @@ public class Monopoly : AbstractAggregateRoot
         AddDomainEvent(player.RedeemLandContract(landId));
     }
 
-    public void PayToll(string payerId)
+    public void PayToll(string playerId)
     {
-        Player payer = GetPlayer(payerId);
-        VerifyCurrentPlayer(payer);
-        Land location = (Land)GetPlayerPosition(payer.Id);
+        Player player = GetPlayer(playerId);
+        VerifyCurrentPlayer(player);
+        Land location = (Land)GetPlayerPosition(player.Id);
 
-        var domainEvent = location.PayToll(payer);
+        var domainEvent = location.PayToll(player);
 
         AddDomainEvent(domainEvent);
     }

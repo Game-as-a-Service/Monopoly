@@ -13,7 +13,7 @@ public abstract class Block
     protected string lot = "";
     public string Lot => lot;
 
-    public List<Map.Direction> Directions => new List<Map.Direction>()
+    internal List<Map.Direction> Directions => new List<Map.Direction>()
     {
         Up is not null ? Map.Direction.Up : Map.Direction.None,
         Down is not null ? Map.Direction.Down : Map.Direction.None,
@@ -26,7 +26,7 @@ public abstract class Block
         Id = id;
     }
 
-    public Block? GetDirectionBlock(Map.Direction d)
+    internal Block? GetDirectionBlock(Map.Direction d)
     {
         return d switch
         {
@@ -38,18 +38,18 @@ public abstract class Block
         };
     }
 
-    public virtual Player? GetOwner()
+    internal virtual Player? GetOwner()
     {
         return null;
     }
 
-    public virtual void UpdateOwner(Player Owner)
+    internal virtual void UpdateOwner(Player Owner)
     {
         throw new Exception("此地不可購買！");
     }
 
-    public abstract DomainEvent GetEvent(Player player);
-    public abstract void DoBlockAction(Player player);
+    internal abstract DomainEvent GetEvent(Player player);
+    internal abstract void DoBlockAction(Player player);
 }
 
 public class Land : Block
@@ -81,67 +81,62 @@ public class Land : Block
         _house++;
     }
 
-    public List<DomainEvent> PayToll(Player payer)
+    internal List<DomainEvent> PayToll(Player player)
     {
         // payer 應該付過路費給 payee
         // 計算過路費
 
-        Player? payee = landContract.Owner;
+        Player? owner = landContract.Owner;
         List<DomainEvent> events = new();
 
-        if (payer.EndRoundFlag)
+        if (player.EndRoundFlag)
         {
             //throw new Exception("玩家不需要支付過路費");
-            events.Add(new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
+            events.Add(new PlayerDoesntNeedToPayTollEvent(player.Monopoly.Id, player.Id, player.Money));
         }
-        else if (payee.SuspendRounds > 0)
+        else if (owner.SuspendRounds > 0)
         {
             //throw new Exception("不需要支付過路費：Owner is in the " + payee.Chess.CurrentBlock.Id);
-            events.Add(new PlayerDoesntNeedToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money));
+            events.Add(new PlayerDoesntNeedToPayTollEvent(player.Monopoly.Id, player.Id, player.Money));
         }
         else
         {
-            decimal amount = CalcullateToll(payee);
+            decimal amount = CalcullateToll(owner);
 
-            if (payer.Money > amount)
+            if (player.Money > amount)
             {
-                payer.EndRoundFlag = true;
-                payer.PayToll(payee, amount);
-                events.Add(new PlayerPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, payee.Id, payee.Money));
+                player.EndRoundFlag = true;
+                player.PayToll(owner, amount);
+                events.Add(new PlayerPayTollEvent(player.Monopoly.Id, player.Id, player.Money, owner.Id, owner.Money));
             }
             else
             {
-                if(!payer.LandContractList.Any(l => !l.Mortgage))
+                if(!player.LandContractList.Any(l => !l.Mortgage))
                 {
                     // 破產
-                    foreach(var landContract in payer.LandContractList)
-                    {
-                        payer.RemoveLandContract(landContract);
-                    }
-                    payer.EndRoundFlag = true;
-                    payer.PayToll(payee, payer.Money);
-                    payer.UpdateState();
-                    events.Add(new PlayerPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, payee.Id, payee.Money));
-                    events.Add(new BankruptEvent(payer.Monopoly.Id, payer.Id));
+                    player.PayToll(owner, player.Money);
+                    events.Add(new PlayerPayTollEvent(player.Monopoly.Id, player.Id, player.Money, owner.Id, owner.Money));
+
+                    events.Add(player.UpdateState());
                 }
                 else
                 {
                     //throw new Exception("錢包餘額不足！");
-                    events.Add(new PlayerTooPoorToPayTollEvent(payer.Monopoly.Id, payer.Id, payer.Money, amount));
+                    events.Add(new PlayerTooPoorToPayTollEvent(player.Monopoly.Id, player.Id, player.Money, amount));
                 }
             }
         }
         return events;
     }
 
-    public virtual decimal CalcullateToll(Player payee)
+    internal virtual decimal CalcullateToll(Player owner)
     {
-        int lotCount = payee.LandContractList.Count(t => t.Land.Lot == lot);
+        int lotCount = owner.LandContractList.Count(t => t.Land.Lot == lot);
 
         return _price * RATE_OF_HOUSE[_house] * RATE_OF_LOT[lotCount];
     }
 
-    public decimal GetPrice(string use)
+    internal decimal GetPrice(string use)
     {
         return use switch
         {
@@ -152,17 +147,14 @@ public class Land : Block
         };
     }
 
-    public override Player? GetOwner()
+    internal override Player? GetOwner() => landContract.Owner;
+
+    internal override void UpdateOwner(Player? owner)
     {
-        return landContract.Owner;
+        landContract.Owner = owner;
     }
 
-    public override void UpdateOwner(Player? Owner)
-    {
-        landContract.Owner = Owner;
-    }
-
-    public virtual DomainEvent BuildHouse(Player player)
+    internal virtual DomainEvent BuildHouse(Player player)
     {
         if (GetOwner() == player)
         {
@@ -188,7 +180,7 @@ public class Land : Block
 
     }
 
-    public override DomainEvent GetEvent(Player player)
+    internal override DomainEvent GetEvent(Player player)
     {
         Player? owner = GetOwner();
         var land = this;
@@ -211,7 +203,7 @@ public class Land : Block
         return DomainEvent.EmptyEvent;
     }
 
-    public override void DoBlockAction(Player player)
+    internal override void DoBlockAction(Player player)
     {
         Player? owner = GetOwner();
         if (owner is null)
@@ -236,11 +228,11 @@ public class StartPoint : Block
     {
     }
 
-    public override void DoBlockAction(Player player)
+    internal override void DoBlockAction(Player player)
     {
     }
 
-    public override DomainEvent GetEvent(Player player)
+    internal override DomainEvent GetEvent(Player player)
     {
         return new OnStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money);
     }
@@ -251,12 +243,12 @@ public class Jail : Block
     {
     }
 
-    public override void DoBlockAction(Player player)
+    internal override void DoBlockAction(Player player)
     {
         player.SuspendRound("Jail");
     }
 
-    public override DomainEvent GetEvent(Player player)
+    internal override DomainEvent GetEvent(Player player)
     {
         return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
     }
@@ -267,12 +259,12 @@ public class ParkingLot : Block
     {
     }
 
-    public override void DoBlockAction(Player player)
+    internal override void DoBlockAction(Player player)
     {
         player.SuspendRound("ParkingLot");
     }
 
-    public override DomainEvent GetEvent(Player player)
+    internal override DomainEvent GetEvent(Player player)
     {
         return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
     }
@@ -289,19 +281,19 @@ public class Station : Land
         throw new Exception("車站不能蓋房子！");
     }
 
-    public override decimal CalcullateToll(Player payee)
+    internal override decimal CalcullateToll(Player owner)
     {
-        int lotCount = payee.LandContractList.Count(t => t.Land.Lot == lot);
+        int lotCount = owner.LandContractList.Count(t => t.Land.Lot == lot);
 
         return _price * lotCount;
     }
 
-    public override DomainEvent BuildHouse(Player player)
+    internal override DomainEvent BuildHouse(Player player)
     {
         return new PlayerCannotBuildHouseEvent(player.Monopoly.Id, player.Id, Id);
     }
 
-    public override DomainEvent GetEvent(Player player)
+    internal override DomainEvent GetEvent(Player player)
     {
         Player? owner = GetOwner();
         var land = this;
@@ -318,7 +310,7 @@ public class Station : Land
         return DomainEvent.EmptyEvent;
     }
 
-    public override void DoBlockAction(Player player)
+    internal override void DoBlockAction(Player player)
     {
         Player? owner = GetOwner();
         if (owner is null)

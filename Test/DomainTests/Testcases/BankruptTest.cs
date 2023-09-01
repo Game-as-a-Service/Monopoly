@@ -1,3 +1,5 @@
+using static Domain.Map;
+
 namespace DomainTests.Testcases;
 
 [TestClass]
@@ -9,6 +11,8 @@ public class BankruptTest
         string id_a = "a";
         Player player_a = new(id_a, 0);
         var game = new Monopoly("Test");
+        game.AddPlayer(player_a, "Start", Direction.Right);
+        game.Initial();
 
         game.UpdatePlayerState(player_a);
 

@@ -276,6 +276,10 @@ public class EndRoundTest
         // A 需要支付過路費
         // A 支付過路費
         // A 結束回合，輪到下一個未破產玩家
+        hub.Verify<string>(
+                       nameof(IMonopolyResponses.BankruptEvent),
+                                  (playerId)
+                                  => playerId == "B");
         hub.Verify<string, int>(
             nameof(IMonopolyResponses.PlayerRolledDiceEvent),
             (playerId, diceCount) => playerId == "A" && diceCount == 2);

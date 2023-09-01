@@ -63,7 +63,7 @@ public class Map
 
 public static class DirectionExtension
 {
-    public static Map.Direction Opposite(this Map.Direction direction)
+    internal static Map.Direction Opposite(this Map.Direction direction)
     {
         return direction switch
         {

@@ -63,6 +63,14 @@ public class SettlementTest
 
         // Assert
         // 遊戲結算
+        hub.Verify<string>(
+                       nameof(IMonopolyResponses.BankruptEvent),
+                                  (playerId)
+                                  => playerId == "B");
+        hub.Verify<string>(
+                       nameof(IMonopolyResponses.BankruptEvent),
+                                  (playerId)
+                                  => playerId == "C");
         hub.Verify<string, int>(
                        nameof(IMonopolyResponses.SettlementEvent),
                                   (playerId, rank)

@@ -65,13 +65,13 @@ public class Chess
         yield return currentBlock.GetEvent(player);
     }
 
-    public List<DomainEvent> Move(int moveCount)
+    internal List<DomainEvent> Move(int moveCount)
     {
         remainingSteps = moveCount;
         return Move().ToList();
     }
 
-    public List<DomainEvent> ChangeDirection(Direction direction)
+    internal List<DomainEvent> ChangeDirection(Direction direction)
     {
         if (direction == currentDirection.Opposite())
         {
