@@ -16,7 +16,7 @@ public class SettlementUsecase : Usecase<SettlementRequest>
     public override async Task ExecuteAsync(SettlementRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
         game.Settlement();

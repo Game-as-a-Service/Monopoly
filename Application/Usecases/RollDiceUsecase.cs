@@ -16,7 +16,7 @@ public class RollDiceUsecase : Usecase<RollDiceRequest>
     public override async Task ExecuteAsync(RollDiceRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
         game.PlayerRollDice(request.PlayerId);

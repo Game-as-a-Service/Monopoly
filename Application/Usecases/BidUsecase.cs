@@ -16,7 +16,7 @@ public class BidUsecase : Usecase<BidRequest>
     public override async Task ExecuteAsync(BidRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
         game.PlayerBid(request.PlayerId, request.BidPrice);

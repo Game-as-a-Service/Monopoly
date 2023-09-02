@@ -65,7 +65,7 @@ public class SelectDirectionTest
         var repo = server.GetRequiredService<IRepository>();
         var game = repo.FindGameById("1");
         var player = game.CurrentPlayer!;
-        Assert.AreEqual("Jail", player.Chess.CurrentBlock.Id);
+        Assert.AreEqual("Jail", player.Chess.CurrentPosition);
     }
 
     [TestMethod]
@@ -115,6 +115,6 @@ public class SelectDirectionTest
         var repo = server.GetRequiredService<IRepository>();
         var game = repo.FindGameById("1");
         var player = game.CurrentPlayer!;
-        Assert.AreEqual("ParkingLot", player.Chess.CurrentBlock.Id);
+        Assert.AreEqual("ParkingLot", player.Chess.CurrentPosition);
     }
 }

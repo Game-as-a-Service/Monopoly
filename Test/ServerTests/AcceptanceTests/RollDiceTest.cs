@@ -127,26 +127,6 @@ public class RollDiceTest
         hub.VerifyNoElseEvent();
     }
 
-    private void SetupMonopoly(string gameId, Player player, string initialBlockId, Direction initialDirection, int[] dices, string[] landContracts = default!, int remainingSteps = 0)
-    {
-        var repo = server.GetRequiredService<IRepository>();
-        var map = new SevenXSevenMap();
-        var game = new Monopoly(gameId, map, Utils.MockDice(dices));
-
-        game.AddPlayer(player, initialBlockId, initialDirection);
-        if (landContracts != null)
-        {
-            foreach (var landContract in landContracts)
-            {
-                Land? land = map.FindBlockById(landContract) as Land;
-                player.AddLandContract(new(player, land));
-            }
-        }
-
-        game.Initial();
-        repo.Save(game);
-    }
-
     [TestMethod]
     [Description(
         """

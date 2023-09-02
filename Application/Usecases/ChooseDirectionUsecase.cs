@@ -16,7 +16,7 @@ public class ChooseDirectionUsecase : Usecase<ChooseDirectionRequest>
     public override async Task ExecuteAsync(ChooseDirectionRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
         //改
         game.PlayerSelectDirection(request.PlayerId, request.Direction);
         //存

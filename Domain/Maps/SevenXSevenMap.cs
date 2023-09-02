@@ -2,7 +2,7 @@
 
 public class SevenXSevenMap : Map
 {
-    public SevenXSevenMap() : base(Blocks)
+    public SevenXSevenMap() : base("7x7", Blocks)
     {
     }
 

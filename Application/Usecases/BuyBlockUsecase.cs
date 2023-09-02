@@ -16,7 +16,7 @@ public class BuyBlockUsecase : Usecase<BuyBlockRequest>
     public override async Task ExecuteAsync(BuyBlockRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
         game.BuyLand(request.PlayerId, request.LandID);

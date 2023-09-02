@@ -74,7 +74,7 @@ public class CreateGameTest
         Assert.AreEqual(expected, data);
         Assert.IsTrue(repository.IsExist(gameId));
         var game = repository.FindGameById(gameId);
-        Assert.AreEqual(3, game.Players.Count);
+        Assert.AreEqual(3, game.Players.Count());
         Assert.AreEqual("idA", game.Host);
     }
 

@@ -16,7 +16,7 @@ public class MortgageUsecase : Usecase<MortgageRequest>
     public override async Task ExecuteAsync(MortgageRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
         game.MortgageLandContract(request.PlayerId, request.BlockId);

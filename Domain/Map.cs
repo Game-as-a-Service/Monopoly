@@ -4,11 +4,14 @@ public class Map
 {
     private readonly Block?[][] _blocks;
 
-    public Map(Block?[][] blocks)
+    public Map(string id, Block?[][] blocks)
     {
+        Id = id;
         _blocks = blocks;
         GererateBlockConnection(blocks);
     }
+    public string Id { get; init; }
+    public Block?[][] Blocks => _blocks;
 
     private static void GererateBlockConnection(Block?[][] blocks)
     {

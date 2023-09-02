@@ -16,7 +16,7 @@ public class PayTollUsecase : Usecase<PayTollRequest>
     public override async Task ExecuteAsync(PayTollRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
         game.PayToll(request.PlayerId);

@@ -173,7 +173,7 @@ public class Utils
 
         internal void Save(MonopolyTestServer server)
         {
-            var monopoly = this.Build();
+            var monopoly = Build();
             server.GetRequiredService<IRepository>().Save(monopoly);
         }
     }

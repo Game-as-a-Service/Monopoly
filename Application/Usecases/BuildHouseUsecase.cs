@@ -16,7 +16,7 @@ public class BuildHouseUsecase : Usecase<BuildHouseRequest>
     public override async Task ExecuteAsync(BuildHouseRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
         game.BuildHouse(request.PlayerId);

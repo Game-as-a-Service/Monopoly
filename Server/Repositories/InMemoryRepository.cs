@@ -1,5 +1,5 @@
 using Application.Common;
-using Domain;
+using Application.DataModels;
 
 namespace Server.Repositories;
 
@@ -27,9 +27,9 @@ public class InMemoryRepository : IRepository
         return Games.ContainsKey(id);
     }
 
-    public string Save(Monopoly game)
+    public string Save(Monopoly monopoly)
     {
-        game.Id ??= (Games.Count + 1).ToString();
+        var game = monopoly with { Id = (Games.Count + 1).ToString() };
         Games[game.Id] = game;
         return game.Id;
     }

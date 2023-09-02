@@ -16,7 +16,7 @@ public class RedeemUsecase : Usecase<RedeemRequest>
     public override async Task ExecuteAsync(RedeemRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
         game.RedeemLandContract(request.PlayerId, request.BlockId);

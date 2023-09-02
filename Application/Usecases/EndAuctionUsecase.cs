@@ -16,7 +16,7 @@ public class EndAuctionUsecase : Usecase<EndAuctionRequest>
     public override async Task ExecuteAsync(EndAuctionRequest request)
     {
         //查
-        var game = Repository.FindGameById(request.GameId);
+        var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
         game.EndAuction();
