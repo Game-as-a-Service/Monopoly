@@ -1,9 +1,12 @@
 ﻿namespace Application.DataModels;
 
-public record Monopoly(string Id, Player[] Players, Map Map, Player Host, Player CurrentPlayer);
+public record Monopoly(string Id, Player[] Players, Map Map, string HostId, CurrentPlayerState CurrentPlayerState);
 
-public record Player(string Id, decimal Money, Chess Chess);
+public record Player(string Id, decimal Money, Chess Chess, LandContract[] LandContracts);
+public record CurrentPlayerState(string PlayerId, bool IsPayToll, bool IsBoughtLand, bool IsUpgradeLand, Auction? Auction);
 public record Chess(string CurrentPosition, Direction Direction, int RemainSteps);
+public record LandContract(string LandId, bool InMortgage, int Deadline);
+public record Auction(string LandId, string? HighestBidderId = null, decimal? HighestPrice = null);
 public enum Direction
 {
     Up,

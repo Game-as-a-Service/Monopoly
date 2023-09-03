@@ -16,8 +16,6 @@ public class Monopoly : AbstractAggregateRoot
     private readonly Map _map;
     private readonly List<Player> _players = new();
     private readonly Dictionary<Player, int> _playerRankDictionary = new(); // 玩家名次 {玩家,名次}
-    private Map map;
-    private Player[] players;
 
     public IDictionary<Player, int> PlayerRankDictionary => _playerRankDictionary.AsReadOnly();
 

@@ -1,7 +1,5 @@
-﻿using Domain;
-using Server.Hubs;
+﻿using Server.Hubs;
 using SharedLibrary;
-using static Domain.Map;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -30,17 +28,19 @@ public class MortgageTest
         """)]
     public async Task 玩家抵押房地產()
     {
-        Player A = new("A", 5000);
+        // Arrange
+        var A = new { Id = "A", Money = 5000m };
+        var A1 = new { Id = "A1", Price = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1")
+            .WithLandContract(A1.Id)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -69,18 +69,19 @@ public class MortgageTest
         """)]
     public async Task 玩家不能抵押已抵押房地產()
     {
-        Player A = new("A", 1000);
+        // Arrange
+        var A = new { Id = "A", Money = 1000m };
+        var A1 = new { Id = "A1", Price = 1000m, IsMortgage = true };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1")
-            .WithMortgage("A1")
+            .WithLandContract(A1.Id, InMortgage: A1.IsMortgage)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -107,16 +108,17 @@ public class MortgageTest
         """)]
     public async Task 玩家抵押非自有房地產()
     {
-        Player A = new("A", 5000);
+        // Arrange
+        var A = new { Id = "A", Money = 5000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 

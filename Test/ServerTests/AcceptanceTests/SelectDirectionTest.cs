@@ -1,8 +1,6 @@
 ﻿using Application.Common;
-using Domain;
 using Server.Hubs;
 using SharedLibrary;
-using static Domain.Map;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -33,38 +31,40 @@ public class SelectDirectionTest
     public async Task 玩家選擇方向後在監獄停住()
     {
         // Arrange
-        Player A = new("A", 1000);
-
         const string gameId = "1";
+        var A = new { Id = "A", Money = 1000m };
+        var A_block = new { Id = "Jail" };
+
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Jail", Direction.Down.ToString())
+            .WithPosition(A_block.Id, Direction.Down)
+            .Build()
         )
         .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerChooseDirection), "1", "A", "Left");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerChooseDirection), gameId, A.Id, Direction.Left.ToString());
 
         // Assert
         // A 選擇方向為 Left
         // A 停在 Jail，方向為 Left，剩下 0 步
         // A 下一回合無法行動，暫停2回合
         hub.Verify<string, string>(nameof(IMonopolyResponses.PlayerChooseDirectionEvent),
-            (playerId, direction) => playerId == "A" && direction == "Left");
+            (playerId, direction) => playerId == A.Id && direction == "Left");
         hub.Verify<string, int>(nameof(IMonopolyResponses.PlayerCannotMoveEvent),
-                       (playerId, suspendRounds) => playerId == "A" && suspendRounds == 2);
+                       (playerId, suspendRounds) => playerId == A.Id && suspendRounds == 2);
         hub.VerifyNoElseEvent();
 
         var repo = server.GetRequiredService<IRepository>();
         var game = repo.FindGameById("1");
-        var player = game.CurrentPlayer!;
+        var player = game.Players.First(p => p.Id == A.Id)!;
         Assert.AreEqual("Jail", player.Chess.CurrentPosition);
     }
 
@@ -82,39 +82,40 @@ public class SelectDirectionTest
     public async Task 玩家選擇方向後在停車場停住()
     {
         // Arrange
-        Player A = new("A", 1000);
+        var A = new { Id = "A", Money = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("ParkingLot", Direction.Down.ToString())
+            .WithPosition("ParkingLot", Direction.Down)
+            .Build()
         )
         .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerChooseDirection), "1", "A", "Left");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerChooseDirection), gameId, A.Id, Direction.Left.ToString());
 
         // Assert
         // A 選擇方向為 Left
         // A 停在 ParkingLot，方向為 Left，剩下 0 步
 
         hub.Verify<string, string>(nameof(IMonopolyResponses.PlayerChooseDirectionEvent),
-            (playerId, direction) => playerId == "A" && direction == "Left");
+            (playerId, direction) => playerId == A.Id && direction == Direction.Left.ToString());
         hub.Verify<string, int>(nameof(IMonopolyResponses.PlayerCannotMoveEvent),
-                       (playerId, suspendRounds) => playerId == "A" && suspendRounds == 1);
+                       (playerId, suspendRounds) => playerId == A.Id && suspendRounds == 1);
 
         hub.VerifyNoElseEvent();
 
         var repo = server.GetRequiredService<IRepository>();
         var game = repo.FindGameById("1");
-        var player = game.CurrentPlayer!;
+        var player = game.Players.First(p=>p.Id== A.Id)!;
         Assert.AreEqual("ParkingLot", player.Chess.CurrentPosition);
     }
 }

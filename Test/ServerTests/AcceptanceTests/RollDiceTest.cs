@@ -1,9 +1,6 @@
 ﻿using Application.Common;
-using Domain;
-using Domain.Maps;
 using Server.Hubs;
 using SharedLibrary;
-using static Domain.Map;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -29,17 +26,17 @@ public class RollDiceTest
     public async Task 玩家擲骰後移動棋子()
     {
         // Arrange
-        Player A = new("A");
+        var A = new { Id = "A" };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition("F4", Direction.Up.ToString())
+            new PlayerBuilder(A.Id)
+            .WithPosition("F4", Direction.Up)
+            .Build()
         )
         .WithMockDice(new[] { 6 })
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -79,17 +76,17 @@ public class RollDiceTest
     public async Task 玩家擲骰後移動棋子到需要選擇方向的地方()
     {
         // Arrange
-        Player A = new("A");
+        var A = new { Id = "A" };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition("F4", Direction.Up.ToString())
+            new PlayerBuilder(A.Id)
+            .WithPosition("F4", Direction.Up)
+            .Build()
         )
         .WithMockDice(new[] { 2, 6 })
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -143,17 +140,18 @@ public class RollDiceTest
     public async Task 玩家擲骰後移動棋子經過起點獲得獎勵金3000()
     {
         // Arrange
-        Player A = new("A", 1000);
+        var A = new { Id = "A", Money = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("F3", Direction.Up.ToString())
+            .WithPosition("F3", Direction.Up)
+            .Build()
         )
-        .WithMockDice(new[] { 4 })
-        .WithCurrentPlayer(nameof(A));
+        .WithMockDice(new[] { 2, 6 })
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -187,7 +185,7 @@ public class RollDiceTest
         // Assert A 有 4000 元
         var repo = server.GetRequiredService<IRepository>();
         var monopoly = repo.FindGameById("1");
-        Assert.AreEqual(4000, monopoly.CurrentPlayer!.Money);
+        Assert.AreEqual(4000, monopoly.Players.First(p => p.Id == A.Id).Money);
     }
 
     [TestMethod]
@@ -203,17 +201,18 @@ public class RollDiceTest
     public async Task 玩家擲骰後移動棋子到起點無法獲得獎勵金()
     {
         // Arrange
-        Player A = new("A", 1000);
+        var A = new { Id = "A", Money = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("F3", Direction.Up.ToString())
+            .WithPosition("F3", Direction.Up)
+            .Build()
         )
-        .WithMockDice(new[] { 3 })
-        .WithCurrentPlayer(nameof(A));
+        .WithMockDice(new[] { 2, 6 })
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -242,7 +241,7 @@ public class RollDiceTest
         // A 共持有1000元
         var repo = server.GetRequiredService<IRepository>();
         var monopoly = repo.FindGameById("1");
-        Assert.AreEqual(1000, monopoly.CurrentPlayer!.Money);
+        Assert.AreEqual(1000, monopoly.Players.First(p => p.Id == A.Id).Money);
     }
 
     [TestMethod]
@@ -258,18 +257,19 @@ public class RollDiceTest
     public async Task 玩家擲骰後移動棋子到自己擁有地()
     {
         // Arrange
-        Player A = new("A");
+        var A = new { Id = "A" };
+        var A1 = new { Id = "A1" };
+        var A2 = new { Id = "A2", HouseCount = 4 };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A2")
+            new PlayerBuilder(A.Id)
+            .WithPosition("A1", Direction.Right)
+            .Build()
         )
-        .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer(nameof(A));
+        .WithMockDice(new[] { 1, 1 })
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -306,24 +306,24 @@ public class RollDiceTest
     public async Task 玩家擲骰後移動棋子到他人擁有地()
     {
         // Arrange
-        Player A = new("A");
-        Player B = new("B");
+        var A = new { Id = "A" };
+        var B = new { Id = "B" };
+        var A2 = new { Id = "A2", HouseCount = 0 };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            new PlayerBuilder(A.Id)
+            .WithPosition("A1", Direction.Right)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
-            .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A2")
+            new PlayerBuilder(B.Id)
+            .WithLandContract(A2.Id)
+            .Build()
         )
         .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer("A");
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -356,17 +356,17 @@ public class RollDiceTest
     public async Task 玩家擲骰後移動棋子到空地()
     {
         // Arrange
-        Player A = new("A");
+        var A = new { Id = "A" };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            new PlayerBuilder(A.Id)
+            .WithPosition("A1", Direction.Right)
+            .Build()
         )
         .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -402,24 +402,26 @@ public class RollDiceTest
     public async Task 玩家的資產為0時破產()
     {
         // Arrange
-        Player A = new("A", 200);
-        Player B = new("B", 1000);
+        var A = new { Id = "A", Money = 200 };
+        var B = new { Id = "B", Money = 1000 };
+        var A2 = new { Id = "A2", HouseCount = 2 };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition("A1", Direction.Right)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A2", 2)
+            .WithLandContract(A2.Id)
+            .Build()
         )
         .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer(nameof(A), rollDice : true);
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 

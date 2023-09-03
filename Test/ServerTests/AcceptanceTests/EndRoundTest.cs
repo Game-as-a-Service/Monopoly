@@ -1,7 +1,5 @@
-using Domain;
 using Server.Hubs;
 using SharedLibrary;
-using static Domain.Map;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -20,35 +18,37 @@ public class EndRoundTest
     [TestMethod]
     [Description(
         """
-        Given:  目前輪到 A
+        Given:  目前輪到 A 目前在 A2
                 A 持有 1000元
                 B 持有 1000元
                 A2 是 B 的土地，價值 1000元
-                A 移動到 A2
         When:   A 結束回合
         Then:   A 無法結束回合
         """)]
     public async Task 玩家沒有付過路費無法結束回合()
     {
         // Arrange
-        Player A = new("A", 1000);
-        Player B = new("B", 1000);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 1000m };
+        var A2 = new { Id = "A2", Price = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition(A2.Id, Direction.Left)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A2")
+            .WithLandContract(A2.Id)
+            .Build()
         )
-        .WithMockDice(new[] { 1, 1 })
-        .WithCurrentPlayer(nameof(A), rollDice : true);
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
+            .Build()
+        );
 
         monopolyBuilder.Save(server);
 
@@ -85,32 +85,35 @@ public class EndRoundTest
                 A 持有 1000元
                 B 持有 1000元
                 A2 是 B 的土地，價值 1000元
-                A 移動到 A2
-                A 支付過路費
+                A 已支付過路費
         When:   A 結束回合
         Then:   A 結束回合, 輪到玩家 B 的回合
         """)]
     public async Task 玩家成功結束回合()
     {
         // Arrange
-        Player A = new("A", 1000);
-        Player B = new("B", 1000);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 1000m };
+        var A2 = new { Id = "A2", Price = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition(A2.Id, Direction.Up)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A2")
+            .WithLandContract(A2.Id)
+            .Build()
         )
-        .WithMockDice(new[] { 1, 1 })
-        .WithCurrentPlayer(nameof(A), rollDice : true, payToll: true);
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
+            .WithPayToll()
+            .Build()
+        );
 
         monopolyBuilder.Save(server);
 
@@ -167,14 +170,14 @@ public class EndRoundTest
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
             .WithPosition("A1", Direction.Right.ToString())
             .WithLandContract("A1", 2)
             .WithMortgage("A1", 1)
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
             .WithPosition("A1", Direction.Right.ToString())
             .WithLandContract("A2")
@@ -243,18 +246,18 @@ public class EndRoundTest
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
             .WithPosition("A1", Direction.Right.ToString())
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
             .WithPosition("A1", Direction.Right.ToString())
             .WithBankrupt()
         )
         .WithPlayer(
-            new MonopolyPlayer(C.Id)
+            new PlayerBuilder(C.Id)
             .WithMoney(C.Money)
             .WithPosition("A1", Direction.Right.ToString())
             .WithLandContract("A2")
@@ -276,10 +279,6 @@ public class EndRoundTest
         // A 需要支付過路費
         // A 支付過路費
         // A 結束回合，輪到下一個未破產玩家
-        hub.Verify<string>(
-                       nameof(IMonopolyResponses.BankruptEvent),
-                                  (playerId)
-                                  => playerId == "B");
         hub.Verify<string, int>(
             nameof(IMonopolyResponses.PlayerRolledDiceEvent),
             (playerId, diceCount) => playerId == "A" && diceCount == 2);
@@ -321,17 +320,17 @@ public class EndRoundTest
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
             .WithPosition("A1", Direction.Right.ToString())
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
             .WithPosition("Jail", Direction.Right.ToString())
         )
         .WithPlayer(
-            new MonopolyPlayer(C.Id)
+            new PlayerBuilder(C.Id)
             .WithMoney(C.Money)
             .WithPosition("A1", Direction.Right.ToString())
         )

@@ -1,7 +1,5 @@
-using Domain;
 using Server.Hubs;
 using SharedLibrary;
-using static Domain.Map;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -30,37 +28,44 @@ public class AuctionTest
         """)]
     public async Task 玩家喊價成功()
     {
-        Player A = new("A", 2000);
-        Player B = new("B", 2000);
-
+        // Arrange
+        var A = new { Id = "A", Money = 2000m };
+        var B = new { Id = "B", Money = 2000m };
+        var A1 = new { Id = "A1", Price = 1000m, HouseCount = 2 };
+        var Auction = new { LandId = A1.Id };
         const string gameId = "1";
-        var monopolyBuilder = new MonopolyBuilder("1")
-        .WithPlayer(
-            new MonopolyPlayer(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1", 2)
-        )
-        .WithPlayer(
-            new MonopolyPlayer(B.Id)
-            .WithMoney(B.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-        )
-        .WithCurrentPlayer(nameof(A), auction : "A1");
+
+        var monopolyBuilder = new MonopolyBuilder(gameId)
+            .WithPlayer(
+                new PlayerBuilder(A.Id)
+                    .WithMoney(A.Money)
+                    .WithLandContract(A1.Id)
+                    .Build()
+            )
+            .WithPlayer(
+                new PlayerBuilder(B.Id)
+                    .WithMoney(B.Money)
+                    .Build()
+            )
+            .WithCurrentPlayer(
+                new CurrentPlayerStateBuilder(A1.Id)
+                    .WithAuction(Auction.LandId)
+                    .Build()
+            );
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerBid), gameId, "B", 1500);
+        await hub.SendAsync(nameof(MonopolyHub.PlayerBid), gameId, B.Id, 1500);
 
         // Assert
         // B 喊價
         hub.Verify<string, string, decimal>(
                        nameof(IMonopolyResponses.PlayerBidEvent),
                                 (playerId, blockId, highestPrice)
-                                => playerId == "B" && blockId == "A1" && highestPrice == 1500);
+                                => playerId == B.Id && blockId == A1.Id && highestPrice == 1500);
         hub.VerifyNoElseEvent();
     }
 
@@ -76,23 +81,28 @@ public class AuctionTest
         """)]
     public async Task 玩家不能喊出比自己現金還高的金額()
     {
-        Player A = new("A", 1000);
-        Player B = new("B", 2000);
-
+        // Arrange
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 2000m };
+        var A1 = new { Id = "A1", Price = 1000m, HouseCount = 1 };
         const string gameId = "1";
-        var monopolyBuilder = new MonopolyBuilder("1")
-        .WithPlayer(
-            new MonopolyPlayer(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1", 1)
-        )
-        .WithPlayer(
-            new MonopolyPlayer(B.Id)
-            .WithMoney(B.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-        )
-        .WithCurrentPlayer(nameof(A), auction : "A1");
+
+        var monopolyBuilder = new MonopolyBuilder(gameId)
+            .WithPlayer(
+                new PlayerBuilder(A.Id)
+                    .WithMoney(A.Money)
+                    .WithLandContract(A1.Id)
+                    .Build()
+            )
+            .WithPlayer(
+                new PlayerBuilder(B.Id)
+                    .WithMoney(B.Money)
+                    .Build()
+            )
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
+                .WithAuction(A1.Id)
+                .Build()
+            );
 
         monopolyBuilder.Save(server);
 
@@ -122,23 +132,28 @@ public class AuctionTest
         """)]
     public async Task 玩家不能喊出比當前拍賣金額更低的金額()
     {
-        Player A = new("A", 1000);
-        Player B = new("B", 2000);
+        // Arrange
+        var A1 = new { Id = "A1", Price = 1000m, HouseCount = 1 };
+        var A = new { Id = "A", Money = 1000m, LandContract = new[] { A1 } };
+        var B = new { Id = "B", Money = 2000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1", 1)
+            .WithLandContract("A1")
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("Start", Direction.Right.ToString())
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A), auction : "A1");
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
+            .WithAuction(A1.Id) 
+            .Build()
+        );
 
         monopolyBuilder.Save(server);
 
@@ -152,7 +167,7 @@ public class AuctionTest
         hub.Verify<string, string, decimal, decimal>(
                        nameof(IMonopolyResponses.PlayerBidFailEvent),
                                 (playerId, blockId, bidPrice, highestPrice)
-                                => playerId == "B" && blockId == "A1" && bidPrice == 800 && highestPrice == 1000);
+                                => playerId == B.Id && blockId == A1.Id && bidPrice == 800 && highestPrice == 1000);
         hub.VerifyNoElseEvent();
     }
 
@@ -168,17 +183,22 @@ public class AuctionTest
         """)]
     public async Task 拍賣結算時流拍系統會以房地產價值的七成收購()
     {
-        Player A = new("A", 2000);
+        // Arrange
+        var A = new { Id = "A", Money = 2000m };
+        var A1 = new { Id = "A1", Price = 1000m, HouseCount = 1 };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1", 1)
+            .WithLandContract(A1.Id)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A), auction : "A1");
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
+            .WithAuction(A1.Id)
+            .Build()
+        );
 
         monopolyBuilder.Save(server);
 
@@ -212,24 +232,28 @@ public class AuctionTest
         """)]
     public async Task 拍賣結算時轉移金錢及地契()
     {
-        Player A = new("A", 1000);
-        Player B = new("B", 2000);
+        // Arrange
+        var A1 = new { Id = "A1", Price = 1000m, HouseCount = 1 };
+        var A = new { Id = "A", Money = 1000m, LandContract = new[] { A1 } };
+        var B = new { Id = "B", Money = 2000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1")
+            .WithLandContract(A1.Id)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("Start", Direction.Right.ToString())
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A), auction : "A1")
-        .WithBid(nameof(B), 600);
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
+            .WithAuction(LandId: A1.Id, HighestBidderId: B.Id, HighestPrice: 600)
+            .Build()
+        );
 
         monopolyBuilder.Save(server);
 
@@ -263,23 +287,28 @@ public class AuctionTest
         """)]
     public async Task 拍賣土地的玩家不能自己喊價()
     {
-        Player A = new("A", 2000);
-        Player B = new("B", 2000);
+        // Arrange
+        var A1 = new { Id = "A1", Price = 1000m, HouseCount = 2 };
+        var A = new { Id = "A", Money = 2000m, LandContract = new[] { A1 } };
+        var B = new { Id = "B", Money = 2000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1", 2)
+            .WithLandContract(A1.Id)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("Start", Direction.Right.ToString())
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A), auction : "A1");
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
+            .WithAuction(LandId: A1.Id)
+            .Build()
+        );
 
         monopolyBuilder.Save(server);
 

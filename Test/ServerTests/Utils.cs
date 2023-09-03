@@ -1,10 +1,7 @@
 using Application.Common;
-using Domain;
-using Domain.Interfaces;
-using Domain.Maps;
+using Application.DataModels;
 using Moq;
 using SharedLibrary;
-using static Domain.Map;
 
 namespace ServerTests;
 
@@ -34,15 +31,13 @@ public class Utils
     {
         public string GameId { get; private set; }
 
-        public List<MonopolyPlayer> Players { get; private set; } = new();
+        public List<Player> Players { get; private set; } = new();
 
-        public Monopoly Game { get; private set; }
+        public string HostId { get; private set; }
 
         public int[] Dices { get; private set; }
 
-        public string CurrentPlayer { get; private set; }
-
-        public bool RollDice { get; private set; }
+        public CurrentPlayerState CurrentPlayerState { get; private set; }
 
         public string? Auction { get; private set; }
 
@@ -55,13 +50,14 @@ public class Utils
         public string? BuyLand { get; private set; }
 
         public bool PayToll { get; private set; }
+        public Map Map { get; private set; }
 
         public MonopolyBuilder(string id)
         {
             GameId = id;
         }
 
-        public MonopolyBuilder WithPlayer(MonopolyPlayer player)
+        public MonopolyBuilder WithPlayer(Player player)
         {
             Players.Add(player);
             return this;
@@ -73,102 +69,25 @@ public class Utils
             return this;
         }
 
-        public MonopolyBuilder WithCurrentPlayer(string playerId, 
-                                                    bool rollDice = false,
-                                                    string? auction = null, 
-                                                    bool upgrade = false,
-                                                    string? buyLand = null,
-                                                    bool payToll = false)
+        public MonopolyBuilder WithCurrentPlayer(CurrentPlayerState currentPlayerState)
         {
-            CurrentPlayer = playerId;
-            RollDice = rollDice;
-            Auction = auction;
-            Upgrade = upgrade;
-            BuyLand = buyLand;
-            PayToll = payToll;
+            CurrentPlayerState = currentPlayerState;
             return this;
         }
 
-        public MonopolyBuilder WithBid(string playerId, decimal price)
+        public MonopolyBuilder WithHost(string id)
         {
-            if (Auction is not null)
-            {
-                PlayerBid = playerId;
-                BidPrice = price;
-                
-            }
+            HostId = id;
             return this;
         }
 
         public Monopoly Build()
         {
-            var map = new SevenXSevenMap();
-            var monopoly = new Monopoly(GameId, map, (Dices is null ? null : MockDice(Dices)));
-            Players.ForEach(p =>
-            {
-                var player = new Player(p.Id, p.Money);
-                var block = map.FindBlockById(p.BlockId);
-                var direction = (Direction)Enum.Parse(typeof(Direction), p.Direction);
-                player.Chess = new Chess(player, map, block, direction);
-                p.LandContracts.ForEach(l =>
-                {
-                    player.AddLandContract(new LandContract(player, (Land)map.FindBlockById(l)));
-
-                    Land land = (Land)map.FindBlockById(l);
-                    for (int i = 0; i < p.House[l]; i++) land.Upgrade();
-                });
-                foreach (var mortgage in p.Mortgages)
-                {
-                    player.MortgageForTest(mortgage.Key, mortgage.Value);
-                }
-                monopoly.AddPlayer(player, p.BlockId, direction);
-                if (CurrentPlayer == player.Id)
-                {
-                    monopoly.CurrentPlayer = player;
-                    monopoly.CurrentPlayer.EnableUpgrade = !Upgrade;
-                    if (Auction is not null)
-                    {
-                        monopoly.CurrentPlayer.AuctionLandContract(Auction);
-                    }
-                    if (BuyLand is not null)
-                    {
-                        monopoly.BuyLand(monopoly.CurrentPlayer.Id, BuyLand);
-                        monopoly.CurrentPlayer.EnableUpgrade = false;
-                    }
-                }
-                if (block is Jail)
-                {
-                    player.SuspendRound("Jail");
-                }
-                else if (block is ParkingLot)
-                {
-                    player.SuspendRound("ParkingLot");
-                }
-                if (p.Bankrupt)
-                {
-                    monopoly.UpdatePlayerState(player);
-                }
-            });
-            Players.ForEach(p =>
-            {
-                if(Auction is not null && PlayerBid == p.Id)
-                {
-                    monopoly.PlayerBid(p.Id, BidPrice);
-                }
-            });
-            if (RollDice)
-            {
-                monopoly.CurrentPlayer.EndRoundFlag = true;
-                monopoly.CurrentPlayer.EnableUpgrade = false;
-
-                monopoly.PlayerRollDice(monopoly.CurrentPlayer!.Id);
-            }
-            if (PayToll)
-            {
-                monopoly.PayToll(monopoly.CurrentPlayer!.Id);
-            }
-            //monopoly.Initial();
-            return monopoly;
+            return new Monopoly(Id: GameId,
+                                Players: Players.ToArray(),
+                                Map: Map,
+                                HostId: HostId,
+                                CurrentPlayerState: CurrentPlayerState);
         }
 
         internal void Save(MonopolyTestServer server)
@@ -178,59 +97,118 @@ public class Utils
         }
     }
 
-    public class MonopolyPlayer
+    public class PlayerBuilder
     {
         public string Id { get; set; }
         public decimal Money { get; set; }
         public string BlockId { get; set; }
-        public string Direction { get; set; }
-        public List<string> LandContracts { get; set; }
-        public IDictionary<string, int> Mortgages =  new Dictionary<string, int>();
-        public IDictionary<string, int> House = new Dictionary<string, int>();
+        public Direction Direction { get; set; }
+        public List<LandContract> LandContracts { get; set; }
         public bool Bankrupt { get; set; }
 
-        public MonopolyPlayer(string id)
+        public PlayerBuilder(string id)
         {
             Id = id;
             Money = 15000;
             BlockId = "StartPoint";
-            Direction = "Right";
+            Direction = Direction.Right;
             LandContracts = new();
         }
 
-        public MonopolyPlayer WithMoney(decimal money)
+        public PlayerBuilder WithMoney(decimal money)
         {
             Money = money;
             return this;
         }
 
-        public MonopolyPlayer WithPosition(string blockId, string direction)
+        public PlayerBuilder WithPosition(string blockId, Direction direction)
         {
             BlockId = blockId;
             Direction = direction;
             return this;
         }
 
-        public MonopolyPlayer WithLandContract(string landId, int house = 0)
+        public PlayerBuilder WithLandContract(string LandId, bool InMortgage = false, int Deadline = 10)
         {
-            LandContracts.Add(landId);
-            House.Add(landId, house);
+            LandContracts.Add(new LandContract(LandId: LandId,
+                                               InMortgage: InMortgage,
+                                               Deadline: Deadline));
             return this;
         }
 
-        public MonopolyPlayer WithMortgage(string landId, int deadLine = 10)
-        {
-            if (LandContracts.Exists(l => l == landId))
-            {
-                Mortgages.Add(landId, deadLine);
-            }
-            return this;
-        }
-
-        public MonopolyPlayer WithBankrupt()
+        public PlayerBuilder WithBankrupt()
         {
             Bankrupt = true;
             return this;
+        }
+
+        public Player Build()
+        {
+            Chess chess = new(CurrentPosition: BlockId,
+                              Direction: Enum.Parse<Application.DataModels.Direction>(Direction.ToString()),
+                              RemainSteps: 0);
+            Player player = new(Id: Id,
+                                    Money: Money,
+                                    Chess: chess,
+                                    LandContracts: LandContracts.ToArray());
+            return player;
+        }
+    }
+
+    public enum Direction
+    {
+        Up,
+        Down,
+        Left,
+        Right
+    }
+
+    public class CurrentPlayerStateBuilder
+    {
+        public string Id { get; private set; }
+        public bool IsPayToll { get; private set; }
+        public bool IsBoughtLand { get; private set; }
+        public bool IsUpgradeLand { get; private set; }
+        public Auction? Auction { get; private set; }
+        public CurrentPlayerStateBuilder(string id)
+        {
+            Id = id;
+            IsPayToll = false;
+            IsBoughtLand = false;
+            IsUpgradeLand = false;
+        }
+
+        public CurrentPlayerStateBuilder WithPayToll()
+        {
+            IsPayToll = true;
+            return this;
+        }
+
+        public CurrentPlayerStateBuilder WithBoughtLand()
+        {
+            IsBoughtLand = true;
+            return this;
+        }
+
+        public CurrentPlayerStateBuilder WithUpgradeLand()
+        {
+            IsUpgradeLand = true;
+            return this;
+        }
+
+        internal CurrentPlayerStateBuilder WithAuction(string LandId, string? HighestBidderId = null, decimal? HighestPrice = null)
+        {
+            Auction = new Auction(LandId, HighestBidderId, HighestPrice);
+            return this;
+        }
+
+        public CurrentPlayerState Build()
+        {
+            return new CurrentPlayerState(PlayerId: Id,
+                                          IsPayToll: IsPayToll,
+                                          IsBoughtLand: IsBoughtLand,
+                                          IsUpgradeLand: IsUpgradeLand,
+                                          Auction: Auction);
         }
     }
 }

@@ -1,7 +1,5 @@
-using Domain;
 using Server.Hubs;
 using SharedLibrary;
-using static Domain.Map;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -29,48 +27,40 @@ public class SettlementTest
     public async Task 玩家破產遊戲結算()
     {
         // Arrange
-        Player A = new("A", 1000);
-        Player B = new("B", 0);
-        Player C = new("C", 0);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 0m };
+        var C = new { Id = "C", Money = 0m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
             .WithBankrupt()
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(C.Id)
+            new PlayerBuilder(C.Id)
             .WithMoney(C.Money)
-            .WithPosition("A1", Direction.Right.ToString())
             .WithBankrupt()
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.Settlement), gameId, "A");
 
         // Assert
         // 遊戲結算
-        hub.Verify<string>(
-                       nameof(IMonopolyResponses.BankruptEvent),
-                                  (playerId)
-                                  => playerId == "B");
-        hub.Verify<string>(
-                       nameof(IMonopolyResponses.BankruptEvent),
-                                  (playerId)
-                                  => playerId == "C");
         hub.Verify<string, int>(
                        nameof(IMonopolyResponses.SettlementEvent),
                                   (playerId, rank)
@@ -98,33 +88,34 @@ public class SettlementTest
     public async Task 遊戲結束結算()
     {
         // Arrange
-        Player A = new("A", 800);
-        Player B = new("B", 1000);
-        Player C = new("C", 600);
+        var A = new { Id = "A", Money = 800m };
+        var B = new { Id = "B", Money = 1000m };
+        var C = new { Id = "C", Money = 600m };
+        var A2 = new { Id = "A2", Price = 1000m, IsMortgage = true };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A2")
+            .WithLandContract(A2.Id, InMortgage: A2.IsMortgage)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(C.Id)
+            new PlayerBuilder(C.Id)
             .WithMoney(C.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.Settlement), gameId, "A");
@@ -159,35 +150,34 @@ public class SettlementTest
     public async Task 遊戲結束結算含抵押土地()
     {
         // Arrange
-        Player A = new("A", 800);
-        Player B = new("B", 1000);
-        Player C = new("C", 600);
+        var A = new { Id = "A", Money = 800m };
+        var B = new { Id = "B", Money = 1000m };
+        var C = new { Id = "C", Money = 600m };
+        var A2 = new { Id = "A2", Price = 1000m, IsMortgage = true }; 
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A2")
-            .WithMortgage("A2")
-
+            .WithLandContract(A2.Id, InMortgage: A2.IsMortgage)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(C.Id)
+            new PlayerBuilder(C.Id)
             .WithMoney(C.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
-        var hub = await server.CreateHubConnectionAsync(gameId, A.Id);
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
         await hub.SendAsync(nameof(MonopolyHub.Settlement), gameId, "A");

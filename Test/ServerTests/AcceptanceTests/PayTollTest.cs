@@ -1,7 +1,5 @@
-using Domain;
 using Server.Hubs;
 using SharedLibrary;
-using static Domain.Map;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -31,23 +29,25 @@ public class PayTollTest
     public async Task 玩家在別人的土地上付過路費()
     {
         // Arrange
-        Player A = new("A", 1000);
-        Player B = new("B", 1000);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 1000m };
+        var A1 = new { Id = "A1", Price = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition(A1.Id, Direction.Right)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A1")
+            .WithLandContract(A1.Id)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -79,23 +79,27 @@ public class PayTollTest
     public async Task 地主在監獄中玩家無須付過路費()
     {
         // Arrange
-        Player A = new("A", 1000);
-        Player B = new("B", 1000);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 1000m };
+        var A1 = new { Id = "A1", Price = 1000m };
+        var Jail = new { Id = "Jail" };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition(A1.Id, Direction.Right)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("Jail", Direction.Right.ToString())
-            .WithLandContract("A1")
+            .WithPosition(Jail.Id, Direction.Right)
+            .WithLandContract(A1.Id)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -127,23 +131,27 @@ public class PayTollTest
     public async Task 地主在停車場玩家無須付過路費()
     {
         // Arrange
-        Player A = new("A", 1000);
-        Player B = new("B", 1000);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 1000m };
+        var A1 = new { Id = "A1", Price = 1000m };
+        var ParkingLot = new { Id = "ParkingLot" };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition(A1.Id, Direction.Right)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("ParkingLot", Direction.Right.ToString())
-            .WithLandContract("A1")
+            .WithPosition(ParkingLot.Id, Direction.Right)
+            .WithLandContract(A1.Id)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -174,24 +182,27 @@ public class PayTollTest
     public async Task 玩家在別人的土地上但餘額不足以付過路費()
     {
         // Arrange
-        Player A = new("A", 30);
-        Player B = new("B", 1000);
+        var A = new { Id = "A", Money = 30m };
+        var B = new { Id = "B", Money = 1000m };
+        var A1 = new { Id = "A1", Price = 1000m };
+        var A3 = new { Id = "A3" };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A3")
+            .WithPosition(A1.Id, Direction.Right)
+            .WithLandContract(A3.Id)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A1")
+            .WithLandContract(A1.Id)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -223,23 +234,25 @@ public class PayTollTest
     public async Task 玩家在別人的車站上付過路費()
     {
         // Arrange
-        Player A = new("A", 3000);
-        Player B = new("B", 1000);
+        var A = new { Id = "A", Money = 3000m };
+        var B = new { Id = "B", Money = 1000m };
+        var Station1 = new { Id = "Station1", Price = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Station1", Direction.Right.ToString())
+            .WithPosition(Station1.Id, Direction.Right)
+            .Build()
         )
         .WithPlayer(
-            new MonopolyPlayer(B.Id)
+            new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("Station1")
+            .WithLandContract(Station1.Id)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 

@@ -31,9 +31,8 @@ internal static class RepositoryExtensions
                 return row.Select(block => block?.ToApplicationBlock()).ToArray();
             }).ToArray()
         );
-        var currentPlayer = players.First(p => p.Id == domainMonopoly.CurrentPlayer.Id);
-        var host = players.First(p => p.Id == domainMonopoly.Host);
-        return new Monopoly(domainMonopoly.Id, players, map, host, currentPlayer);
+        var currentPlayerState = new CurrentPlayerState(domainMonopoly.Id);
+        return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.Host, currentPlayerState);
     }
     private static Block ToApplicationBlock(this Domain.Block domainBlock)
     {

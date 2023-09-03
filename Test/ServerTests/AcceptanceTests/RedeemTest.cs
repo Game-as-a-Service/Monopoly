@@ -1,7 +1,5 @@
-using Domain;
 using Server.Hubs;
 using SharedLibrary;
-using static Domain.Map;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -31,18 +29,19 @@ public class RedeemTest
         """)]
     public async Task 玩家贖回房地產()
     {
-        Player A = new("A", 5000);
+        // Arrange
+        var A = new { Id = "A", Money = 5000m };
+        var A1 = new { Id = "A1", House = 2, Price = 1000m, IsMortgage = true };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1", 2)
-            .WithMortgage("A1")
+            .WithLandContract(A1.Id, A1.IsMortgage)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -73,18 +72,19 @@ public class RedeemTest
         """)]
     public async Task 玩家餘額不足以贖回房地產()
     {
-        Player A = new("A", 2000);
+        // Arrange
+        var A = new { Id = "A", Money = 2000m };
+        var A1 = new { Id = "A1", House = 2, Price = 1000m, IsMortgage = true };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
-            new MonopolyPlayer(A.Id)
+            new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("Start", Direction.Right.ToString())
-            .WithLandContract("A1", 2)
-            .WithMortgage("A1")
+            .WithLandContract(A1.Id, A1.IsMortgage)
+            .Build()
         )
-        .WithCurrentPlayer(nameof(A));
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
