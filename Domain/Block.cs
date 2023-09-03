@@ -184,7 +184,6 @@ public class Land : Block
     {
         Player? owner = GetOwner();
         var land = this;
-        var CurrentBlock = player.Chess.CurrentBlock;
         if (owner is null)
         {
             return new PlayerCanBuyLandEvent(player.Monopoly.Id, player.Id, land.Id, land.Price);
@@ -297,7 +296,6 @@ public class Station : Land
     {
         Player? owner = GetOwner();
         var land = this;
-        var CurrentBlock = player.Chess.CurrentBlock;
         if (owner is null)
         {
             return new PlayerCanBuyLandEvent(player.Monopoly.Id, player.Id, land.Id, land.Price);

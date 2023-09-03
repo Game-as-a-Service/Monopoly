@@ -29,7 +29,6 @@ public class Player
     public bool EndRoundFlag { get; set; }
     // false: 回合尚不能結束，true: 玩家可結束回合
     public bool EnableUpgrade { get; set; }
-    public bool IsHost { get; set; }
     public int SuspendRounds { get; private set; } = 0;
 
     
@@ -113,22 +112,22 @@ public class Player
         auction = new Auction(landContract);
     }
 
-    internal IDice[] RollDice(IDice[] dices)
+    internal IDice[] RollDice(Map map, IDice[] dices)
     {
         foreach (var dice in dices)
         {
             dice.Roll();
         }
 
-        var events = chess.Move(dices.Sum(dice => dice.Value));
+        var events = chess.Move(map, dices.Sum(dice => dice.Value));
 
         Monopoly.AddDomainEvent(events);
         return dices;
     }
 
-    internal void SelectDirection(Map.Direction direction)
+    internal void SelectDirection(Map map, Map.Direction direction)
     {
-        var events = chess.ChangeDirection(direction);
+        var events = chess.ChangeDirection(map, direction);
         Monopoly.AddDomainEvent(events);
     }
 
@@ -188,9 +187,9 @@ public class Player
         owner.Money += amount;
     }
 
-    internal DomainEvent BuildHouse()
+    internal DomainEvent BuildHouse(Map map)
     {
-        Block block = Chess.CurrentBlock;
+        Block block = map.FindBlockById(chess.CurrentBlockId);
 
         if (block is Land land && EnableUpgrade)
         {
@@ -199,12 +198,12 @@ public class Player
         return new PlayerCannotBuildHouseEvent(Monopoly.Id, Id, block.Id);
     }
 
-    internal List<DomainEvent> BuyLand(string BlockId)
+    internal List<DomainEvent> BuyLand(Map map, string BlockId)
     {
         List<DomainEvent> events = new();
 
         //判斷是否為空土地
-        if (Chess.CurrentBlock is Land land)
+        if (map.FindBlockById(chess.CurrentBlockId) is Land land)
         {
             if (land.GetOwner() is not null)
             {

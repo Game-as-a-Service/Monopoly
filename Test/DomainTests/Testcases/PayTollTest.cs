@@ -73,7 +73,7 @@ public class PayTollTest
 
         game.Initial();
 
-        game.CurrentPlayer = player_b;
+        game = player_b;
 
         // A擁有A1, A4, A4有2房子
         Land A1 = (Land)map.FindBlockById("A1");

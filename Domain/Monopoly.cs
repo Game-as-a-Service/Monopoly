@@ -1,3 +1,4 @@
+using Domain.Builders;
 using Domain.Common;
 using Domain.Events;
 using Domain.Interfaces;
@@ -10,18 +11,20 @@ public class Monopoly : AbstractAggregateRoot
 {
     public string Id { get; set; }
     public int[]? CurrentDice { get; set; } = null;
-    public Player CurrentPlayer { get; set; }
+    public CurrentPlayerState CurrentPlayerState => _currentPlayerState;
     public IDice[] Dices { get; init; }
+    private Player CurrentPlayer => _players.First(p => p.Id == _currentPlayerState.PlayerId);
 
     private readonly Map _map;
     private readonly List<Player> _players = new();
     private readonly Dictionary<Player, int> _playerRankDictionary = new(); // 玩家名次 {玩家,名次}
+    private CurrentPlayerState _currentPlayerState;
 
     public IDictionary<Player, int> PlayerRankDictionary => _playerRankDictionary.AsReadOnly();
 
     public ICollection<Player> Players => _players.AsReadOnly();
 
-    public string Host => _players.Find(p => p.IsHost)!.Id;
+    public string HostId { get; init; }
 
     public Map Map => _map;
 
@@ -33,12 +36,19 @@ public class Monopoly : AbstractAggregateRoot
         Dices = dices ?? new IDice[2] { new Dice(), new Dice() };
     }
 
+    public Monopoly(string gameId, Player[] players, Map map, string hostId, CurrentPlayerState currentPlayerState)
+    {
+        Id = gameId;
+        _players = players.ToList();
+        _map = map;
+        HostId = hostId;
+        _currentPlayerState = currentPlayerState;
+    }
+
     public void AddPlayer(Player player, string blockId = "Start", Direction direction = Direction.Right)
     {
-        Block block = _map.FindBlockById(blockId);
-        Chess chess = new(player, _map, block, direction);
+        Chess chess = new(player, blockId, direction);
         player.Chess = chess;
-        player.Chess.SetBlock(blockId, direction);
         player.Monopoly = this;
         _players.Add(player);
     }
@@ -74,7 +84,7 @@ public class Monopoly : AbstractAggregateRoot
     public Block GetPlayerPosition(string playerId)
     {
         Player player = GetPlayer(playerId);
-        return player.Chess.CurrentBlock;
+        return _map.FindBlockById(player.Chess.CurrentBlockId);
     }
 
     // 玩家選擇方向
@@ -85,7 +95,7 @@ public class Monopoly : AbstractAggregateRoot
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
         var d = GetDirection(direction);
-        player.SelectDirection(d);
+        player.SelectDirection(_map, d);
     }
 
     private static Direction GetDirection(string direction)
@@ -109,7 +119,7 @@ public class Monopoly : AbstractAggregateRoot
     public void Initial()
     {
         // 初始化目前玩家
-        CurrentPlayer = _players[0];
+        _currentPlayerState = new CurrentPlayerState(_players[0].Id);
         CurrentPlayer.StartRound();
     }
 
@@ -123,7 +133,7 @@ public class Monopoly : AbstractAggregateRoot
     {
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
-        IDice[] dices = player.RollDice(Dices);
+        IDice[] dices = player.RollDice(_map, Dices);
         AddDomainEvent(new PlayerRolledDiceEvent(Id, playerId, dices.Sum(d => d.Value)));
     }
 
@@ -181,19 +191,19 @@ public class Monopoly : AbstractAggregateRoot
     {
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
-        AddDomainEvent(player.BuildHouse());
+        AddDomainEvent(player.BuildHouse(_map));
     }
 
     public void EndRound()
     {
-        if(CurrentPlayer!.EndRoundFlag)
+        if (CurrentPlayerState.IsPayToll)
         {
             // 結束回合，輪到下一個玩家
             AddDomainEvent(CurrentPlayer.EndRound());
             string lastPlayerId = CurrentPlayer.Id;
             do
             {
-                CurrentPlayer = _players[(_players.IndexOf(CurrentPlayer)+1)%_players.Count];
+                _currentPlayerState = new CurrentPlayerState(_players[(_players.IndexOf(CurrentPlayer) + 1) % _players.Count].Id);
                 CurrentPlayer.StartRound();
             } while (CurrentPlayer.State == PlayerState.Bankrupt);
             AddDomainEvent(new EndRoundEvent(Id, lastPlayerId, CurrentPlayer.Id));
@@ -248,13 +258,13 @@ public class Monopoly : AbstractAggregateRoot
 
 
         //判斷是否踩在該土地
-        if (player.Chess.CurrentBlock.Id != BlockId)
+        if (player.Chess.CurrentBlockId != BlockId)
         {
             AddDomainEvent(new PlayerBuyBlockMissedLandEvent(Id, player.Id, BlockId));
         }
         else
         {
-            AddDomainEvent(player.BuyLand(BlockId));
+            AddDomainEvent(player.BuyLand(_map, BlockId));
         }
     }
 }

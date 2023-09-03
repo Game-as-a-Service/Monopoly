@@ -38,18 +38,6 @@ public class Utils
         public int[] Dices { get; private set; }
 
         public CurrentPlayerState CurrentPlayerState { get; private set; }
-
-        public string? Auction { get; private set; }
-
-        public string PlayerBid { get; private set; }
-
-        public decimal BidPrice { get; private set; }
-
-        public bool Upgrade { get; private set; }
-
-        public string? BuyLand { get; private set; }
-
-        public bool PayToll { get; private set; }
         public Map Map { get; private set; }
 
         public MonopolyBuilder(string id)

@@ -6,7 +6,7 @@ namespace Domain;
 
 public class Auction
 {
-    private LandContract landContract;
+    private readonly LandContract landContract;
     private Player? highestBidder;
     private decimal highestPrice;
 
@@ -14,6 +14,13 @@ public class Auction
     {
         this.landContract = landContract;
         highestPrice = landContract.Land.GetPrice("Auction");
+    }
+
+    public Auction(LandContract landContract, Player highestBidder, decimal highestPrice)
+    {
+        this.landContract = landContract;
+        this.highestBidder = highestBidder;
+        this.highestPrice = highestPrice;
     }
 
     /// <summary>
