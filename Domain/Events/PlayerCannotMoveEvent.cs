@@ -2,4 +2,4 @@
 
 namespace Domain.Events;
 
-public record PlayerCannotMoveEvent(string GameId, string PlayerId, int SuspendRounds) : DomainEvent(GameId);
+public record PlayerCannotMoveEvent(string PlayerId, int SuspendRounds) : DomainEvent;

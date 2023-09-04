@@ -27,11 +27,11 @@ public class LandContract
             if (Deadline == 0)
             {
                 Land.UpdateOwner(null);
-                return new MortgageDueEvent(Owner.Monopoly.Id, Owner.Id, Land.Id);
+                return new MortgageDueEvent(Owner.Id, Land.Id);
             }
             else
             {
-                return new MortgageCountdownEvent(Owner.Monopoly.Id, Owner.Id, Land.Id, Deadline);
+                return new MortgageCountdownEvent(Owner.Id, Land.Id, Deadline);
             }
         }
         return DomainEvent.EmptyEvent;

@@ -36,13 +36,19 @@ public class Monopoly : AbstractAggregateRoot
         Dices = dices ?? new IDice[2] { new Dice(), new Dice() };
     }
 
-    public Monopoly(string gameId, Player[] players, Map map, string hostId, CurrentPlayerState currentPlayerState)
+    public Monopoly(string gameId, Player[] players, Map map, string hostId, CurrentPlayerState currentPlayerState, IDice[]? dices = null)
     {
         Id = gameId;
         _players = players.ToList();
         _map = map;
         HostId = hostId;
         _currentPlayerState = currentPlayerState;
+        Dices = dices ?? new IDice[2] { new Dice(), new Dice() };
+
+        foreach (var player in _players)
+        {
+            player.Monopoly = this;
+        }
     }
 
     public void AddPlayer(Player player, string blockId = "Start", Direction direction = Direction.Right)
@@ -77,7 +83,7 @@ public class Monopoly : AbstractAggregateRoot
         }
         foreach(var playerRank in _playerRankDictionary)
         {
-            AddDomainEvent(new SettlementEvent(Id, playerRank.Key.Id, playerRank.Value));
+            AddDomainEvent(new SettlementEvent(playerRank.Key.Id, playerRank.Value));
         }
     }
 
@@ -134,7 +140,7 @@ public class Monopoly : AbstractAggregateRoot
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
         IDice[] dices = player.RollDice(_map, Dices);
-        AddDomainEvent(new PlayerRolledDiceEvent(Id, playerId, dices.Sum(d => d.Value)));
+        AddDomainEvent(new PlayerRolledDiceEvent(playerId, dices.Sum(d => d.Value)));
     }
 
     public void EndAuction()
@@ -154,7 +160,7 @@ public class Monopoly : AbstractAggregateRoot
         Player player = GetPlayer(playerId);
         if (playerId == CurrentPlayer.Id)
         {
-            AddDomainEvent(new CurrentPlayerCannotBidEvent(Id, playerId));
+            AddDomainEvent(new CurrentPlayerCannotBidEvent(playerId));
         }
         else
         {
@@ -206,16 +212,16 @@ public class Monopoly : AbstractAggregateRoot
                 _currentPlayerState = new CurrentPlayerState(_players[(_players.IndexOf(CurrentPlayer) + 1) % _players.Count].Id);
                 CurrentPlayer.StartRound();
             } while (CurrentPlayer.State == PlayerState.Bankrupt);
-            AddDomainEvent(new EndRoundEvent(Id, lastPlayerId, CurrentPlayer.Id));
+            AddDomainEvent(new EndRoundEvent(lastPlayerId, CurrentPlayer.Id));
             if (CurrentPlayer.SuspendRounds > 0)
             {
-                AddDomainEvent(new SuspendRoundEvent(Id, CurrentPlayer.Id, CurrentPlayer.SuspendRounds));
+                AddDomainEvent(new SuspendRoundEvent(CurrentPlayer.Id, CurrentPlayer.SuspendRounds));
                 EndRound();
             }
         }
         else
         {
-            AddDomainEvent(new EndRoundFailEvent(Id, CurrentPlayer.Id));
+            AddDomainEvent(new EndRoundFailEvent(CurrentPlayer.Id));
         }
     }
 
@@ -260,7 +266,7 @@ public class Monopoly : AbstractAggregateRoot
         //判斷是否踩在該土地
         if (player.Chess.CurrentBlockId != BlockId)
         {
-            AddDomainEvent(new PlayerBuyBlockMissedLandEvent(Id, player.Id, BlockId));
+            AddDomainEvent(new PlayerBuyBlockMissedLandEvent(player.Id, BlockId));
         }
         else
         {

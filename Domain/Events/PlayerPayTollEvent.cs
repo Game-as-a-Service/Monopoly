@@ -2,14 +2,10 @@ using Domain.Common;
 
 namespace Domain.Events;
 
-public record PlayerNeedsToPayTollEvent(string GameId, string PlayerId, string ownerId, decimal toll)
-    : DomainEvent(GameId);
+public record PlayerNeedsToPayTollEvent(string PlayerId, string ownerId, decimal toll) : DomainEvent;
 
-public record PlayerPayTollEvent(string GameId, string PlayerId, decimal PlayerMoney, string ownerId, decimal ownerMoney)
-    : DomainEvent(GameId);
+public record PlayerPayTollEvent(string PlayerId, decimal PlayerMoney, string ownerId, decimal ownerMoney) : DomainEvent;
 
-public record PlayerDoesntNeedToPayTollEvent(string GameId, string PlayerId, decimal PlayerMoney)
-    : DomainEvent(GameId);
+public record PlayerDoesntNeedToPayTollEvent(string PlayerId, decimal PlayerMoney) : DomainEvent;
 
-public record PlayerTooPoorToPayTollEvent(string GameId, string PlayerId, decimal PlayerMoney, decimal toll)
-    : DomainEvent(GameId);
+public record PlayerTooPoorToPayTollEvent(string PlayerId, decimal PlayerMoney, decimal toll) : DomainEvent;

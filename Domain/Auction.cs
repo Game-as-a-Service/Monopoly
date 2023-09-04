@@ -46,8 +46,7 @@ public class Auction
             landContract.Owner.Money += landContract.Land.GetPrice("UnSold");
             landContract.Land.UpdateOwner(null);
         }
-        return new EndAuctionEvent(landContract.Owner.Monopoly.Id, 
-                                   landContract.Owner.Id, 
+        return new EndAuctionEvent(landContract.Owner.Id, 
                                    landContract.Owner.Money, 
                                    landContract.Land.Id, 
                                    highestBidder?.Id,  
@@ -58,18 +57,18 @@ public class Auction
     {
         if (price < highestPrice || (price == highestPrice && highestBidder is not null))
         {
-            return new PlayerBidFailEvent(player.Monopoly.Id, player.Id, landContract.Land.Id, price, highestPrice);
+            return new PlayerBidFailEvent(player.Id, landContract.Land.Id, price, highestPrice);
             //throw new BidException($"出價要大於{highestPrice}");
         }
         else if (price > player.Money)
         {
             
-            return new PlayerTooPoorToBidEvent(player.Monopoly.Id, player.Id, player.Money, price, highestPrice);
+            return new PlayerTooPoorToBidEvent(player.Id, player.Money, price, highestPrice);
             //throw new BidException($"現金少於{price}");
         }
         highestBidder = player;
         highestPrice = price;
-        return new PlayerBidEvent(player.Monopoly.Id, player.Id, landContract.Land.Id, highestPrice);
+        return new PlayerBidEvent(player.Id, landContract.Land.Id, highestPrice);
         
     }
 }

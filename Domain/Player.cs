@@ -43,7 +43,7 @@ public class Player
                 RemoveLandContract(landContract);
             }
             EndRoundFlag = true;
-            return new BankruptEvent(Monopoly.Id, Id);
+            return new BankruptEvent(Id);
         }
         return DomainEvent.EmptyEvent;
     }
@@ -139,13 +139,13 @@ public class Player
             var landContract = _landContractList.First(l => l.Land.Id == landId);
             landContract.GetMortgage();
             Money += landContract.Land.GetPrice("Mortgage");
-            return new PlayerMortgageEvent(Monopoly.Id, Id, Money,
+            return new PlayerMortgageEvent(Id, Money,
                                             landId,
                                             landContract.Deadline);
         }
         else
         {
-            return new PlayerCannotMortgageEvent(Monopoly.Id, Id, Money, landId);
+            return new PlayerCannotMortgageEvent(Id, Money, landId);
         }
     }
 
@@ -159,16 +159,16 @@ public class Player
             {
                 landContract.GetRedeem();
                 Money -= landContract.Land.GetPrice("Redeem");
-                return new PlayerRedeemEvent(Monopoly.Id, Id, Money, landId);
+                return new PlayerRedeemEvent(Id, Money, landId);
             }
             else
             {
-                return new PlayerTooPoorToRedeemEvent(Monopoly.Id, Id, Money, landId, landContract.Land.GetPrice("Redeem"));
+                return new PlayerTooPoorToRedeemEvent(Id, Money, landId, landContract.Land.GetPrice("Redeem"));
             }
         }
         else
         {
-            return new LandNotInMortgageEvent(Monopoly.Id, Id, landId);
+            return new LandNotInMortgageEvent(Id, landId);
         }
     }
 
@@ -195,7 +195,7 @@ public class Player
         {
             return land.BuildHouse(this);
         }
-        return new PlayerCannotBuildHouseEvent(Monopoly.Id, Id, block.Id);
+        return new PlayerCannotBuildHouseEvent(Id, block.Id);
     }
 
     internal List<DomainEvent> BuyLand(Map map, string BlockId)
@@ -207,14 +207,14 @@ public class Player
         {
             if (land.GetOwner() is not null)
             {
-                events.Add(new PlayerBuyBlockOccupiedByOtherPlayerEvent(Monopoly.Id, Id, BlockId));
+                events.Add(new PlayerBuyBlockOccupiedByOtherPlayerEvent(Id, BlockId));
             }
             else
             {
                 //判斷格子購買金額足夠
                 if (land.Price > Money)
                 {
-                    events.Add(new PlayerBuyBlockInsufficientFundsEvent(Monopoly.Id, Id, BlockId, land.Price));
+                    events.Add(new PlayerBuyBlockInsufficientFundsEvent(Id, BlockId, land.Price));
                 } 
                 else
                 {
@@ -225,7 +225,7 @@ public class Player
                     var landContract = new LandContract(this, land);
                     AddLandContract(landContract);
 
-                    events.Add(new PlayerBuyBlockEvent(Monopoly.Id, Id, BlockId));
+                    events.Add(new PlayerBuyBlockEvent(Id, BlockId));
                 }
             }
         }

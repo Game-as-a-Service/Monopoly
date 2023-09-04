@@ -40,16 +40,15 @@ public class Chess
             if (currentBlockId == "Start" && remainingSteps > 0) // 如果移動到起點，且還有剩餘步數，則獲得獎勵金
             {
                 player.Money += 3000;
-                yield return new ThroughStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money);
+                yield return new ThroughStartEvent(player.Id, 3000, player.Money);
             }
             var directions = DirectionOptions(map);
             if (directions.Count > 1)
             {
                 // 可選方向多於一個
                 // 代表棋子會停在這個區塊
-                yield return new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlockId, currentDirection.ToString(), remainingSteps);
+                yield return new ChessMovedEvent(player.Id, currentBlockId, currentDirection.ToString(), remainingSteps);
                 yield return new PlayerNeedToChooseDirectionEvent(
-                    player.Monopoly.Id,
                     player.Id,
                     directions.Select(d => d.ToString()).ToArray());
                 yield break;
@@ -57,7 +56,7 @@ public class Chess
             // 只剩一個方向
             // 代表棋子會繼續往這個方向移動
             currentDirection = directions.First();
-            yield return new ChessMovedEvent(player.Monopoly.Id, player.Id, currentBlockId, currentDirection.ToString(), remainingSteps);
+            yield return new ChessMovedEvent(player.Id, currentBlockId, currentDirection.ToString(), remainingSteps);
         }
         map.FindBlockById(currentBlockId).DoBlockAction(player);
         yield return map.FindBlockById(currentBlockId).GetEvent(player);
@@ -80,7 +79,7 @@ public class Chess
             throw new Exception("不能選擇這個方向");
         }
         currentDirection = direction;
-        List<DomainEvent> events = new() { new PlayerChooseDirectionEvent(player.Monopoly.Id, player.Id, direction.ToString()) };
+        List<DomainEvent> events = new() { new PlayerChooseDirectionEvent(player.Id, direction.ToString()) };
         events.AddRange(Move(map));
         return events;
     }

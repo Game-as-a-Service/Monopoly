@@ -2,4 +2,4 @@
 
 namespace Domain.Events;
 
-public record PlayerRolledDiceEvent(string GameId, string PlayerId, int DiceCount) : DomainEvent(GameId);
+public record PlayerRolledDiceEvent(string PlayerId, int DiceCount) : DomainEvent;

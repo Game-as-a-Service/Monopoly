@@ -2,4 +2,4 @@
 
 namespace Domain.Events;
 
-public record GameCreatedEvent(string GameId) : DomainEvent(GameId);
+public record GameCreatedEvent() : DomainEvent;

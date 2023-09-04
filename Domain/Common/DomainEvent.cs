@@ -1,8 +1,8 @@
 ﻿namespace Domain.Common;
 
-public record DomainEvent(string GameId)
+public record DomainEvent()
 {
-    private static readonly DomainEvent emptyEvent = new(string.Empty);
+    private static readonly DomainEvent emptyEvent = new();
     public static DomainEvent EmptyEvent => emptyEvent;
 }
-public record EmptyEvent() : DomainEvent(string.Empty);
+public record EmptyEvent() : DomainEvent;

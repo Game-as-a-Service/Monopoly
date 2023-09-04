@@ -92,12 +92,12 @@ public class Land : Block
         if (player.EndRoundFlag)
         {
             //throw new Exception("玩家不需要支付過路費");
-            events.Add(new PlayerDoesntNeedToPayTollEvent(player.Monopoly.Id, player.Id, player.Money));
+            events.Add(new PlayerDoesntNeedToPayTollEvent(player.Id, player.Money));
         }
         else if (owner.SuspendRounds > 0)
         {
             //throw new Exception("不需要支付過路費：Owner is in the " + payee.Chess.CurrentBlock.Id);
-            events.Add(new PlayerDoesntNeedToPayTollEvent(player.Monopoly.Id, player.Id, player.Money));
+            events.Add(new PlayerDoesntNeedToPayTollEvent(player.Id, player.Money));
         }
         else
         {
@@ -107,7 +107,7 @@ public class Land : Block
             {
                 player.EndRoundFlag = true;
                 player.PayToll(owner, amount);
-                events.Add(new PlayerPayTollEvent(player.Monopoly.Id, player.Id, player.Money, owner.Id, owner.Money));
+                events.Add(new PlayerPayTollEvent(player.Id, player.Money, owner.Id, owner.Money));
             }
             else
             {
@@ -115,14 +115,14 @@ public class Land : Block
                 {
                     // 破產
                     player.PayToll(owner, player.Money);
-                    events.Add(new PlayerPayTollEvent(player.Monopoly.Id, player.Id, player.Money, owner.Id, owner.Money));
+                    events.Add(new PlayerPayTollEvent(player.Id, player.Money, owner.Id, owner.Money));
 
                     events.Add(player.UpdateState());
                 }
                 else
                 {
                     //throw new Exception("錢包餘額不足！");
-                    events.Add(new PlayerTooPoorToPayTollEvent(player.Monopoly.Id, player.Id, player.Money, amount));
+                    events.Add(new PlayerTooPoorToPayTollEvent(player.Id, player.Money, amount));
                 }
             }
         }
@@ -158,24 +158,24 @@ public class Land : Block
     {
         if (GetOwner() == player)
         {
-            if (_house == MAX_HOUSE) return new HouseMaxEvent(player.Monopoly.Id, player.Id, Id, _house);
+            if (_house == MAX_HOUSE) return new HouseMaxEvent(player.Id, Id, _house);
 
             if (UpgradePrice <= player.Money)
             {
                 player.Money -= UpgradePrice;
                 _house++;
                 player.EnableUpgrade = false;
-                return new PlayerBuildHouseEvent(player.Monopoly.Id, player.Id, Id, player.Money, _house);
+                return new PlayerBuildHouseEvent(player.Id, Id, player.Money, _house);
             }
             else
             {
-                return new PlayerTooPoorToBuildHouseEvent(player.Monopoly.Id, player.Id, Id, player.Money, UpgradePrice);
+                return new PlayerTooPoorToBuildHouseEvent(player.Id, Id, player.Money, UpgradePrice);
             }
 
         }
         else
         {
-            return new PlayerCannotBuildHouseEvent(player.Monopoly.Id, player.Id, Id);
+            return new PlayerCannotBuildHouseEvent(player.Id, Id);
         }
 
     }
@@ -186,18 +186,18 @@ public class Land : Block
         var land = this;
         if (owner is null)
         {
-            return new PlayerCanBuyLandEvent(player.Monopoly.Id, player.Id, land.Id, land.Price);
+            return new PlayerCanBuyLandEvent(player.Id, land.Id, land.Price);
         }
         else if (owner == player)
         {
             if(player.LandContractList.Any(l => l.Land.Id == Id && !l.Mortgage))
             {
-                return new PlayerCanBuildHouseEvent(player.Monopoly.Id, player.Id, land.Id, land.House, land.UpgradePrice);
+                return new PlayerCanBuildHouseEvent(player.Id, land.Id, land.House, land.UpgradePrice);
             }
         }
         else if (owner!.SuspendRounds <= 0)
         {
-            return new PlayerNeedsToPayTollEvent(player.Monopoly.Id, player.Id, owner.Id, land.CalcullateToll(owner));
+            return new PlayerNeedsToPayTollEvent(player.Id, owner.Id, land.CalcullateToll(owner));
         }
         return DomainEvent.EmptyEvent;
     }
@@ -233,7 +233,7 @@ public class StartPoint : Block
 
     internal override DomainEvent GetEvent(Player player)
     {
-        return new OnStartEvent(player.Monopoly.Id, player.Id, 3000, player.Money);
+        return new OnStartEvent(player.Id, 3000, player.Money);
     }
 }
 public class Jail : Block
@@ -249,7 +249,7 @@ public class Jail : Block
 
     internal override DomainEvent GetEvent(Player player)
     {
-        return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
+        return new PlayerCannotMoveEvent(player.Id, player.SuspendRounds);
     }
 }
 public class ParkingLot : Block
@@ -265,7 +265,7 @@ public class ParkingLot : Block
 
     internal override DomainEvent GetEvent(Player player)
     {
-        return new PlayerCannotMoveEvent(player.Monopoly.Id, player.Id, player.SuspendRounds);
+        return new PlayerCannotMoveEvent(player.Id, player.SuspendRounds);
     }
 }
 
@@ -289,7 +289,7 @@ public class Station : Land
 
     internal override DomainEvent BuildHouse(Player player)
     {
-        return new PlayerCannotBuildHouseEvent(player.Monopoly.Id, player.Id, Id);
+        return new PlayerCannotBuildHouseEvent(player.Id, Id);
     }
 
     internal override DomainEvent GetEvent(Player player)
@@ -298,12 +298,12 @@ public class Station : Land
         var land = this;
         if (owner is null)
         {
-            return new PlayerCanBuyLandEvent(player.Monopoly.Id, player.Id, land.Id, land.Price);
+            return new PlayerCanBuyLandEvent(player.Id, land.Id, land.Price);
         }
         else if (owner!.SuspendRounds <= 0)
         {
             DoBlockAction(player);
-            return new PlayerNeedsToPayTollEvent(player.Monopoly.Id, player.Id, owner.Id, land.CalcullateToll(owner));
+            return new PlayerNeedsToPayTollEvent(player.Id, owner.Id, land.CalcullateToll(owner));
         }
         return DomainEvent.EmptyEvent;
     }
