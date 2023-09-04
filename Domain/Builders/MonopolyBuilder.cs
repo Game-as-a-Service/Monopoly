@@ -1,23 +1,34 @@
-﻿namespace Domain.Builders;
+﻿#pragma warning disable CS8618 // 退出建構函式時，不可為 Null 的欄位必須包含非 Null 值。請考慮宣告為可為 Null。
+using Domain.Interfaces;
 
-internal class MonopolyBuilder
+namespace Domain.Builders;
+
+public class MonopolyBuilder
 {
     public string GameId { get; private set; }
 
-    public List<Player> Players { get; private set; } = new();
+    public List<Player> Players { get; private set; }
 
     public string HostId { get; private set; }
 
-    public int[] Dices { get; private set; }
+    public IDice[] Dices { get; private set; }
 
     public CurrentPlayerState CurrentPlayerState { get; private set; }
 
     public Map Map { get; private set; }
 
-    public MonopolyBuilder(string id)
+
+    public MonopolyBuilder()
+    {
+        Players = new();
+    }
+
+    public MonopolyBuilder WithId(string id)
     {
         GameId = id;
+        return this;
     }
+
     public MonopolyBuilder WithMap(Map map)
     {
         Map = map;
@@ -48,7 +59,14 @@ internal class MonopolyBuilder
                             Players.ToArray(),
                             Map,
                             HostId,
-                            CurrentPlayerState
+                            CurrentPlayerState,
+                            Dices
                             );
+    }
+
+    public MonopolyBuilder WithDices(IDice[] dices)
+    {
+        Dices = dices;
+        return this;
     }
 }

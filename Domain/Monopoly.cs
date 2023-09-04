@@ -139,8 +139,7 @@ public class Monopoly : AbstractAggregateRoot
     {
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
-        IDice[] dices = player.RollDice(_map, Dices);
-        AddDomainEvent(new PlayerRolledDiceEvent(playerId, dices.Sum(d => d.Value)));
+        player.RollDice(_map, Dices);
     }
 
     public void EndAuction()

@@ -7,7 +7,7 @@ public class PlayerBuilder
     public string Id { get; set; }
     public decimal Money { get; set; }
     public string BlockId { get; set; }
-    public Direction CurrentDirection { get; set; }
+    public Map.Direction CurrentDirection { get; set; }
     public List<(string LandId, bool InMortgage, int Deadline)> LandContracts { get; set; }
     public bool Bankrupt { get; set; }
 
@@ -16,7 +16,7 @@ public class PlayerBuilder
         Id = id;
         Money = 15000;
         BlockId = "StartPoint";
-        CurrentDirection = Direction.Right;
+        CurrentDirection = Map.Direction.Right;
         LandContracts = new();
     }
 
@@ -26,10 +26,10 @@ public class PlayerBuilder
         return this;
     }
 
-    public PlayerBuilder WithPosition(string blockId, Direction direction)
+    public PlayerBuilder WithPosition(string blockId, string direction)
     {
         BlockId = blockId;
-        CurrentDirection = direction;
+        CurrentDirection = Enum.Parse<Map.Direction>(direction);
         return this;
     }
 
@@ -48,7 +48,7 @@ public class PlayerBuilder
     public Player Build()
     {
         Player player = new(Id, Money);
-        Chess chess = new(player, BlockId, Enum.Parse<Map.Direction>(CurrentDirection.ToString()));
+        Chess chess = new(player, BlockId, CurrentDirection);
         player.Chess = chess;
         return player;
     }

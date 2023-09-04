@@ -54,8 +54,8 @@ public class SelectDirectionTest
         var player = new Player("A");
         game.AddPlayer(player, "ParkingLot", Map.Direction.Down);
         game.Initial();
-        var chess = game.CurrentPlayer!.Chess;
-        game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 3);
+        var chess = player.Chess;
+        //player.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 3);
 
         // Act
         game.PlayerSelectDirection("A", "Left");
@@ -86,8 +86,8 @@ public class SelectDirectionTest
         var player = new Player("A");
         game.AddPlayer(player, "ParkingLot", Map.Direction.Down);
         game.Initial();
-        var chess = game.CurrentPlayer!.Chess;
-        game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 4);
+        //var chess = game.CurrentPlayer!.Chess;
+        //game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 4);
 
         // Act
         game.PlayerSelectDirection("A", "Left");
@@ -117,8 +117,8 @@ public class SelectDirectionTest
         var player = new Player("A");
         game.AddPlayer(player, "Jail", Map.Direction.Down);
         game.Initial();
-        var chess = game.CurrentPlayer!.Chess;
-        game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 0);
+        //var chess = game.CurrentPlayer!.Chess;
+        //game.CurrentPlayer.Chess = new Chess(player, map, chess.CurrentBlock, chess.CurrentDirection, 0);
 
         // Act
         game.PlayerSelectDirection("A", "Left");

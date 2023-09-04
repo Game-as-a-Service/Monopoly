@@ -1,10 +1,11 @@
+using Domain.Common;
 using Moq;
 
 namespace DomainTests;
 
 public class Utils
 {
-    public static IDice[]? MockDice(params int[] diceValues)
+    public static IDice[] MockDice(params int[] diceValues)
     {
         var dice = new IDice[diceValues.Length];
         for (int i = 0; i < diceValues.Length; i++)
@@ -16,5 +17,19 @@ public class Utils
         }
 
         return dice;
+    }
+}
+
+static class DomainEventsExtension
+{
+    public static IEnumerable<DomainEvent> NextShouldBe(this IEnumerable<DomainEvent> domainEvents, DomainEvent e)
+    {
+        Assert.AreEqual(e, domainEvents.First());
+        return domainEvents.Skip(1);
+    }
+
+    public static void NoMore(this IEnumerable<DomainEvent> domainEvents)
+    {
+        Assert.IsFalse(domainEvents.Any(), string.Join('\n', domainEvents));
     }
 }

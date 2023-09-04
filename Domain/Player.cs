@@ -112,17 +112,16 @@ public class Player
         auction = new Auction(landContract);
     }
 
-    internal IDice[] RollDice(Map map, IDice[] dices)
+    internal void RollDice(Map map, IDice[] dices)
     {
         foreach (var dice in dices)
         {
             dice.Roll();
         }
-
+        Monopoly.AddDomainEvent(new PlayerRolledDiceEvent(Id, dices.Sum(d => d.Value)));
         var events = chess.Move(map, dices.Sum(dice => dice.Value));
 
         Monopoly.AddDomainEvent(events);
-        return dices;
     }
 
     internal void SelectDirection(Map map, Map.Direction direction)

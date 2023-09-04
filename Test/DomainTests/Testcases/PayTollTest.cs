@@ -73,8 +73,6 @@ public class PayTollTest
 
         game.Initial();
 
-        game = player_b;
-
         // A擁有A1, A4, A4有2房子
         Land A1 = (Land)map.FindBlockById("A1");
         player_a.AddLandContract(new(player_a, A1));
@@ -203,7 +201,7 @@ public class PayTollTest
 
         game.Initial();
 
-        game.CurrentPlayer = player_b;
+        //game.CurrentPlayer = player_b;
 
         // A擁有A1, A4, A4有2房子
         Land A1 = (Land)map.FindBlockById("A1");
