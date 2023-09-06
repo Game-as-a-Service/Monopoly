@@ -6,12 +6,10 @@ namespace Domain;
 public abstract class Block
 {
     public string Id { get; }
-    public Block? Up { get; set; }
-    public Block? Down { get; set; }
-    public Block? Left { get; set; }
-    public Block? Right { get; set; }
-    protected string lot = "";
-    public string Lot => lot;
+    internal Block? Up { get; set; }
+    internal Block? Down { get; set; }
+    internal Block? Left { get; set; }
+    internal Block? Right { get; set; }
 
     internal List<Map.Direction> Directions => new List<Map.Direction>()
     {
@@ -61,13 +59,13 @@ public class Land : Block
     protected LandContract landContract;
     protected readonly decimal _price;
     protected int _house = 0;
+    protected string lot;
 
     public decimal Price => _price; // 土地購買價格
 
     public decimal UpgradePrice => _price; // 升級價格
-
-    // public int TollFee => _price; // 過路費
     public int House => _house;
+    public string Lot => lot;
 
     public Land(string id, decimal price = 1000, string lot = " ") : base(id)
     {
@@ -233,7 +231,7 @@ public class StartPoint : Block
 
     internal override DomainEvent GetEvent(Player player)
     {
-        return new OnStartEvent(player.Id, 3000, player.Money);
+        return new CannotGetRewardBecauseStandOnStartEvent(player.Id, player.Money);
     }
 }
 public class Jail : Block

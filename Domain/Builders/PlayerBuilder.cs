@@ -8,6 +8,7 @@ public class PlayerBuilder
     public decimal Money { get; set; }
     public string BlockId { get; set; }
     public Map.Direction CurrentDirection { get; set; }
+    public Map Map { get; set; }
     public List<(string LandId, bool InMortgage, int Deadline)> LandContracts { get; set; }
     public bool Bankrupt { get; set; }
 
@@ -45,11 +46,25 @@ public class PlayerBuilder
         return this;
     }
 
+    public PlayerBuilder WithMap(Map map)
+    {
+        Map = map;
+        return this;
+    }
+
     public Player Build()
     {
         Player player = new(Id, Money);
         Chess chess = new(player, BlockId, CurrentDirection);
         player.Chess = chess;
+        if (LandContracts.Count > 0)
+        {
+            if (Map == null)
+            {
+                throw new InvalidOperationException("Map must be set!");
+            }
+        }
+        LandContracts.ForEach(l => player.AddLandContract(new(player, Map.FindBlockById<Land>(l.LandId))));
         return player;
     }
 

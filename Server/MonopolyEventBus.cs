@@ -46,7 +46,7 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.ThroughStartEvent(tse.PlayerId, tse.GainMoney, tse.TotalMoney);
             }
-            else if (e is OnStartEvent ose)
+            else if (e is CannotGetRewardBecauseStandOnStartEvent ose)
             {
                 await _hubContext.Clients.All.OnStartEvent(ose.PlayerId, ose.GainMoney, ose.TotalMoney);
             }

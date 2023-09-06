@@ -1,4 +1,5 @@
 using Domain.Common;
+using Domain.Events;
 using Moq;
 
 namespace DomainTests;
@@ -24,7 +25,17 @@ static class DomainEventsExtension
 {
     public static IEnumerable<DomainEvent> NextShouldBe(this IEnumerable<DomainEvent> domainEvents, DomainEvent e)
     {
-        Assert.AreEqual(e, domainEvents.First());
+        var first = domainEvents.First();
+        if (first is PlayerNeedToChooseDirectionEvent playerNeedToChooseDirectionEvent)
+        {
+            var directions = ((PlayerNeedToChooseDirectionEvent)e).Directions;
+            Assert.AreEqual(((PlayerNeedToChooseDirectionEvent)e).PlayerId, playerNeedToChooseDirectionEvent.PlayerId);
+            CollectionAssert.AreEquivalent(directions, playerNeedToChooseDirectionEvent.Directions);
+        }
+        else
+        {
+            Assert.AreEqual(e, first);
+        }
         return domainEvents.Skip(1);
     }
 

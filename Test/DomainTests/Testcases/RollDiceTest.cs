@@ -7,6 +7,7 @@ namespace DomainTests.Testcases;
 public class RollDiceTest
 {
     private static Map Map => new Domain.Maps.SevenXSevenMap();
+
     [TestMethod]
     [Description(
         """
@@ -14,6 +15,7 @@ public class RollDiceTest
                 A 持有 2000 元
         When:   A 擲骰得到 6 點
         Then:   A 移動到 A4，方向 Down
+                A 獲得 3000 元，還有 5000 元
                 A 剩餘步數為 0
 
                 DomainEvent:    1. A 擲骰子得到了 6 點
@@ -27,7 +29,7 @@ public class RollDiceTest
                                 9. A 可以買下 A4，價錢 1000
         
         """)]
-    public void 玩家擲骰後移動棋子()
+    public void 玩家擲骰後移動棋子經過起點獲得獎勵金()
     {
         // Arrange
         var A = new { Id = "A", CurrentBlockId = "F4", Direction = "Up", Money = 2000m };
@@ -55,6 +57,7 @@ public class RollDiceTest
 
         // Assert
         確認玩家目前位置(monopoly, player.Id, expected.BlockId, expected.Direction);
+        確認玩家持有金額(monopoly, player.Id, 5000m);
         確認玩家剩餘步數(monopoly, player.Id, expected.RemainingSteps);
         monopoly.DomainEvents
             .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
@@ -72,17 +75,21 @@ public class RollDiceTest
     [TestMethod]
     [Description(
         """
-        Given:  目前 A 在 F4
-        When:   玩家擲骰得到 8 點
+        Given:  目前 A 在 A4，方向向下
+        When:   玩家擲骰得到 2 點
         Then:   A 移動到 停車場，方向 Down
                 A 剩餘步數為 1
                 A 需要選擇方向
+
+                DomainEvent:    1. A 擲骰子得到了 2 點
+                                2. A 移動到 ParkingLot，方向 Down，剩餘 1 步
+                                3. A 需要選擇方向，可選方向為 Left, Right, Down
         """)]
     public void 玩家擲骰後移動棋子到需要選擇方向的地方()
     {
         // Arrange
-        var A = new { Id = "A", CurrentBlockId = "F4", Direction = "Up" };
-        var dicePoints = 8;
+        var A = new { Id = "A", CurrentBlockId = "A4", Direction = "Down" };
+        var dicePoints = 2;
         var expected = new
         {
             BlockId = "ParkingLot",
@@ -106,22 +113,31 @@ public class RollDiceTest
         //Assert
         確認玩家目前位置(monopoly, player.Id, expected.BlockId, expected.Direction);
         確認玩家剩餘步數(monopoly, player.Id, expected.RemainingSteps);
-        Assert.IsTrue(monopoly.DomainEvents.Any(
-            e => e is PlayerNeedToChooseDirectionEvent @event &&
-                            @event.PlayerId == player.Id &&
-                            @event.Directions.Count() == 3
-                            ));
+
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "ParkingLot", "Down", 1))
+            .NextShouldBe(new PlayerNeedToChooseDirectionEvent(player.Id, "Left", "Right", "Down"))
+            .NoMore();
     }
 
     [TestMethod]
     [Description(
         """
-        Given:  目前 A 在 F3
+        Given:  目前 A 在 F3，方向 Up
                 A 持有 1000 元
         When:   A 擲骰得到 4 點
-        Then:   A 移動到 A1
+        Then:   A 移動到 A1，方向 Right
                 A 剩餘步數為 0
                 A 持有 4000 元
+
+                DomainEvent:    1. A 擲骰子得到了 4 點
+                                2. A 移動到 Station4，方向 Up，剩餘 3 步
+                                3. A 移動到 F4，方向 Up，剩餘 2 步
+                                4. A 移動到 Start，方向 Up，剩餘 1 步
+                                5. A 經過起點，獲得獎勵金 3000，持有金額為 4000
+                                6. A 移動到 A1，方向 Up，剩餘 0 步
+                                7. A 可以買下 A1，價錢 1000
         """)]
     public void 玩家擲骰後移動棋子經過起點獲得獎勵金3000()
     {
@@ -131,7 +147,7 @@ public class RollDiceTest
         var expected = new
         {
             BlockId = "A1",
-            Direction = "Up",
+            Direction = "Right",
             RemainingSteps = 0,
             Money = 4000
         };
@@ -154,6 +170,16 @@ public class RollDiceTest
         確認玩家目前位置(monopoly, player.Id, expected.BlockId, expected.Direction);
         確認玩家剩餘步數(monopoly, player.Id, expected.RemainingSteps);
         確認玩家持有金額(monopoly, player.Id, expected.Money);
+
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "Station4", "Up", 3))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "F4", "Up", 2))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "Start", "Up", 1))
+            .NextShouldBe(new ThroughStartEvent(player.Id, 3000m, 4000m))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "A1", "Right", 0))
+            .NextShouldBe(new PlayerCanBuyLandEvent(player.Id, "A1", 1000m))
+            .NoMore();
     }
 
     [TestMethod]
@@ -162,26 +188,32 @@ public class RollDiceTest
         Given:  目前 A 在 F3，方向 Up
                 A 持有 1000 元
         When:   A 擲骰得到 3 點
-        Then:   A 移動到 起點，方向 Up
+        Then:   A 移動到 起點，方向 Right
                 A 剩餘步數為 0
                 A 持有 1000 元
+
+                DomainEvent:    1. A 擲骰子得到了 3 點
+                                2. A 移動到 Station4，方向 Up，剩餘 2 步
+                                3. A 移動到 F4，方向 Up，剩餘 1 步
+                                4. A 移動到 Start，方向 Up，剩餘 0 步
+                                5. A 剛好踩在起點，無法獲得獎勵金，持有金額為 4000
         """)]
     public void 玩家擲骰後移動棋子到起點無法獲得獎勵金()
     {
         // Arrange
-        var A = new { Id = "A", CurrentBlockId = "F3", Direction = "Up" };
+        var A = new { Id = "A", CurrentBlockId = "F3", Direction = "Up", Money = 1000m };
         var dicePoints = 3;
         var expected = new
         {
             BlockId = "Start",
-            Direction = "Up",
+            Direction = "Right",
             RemainingSteps = 0,
             Money = 1000
         };
 
         var player = new PlayerBuilder(A.Id)
             .WithPosition(A.CurrentBlockId, A.Direction)
-            .WithMoney(1000)
+            .WithMoney(A.Money)
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
@@ -197,23 +229,36 @@ public class RollDiceTest
         確認玩家目前位置(monopoly, player.Id, expected.BlockId, expected.Direction);
         確認玩家剩餘步數(monopoly, player.Id, expected.RemainingSteps);
         確認玩家持有金額(monopoly, player.Id, expected.Money);
+
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "Station4", "Up", 2))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "F4", "Up", 1))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "Start", "Up", 0))
+            .NextShouldBe(new CannotGetRewardBecauseStandOnStartEvent(player.Id, expected.Money))
+            .NoMore();
     }
 
     [TestMethod]
     [Description("""
         Given:  目前 A 在 A1，方向 Right
                 A 持有 A2
-                A2 房子有 3 間
+                A2 價格 1000 元，房子有 3 間
         When:   A 擲骰得到 2 點
         Then:   A 移動到 A2，方向 Right
                 A 剩餘步數為 0
                 提示可以蓋房子
+
+                DomainEvent:    1. A 擲骰子得到了 2 點
+                                2. A 移動到 Station1，方向 Right，剩餘 1 步
+                                3. A 移動到 A2，方向 Right，剩餘 0 步
+                                4. A 剛好踩在自己的地，可以蓋房子，目前房子有 3 間，需要 1000 元
         """)]
     public void 玩家擲骰後移動棋子到自己擁有地()
     {
         // Arrange
         var A = new { Id = "A", CurrentBlockId = "A1", Direction = "Right"};
-        var A2 = new { Id = "A2", HouseCount = 3 };
+        var A2 = new { Id = "A2", Price = 1000m , HouseCount = 3 };
         var dicePoints = 2;
         var expected = new
         {
@@ -222,12 +267,18 @@ public class RollDiceTest
             RemainingSteps = 0
         };
 
+        var map = Map;
+        map.FindBlockById<Land>(A2.Id).Upgrade();
+        map.FindBlockById<Land>(A2.Id).Upgrade();
+        map.FindBlockById<Land>(A2.Id).Upgrade();
+
         var player = new PlayerBuilder(A.Id)
+            .WithMap(map)
             .WithPosition(A.CurrentBlockId, A.Direction)
             .WithLandContract(A2.Id)
             .Build();
         var monopoly = new MonopolyBuilder()
-            .WithMap(Map)
+            .WithMap(map)
             .WithPlayer(player)
             .WithCurrentPlayer(new CurrentPlayerState(player.Id))
             .WithDices(Utils.MockDice(dicePoints))
@@ -239,13 +290,13 @@ public class RollDiceTest
         // Assert
         確認玩家目前位置(monopoly, player.Id, expected.BlockId, expected.Direction);
         確認玩家剩餘步數(monopoly, player.Id, expected.RemainingSteps);
-        
-        Assert.IsTrue(monopoly.DomainEvents.Any(
-                       e => e is PlayerCanBuildHouseEvent @event &&
-                               @event.PlayerId == player.Id &&
-                               @event.BlockId == "A2" &&
-                               @event.HouseCount == 0 &&
-                               @event.UpgradeMoney == 1000));
+
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "Station1", "Right", 1))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "A2", "Right", 0))
+            .NextShouldBe(new PlayerCanBuildHouseEvent(player.Id, A2.Id, 3, 1000))
+            .NoMore();
     }
 
     
@@ -259,7 +310,7 @@ public class RollDiceTest
     {
         Assert.AreEqual(expectedRemainingSteps, monopoly.Players.First(p => p.Id == playerId).Chess.RemainingSteps);
     }
-    private static void 確認玩家持有金額(Monopoly monopoly, string id, int expectedMoney)
+    private static void 確認玩家持有金額(Monopoly monopoly, string id, decimal expectedMoney)
     {
         Assert.AreEqual(expectedMoney, monopoly.Players.First(p => p.Id == id).Money);
     }

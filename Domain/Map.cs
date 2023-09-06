@@ -54,6 +54,11 @@ public class Map
         throw new Exception("找不到該區塊");
     }
 
+    public T FindBlockById<T>(string blockId) where T : Block
+    {
+        return (T)FindBlockById(blockId);
+    }
+
     public enum Direction
     {
         Up,
