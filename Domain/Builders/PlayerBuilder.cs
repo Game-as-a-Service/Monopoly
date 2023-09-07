@@ -11,6 +11,8 @@ public class PlayerBuilder
     public Map Map { get; set; }
     public List<(string LandId, bool InMortgage, int Deadline)> LandContracts { get; set; }
     public bool Bankrupt { get; set; }
+    public int RemainingSteps { get; set; }
+    public bool IsChooseDirection { get; set; }
 
     public PlayerBuilder(string id)
     {
@@ -19,6 +21,9 @@ public class PlayerBuilder
         BlockId = "StartPoint";
         CurrentDirection = Map.Direction.Right;
         LandContracts = new();
+        Bankrupt = false;
+        RemainingSteps = 0;
+        IsChooseDirection = true;
     }
 
     public PlayerBuilder WithMoney(decimal money)
@@ -52,10 +57,26 @@ public class PlayerBuilder
         return this;
     }
 
+    public PlayerBuilder WithRemainingSteps(int remainingSteps)
+    {
+        RemainingSteps = remainingSteps;
+        return this;
+    }
+
+    public PlayerBuilder WithNotChooseDirection()
+    {
+        IsChooseDirection = false;
+        return this;
+    }
+
     public Player Build()
     {
         Player player = new(Id, Money);
-        Chess chess = new(player, BlockId, CurrentDirection);
+        Chess chess = new(player: player,
+                          currentBlockId: BlockId,
+                          currentDirection: CurrentDirection,
+                          remainingSteps: RemainingSteps,
+                          isChooseDirection: IsChooseDirection);
         player.Chess = chess;
         if (LandContracts.Count > 0)
         {

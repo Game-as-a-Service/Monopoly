@@ -49,7 +49,7 @@ public class RollDiceTest
             .WithMap(Map)
             .WithPlayer(player)
             .WithDices(Utils.MockDice(dicePoints))
-            .WithCurrentPlayer(new CurrentPlayerState(A.Id))
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
             .Build();
 
         // Act
@@ -103,7 +103,7 @@ public class RollDiceTest
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerState(A.Id))
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
             .WithDices(Utils.MockDice(dicePoints))
             .Build();
 
@@ -159,7 +159,7 @@ public class RollDiceTest
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerState(A.Id))
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
             .WithDices(Utils.MockDice(dicePoints))
             .Build();
 
@@ -218,7 +218,7 @@ public class RollDiceTest
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerState(A.Id))
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
             .WithDices(Utils.MockDice(dicePoints))
             .Build();
 
@@ -280,7 +280,7 @@ public class RollDiceTest
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
             .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerState(player.Id))
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
             .WithDices(Utils.MockDice(dicePoints))
             .Build();
 

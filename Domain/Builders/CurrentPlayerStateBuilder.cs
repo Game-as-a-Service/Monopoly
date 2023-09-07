@@ -7,6 +7,7 @@ public class CurrentPlayerStateBuilder
     public bool IsBoughtLand { get; private set; }
     public bool IsUpgradeLand { get; private set; }
     public Auction? Auction { get; private set; }
+    public int RemainingSteps { get; private set; }
     public CurrentPlayerStateBuilder(Player player)
     {
         Player = player;
@@ -54,4 +55,6 @@ public class CurrentPlayerStateBuilder
                                       IsUpgradeLand: IsUpgradeLand,
                                       Auction: Auction);
     }
+
+    
 }

@@ -53,7 +53,7 @@ public class Monopoly : AbstractAggregateRoot
 
     public void AddPlayer(Player player, string blockId = "Start", Direction direction = Direction.Right)
     {
-        Chess chess = new(player, blockId, direction);
+        Chess chess = new(player, blockId, direction, 0, true);
         player.Chess = chess;
         player.Monopoly = this;
         _players.Add(player);
@@ -96,7 +96,7 @@ public class Monopoly : AbstractAggregateRoot
     // 玩家選擇方向
     // 1.不能選擇回頭的方向
     // 2.不能選擇沒有的方向
-    public void PlayerSelectDirection(string playerId, string direction)
+    public void PlayerChooseDirection(string playerId, string direction)
     {
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);

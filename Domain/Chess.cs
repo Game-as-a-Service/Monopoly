@@ -10,13 +10,19 @@ public class Chess
     private string currentBlockId;
     private Direction currentDirection;
     private int remainingSteps;
+    private bool isChooseDirection = true;
 
-    public Chess(Player player, string currentBlockId, Direction currentDirection, int remainingSteps = 0)
+    public Chess(Player player,
+                 string currentBlockId,
+                 Direction currentDirection,
+                 int remainingSteps,
+                 bool isChooseDirection)
     {
         this.player = player;
         this.currentBlockId = currentBlockId;
         this.currentDirection = currentDirection;
         this.remainingSteps = remainingSteps;
+        this.isChooseDirection = isChooseDirection;
     }
 
     public Direction CurrentDirection => currentDirection;
@@ -32,7 +38,7 @@ public class Chess
     /// </summary>
     private IEnumerable<DomainEvent> Move(Map map)
     {
-        while (RemainingSteps > 0)
+        while (remainingSteps > 0)
         {
             var nextBlock = map.FindBlockById(currentBlockId).GetDirectionBlock(CurrentDirection) ?? throw new Exception("找不到下一個區塊");
             currentBlockId = nextBlock.Id;
@@ -48,6 +54,7 @@ public class Chess
             {
                 // 可選方向多於一個
                 // 代表棋子會停在這個區塊
+                isChooseDirection = false;
                 yield return new PlayerNeedToChooseDirectionEvent(
                     player.Id,
                     directions.Select(d => d.ToString()).ToArray());
@@ -58,28 +65,33 @@ public class Chess
             currentDirection = directions.First();
         }
         map.FindBlockById(currentBlockId).DoBlockAction(player);
-        yield return map.FindBlockById(currentBlockId).GetEvent(player);
+        yield return map.FindBlockById(currentBlockId).OnBlockEvent(player);
     }
 
-    internal List<DomainEvent> Move(Map map, int moveCount)
+    public IEnumerable<DomainEvent> Move(Map map, int steps)
     {
-        remainingSteps = moveCount;
-        return Move(map).ToList();
+        remainingSteps = steps;
+        return Move(map);
     }
 
-    internal List<DomainEvent> ChangeDirection(Map map, Direction direction)
+    internal IEnumerable<DomainEvent> ChangeDirection(Map map, Direction direction)
     {
-        if (direction == currentDirection.Opposite())
+        List<DomainEvent> events = new() { };
+        if (isChooseDirection)
         {
-            throw new Exception("不能選擇原本的方向");
+            events.Add(new PlayerAlreadyChooseDirectionEvent(player.Id));
+            return events;
         }
         if (!DirectionOptions(map).Contains(direction))
         {
-            throw new Exception("不能選擇這個方向");
+            events.Add(new PlayerChooseInvalidDirectionEvent(player.Id, direction.ToString()));
+            return events;
         }
+        isChooseDirection = false;
         currentDirection = direction;
-        List<DomainEvent> events = new() { new PlayerChooseDirectionEvent(player.Id, direction.ToString()) };
+        events.Add(new PlayerChooseDirectionEvent(player.Id, direction.ToString()));
         events.AddRange(Move(map));
+
         return events;
     }
 

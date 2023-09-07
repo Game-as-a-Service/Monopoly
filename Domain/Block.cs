@@ -46,7 +46,7 @@ public abstract class Block
         throw new Exception("此地不可購買！");
     }
 
-    internal abstract DomainEvent GetEvent(Player player);
+    internal abstract DomainEvent OnBlockEvent(Player player);
     internal abstract void DoBlockAction(Player player);
 }
 
@@ -178,7 +178,7 @@ public class Land : Block
 
     }
 
-    internal override DomainEvent GetEvent(Player player)
+    internal override DomainEvent OnBlockEvent(Player player)
     {
         Player? owner = GetOwner();
         var land = this;
@@ -229,7 +229,7 @@ public class StartPoint : Block
     {
     }
 
-    internal override DomainEvent GetEvent(Player player)
+    internal override DomainEvent OnBlockEvent(Player player)
     {
         return new CannotGetRewardBecauseStandOnStartEvent(player.Id, player.Money);
     }
@@ -245,9 +245,9 @@ public class Jail : Block
         player.SuspendRound("Jail");
     }
 
-    internal override DomainEvent GetEvent(Player player)
+    internal override DomainEvent OnBlockEvent(Player player)
     {
-        return new PlayerCannotMoveEvent(player.Id, player.SuspendRounds);
+        return new SuspendRoundEvent(player.Id, player.SuspendRounds);
     }
 }
 public class ParkingLot : Block
@@ -261,9 +261,9 @@ public class ParkingLot : Block
         player.SuspendRound("ParkingLot");
     }
 
-    internal override DomainEvent GetEvent(Player player)
+    internal override DomainEvent OnBlockEvent(Player player)
     {
-        return new PlayerCannotMoveEvent(player.Id, player.SuspendRounds);
+        return DomainEvent.EmptyEvent;
     }
 }
 
@@ -290,7 +290,7 @@ public class Station : Land
         return new PlayerCannotBuildHouseEvent(player.Id, Id);
     }
 
-    internal override DomainEvent GetEvent(Player player)
+    internal override DomainEvent OnBlockEvent(Player player)
     {
         Player? owner = GetOwner();
         var land = this;

@@ -18,7 +18,7 @@ public class ChooseDirectionUsecase : Usecase<ChooseDirectionRequest>
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
         //改
-        game.PlayerSelectDirection(request.PlayerId, request.Direction);
+        game.PlayerChooseDirection(request.PlayerId, request.Direction);
         //存
         Repository.Save(game);
         //推

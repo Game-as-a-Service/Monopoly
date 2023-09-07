@@ -31,8 +31,6 @@ public class Player
     public bool EnableUpgrade { get; set; }
     public int SuspendRounds { get; private set; } = 0;
 
-    
-
     internal DomainEvent UpdateState()
     {
         if (Money <= 0 && !LandContractList.Any(l => !l.Mortgage))
