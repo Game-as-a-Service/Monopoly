@@ -78,6 +78,7 @@ public class PlayerBuilder
                           remainingSteps: RemainingSteps,
                           isChooseDirection: IsChooseDirection);
         player.Chess = chess;
+        player.SuspendRound(BlockId);
         if (LandContracts.Count > 0)
         {
             if (Map == null)

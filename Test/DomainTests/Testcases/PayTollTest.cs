@@ -1,3 +1,5 @@
+using Domain.Builders;
+using Domain.Events;
 using Domain.Maps;
 
 namespace DomainTests.Testcases;
@@ -5,6 +7,8 @@ namespace DomainTests.Testcases;
 [TestClass]
 public class PayTollTest
 {
+    private static Map Map => new SevenXSevenMap();
+
     [TestMethod]
     [Description(
         """
@@ -19,31 +23,39 @@ public class PayTollTest
     public void 玩家付過路費_無房_無同地段()
     {
         // Arrange
-        var map = new SevenXSevenMap();
-        var game = new Monopoly("Test", map, Utils.MockDice(2));
-
         // 玩家AB
         // A餘額1000, B餘額1000
-        var player_a = new Player("A", 1000);
-        var player_b = new Player("B", 1000);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", CurrentBlockId = "A4", CurrentDirection = "Down", Money = 1000m };
+        var A4 = new { Id = "A4", Price = 1000m };
 
-        game.AddPlayer(player_b, "A4");
-        game.AddPlayer(player_a);
+        var map = Map;
 
-        game.Initial();
-
-        // A擁有A4
-        Land A4 = (Land)map.FindBlockById("A4");
-        player_a.AddLandContract(new(player_a, A4));
-        player_b.EndRoundFlag = false;
+        var player_a = new PlayerBuilder(A.Id)
+            .WithMap(map)
+            .WithMoney(A.Money)
+            .WithLandContract(A4.Id)
+            .Build();
+        var player_b = new PlayerBuilder(B.Id)
+            .WithMap(map)
+            .WithMoney(B.Money)
+            .WithPosition(B.CurrentBlockId, B.CurrentDirection)
+            .Build();
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .WithPlayer(player_b)
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_b).Build())
+            .Build();
 
         //Act
-        game.PayToll(player_b.Id);
+        monopoly.PayToll(player_b.Id);
 
         // Assert
         // 1000 * 0.05 = 50
-        Assert.AreEqual(1050, player_a.Money);
-        Assert.AreEqual(950, player_b.Money);
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerPayTollEvent(B.Id, 950, A.Id, 1050))
+            .NoMore();
     }
 
     [TestMethod]
@@ -60,36 +72,40 @@ public class PayTollTest
     public void 玩家付過路費_有2房_有1同地段()
     {
         // Arrange
-        var map = new SevenXSevenMap();
-        var game = new Monopoly("Test", map, Utils.MockDice(2));
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", CurrentBlockId = "A4", CurrentDirection = "Down", Money = 2000m };
+        var A1 = new { Id = "A1", Price = 1000m };
+        var A4 = new { Id = "A4", Price = 1000m, HouseCount = 2 };
 
-        // 玩家AB
-        // A餘額1000, B餘額1000
-        var player_a = new Player("A", 1000);
-        var player_b = new Player("B", 2000);
+        var map = Map;
+        map.FindBlockById<Land>(A4.Id).Upgrade();
+        map.FindBlockById<Land>(A4.Id).Upgrade();
 
-        game.AddPlayer(player_a);
-        game.AddPlayer(player_b, "A4");
-
-        game.Initial();
-
-        // A擁有A1, A4, A4有2房子
-        Land A1 = (Land)map.FindBlockById("A1");
-        player_a.AddLandContract(new(player_a, A1));
-
-        Land A4 = (Land)map.FindBlockById("A4");
-        player_a.AddLandContract(new(player_a, A4));
-        A4.Upgrade();
-        A4.Upgrade();
-
-        player_b.EndRoundFlag = false;
+        var player_a = new PlayerBuilder(A.Id)
+            .WithMap(map)
+            .WithMoney(A.Money)
+            .WithLandContract(A1.Id)
+            .WithLandContract(A4.Id)
+            .Build();
+        var player_b = new PlayerBuilder(B.Id)
+            .WithMap(map)
+            .WithMoney(B.Money)
+            .WithPosition(B.CurrentBlockId, B.CurrentDirection)
+            .Build();
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .WithPlayer(player_b)
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_b).Build())
+            .Build();
 
         // Act
-        game.PayToll(player_b.Id);
+        monopoly.PayToll(player_b.Id);
 
         // 1000 * 100% * 130% = 1300
-        Assert.AreEqual(2300, player_a.Money);
-        Assert.AreEqual(700, player_b.Money);
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerPayTollEvent(B.Id, 700, A.Id, 2300))
+            .NoMore();
     }
 
     [TestMethod]
@@ -107,29 +123,40 @@ public class PayTollTest
     public void 地主在監獄無需付過路費()
     {
         // Arrange
-        var map = new SevenXSevenMap();
-        var game = new Monopoly("Test", map, Utils.MockDice(1));
+        var A = new { Id = "A", Money = 1000m, CurrentBlockId = "A1", CurrentDirection = "Right" };
+        var B = new { Id = "B", Money = 1000m, CurrentBlockId = "Jail", CurrentDirection = "Down" };
+        var A1 = new { Id = "A1", Price = 1000m };
 
-        // 玩家AB
-        // A餘額1000, B餘額1000
-        var player_a = new Player("A", 1000);
-        var player_b = new Player("B", 1000);
+        var map = Map;
 
-        game.AddPlayer(player_a, "A1", Map.Direction.Right);
-        game.AddPlayer(player_b, "Jail", Map.Direction.Left);
-
-        game.Initial();
-
-        //A1是B的土地，價值1000元
-        Land A1 = (Land)map.FindBlockById("A1");
-        player_b.AddLandContract(new(player_b, A1));
+        var player_a = new PlayerBuilder(A.Id)
+            .WithMap(map)
+            .WithMoney(A.Money)
+            .WithPosition(A.CurrentBlockId, A.CurrentDirection)
+            .Build();
+        var player_b = new PlayerBuilder(B.Id)
+            .WithMap(map)
+            .WithMoney(B.Money)
+            .WithPosition(B.CurrentBlockId, B.CurrentDirection)
+            .WithLandContract(A1.Id)
+            .Build();
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .WithPlayer(player_b)
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .Build();
 
         // Act
-        game.PayToll(player_a.Id);
+        monopoly.PayToll(player_a.Id);
 
         // Assert
         Assert.AreEqual(1000, player_a.Money);
         Assert.AreEqual(1000, player_b.Money);
+
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerDoesntNeedToPayTollEvent(A.Id, 1000))
+            .NoMore();
     }
 
     [TestMethod]
@@ -147,29 +174,37 @@ public class PayTollTest
     public void 地主在停車場無需付過路費()
     {
         // Arrange
-        var map = new SevenXSevenMap();
-        var game = new Monopoly("Test", map, Utils.MockDice(1));
+        var A = new { Id = "A", Money = 1000m, CurrentBlockId = "A1", CurrentDirection = "Right" };
+        var B = new { Id = "B", Money = 1000m, CurrentBlockId = "ParkingLot", CurrentDirection = "Down" };
+        var A1 = new { Id = "A1", Price = 1000m };
 
-        // 玩家AB
-        // A餘額1000, B餘額1000
-        var player_a = new Player("A", 1000);
-        var player_b = new Player("B", 1000);
+        var map = Map;
 
-        game.AddPlayer(player_a, "A1");
-        game.AddPlayer(player_b, "ParkingLot");
-
-        game.Initial();
-
-        //A1是B的土地，價值1000元
-        Land A1 = (Land)map.FindBlockById("A1");
-        player_b.AddLandContract(new(player_b, A1));
+        var player_a = new PlayerBuilder(A.Id)
+            .WithMap(map)
+            .WithMoney(A.Money)
+            .WithPosition(A.CurrentBlockId, A.CurrentDirection)
+            .Build();
+        var player_b = new PlayerBuilder(B.Id)
+            .WithMap(map)
+            .WithMoney(B.Money)
+            .WithPosition(B.CurrentBlockId, B.CurrentDirection)
+            .WithLandContract(A1.Id)
+            .Build();
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .WithPlayer(player_b)
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .Build();
 
         // Act
-        game.PayToll(player_a.Id);
+        monopoly.PayToll(player_a.Id);
 
         // Assert
-        Assert.AreEqual(1000, player_a.Money);
-        Assert.AreEqual(1000, player_b.Money);
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerDoesntNeedToPayTollEvent(A.Id, 1000))
+            .NoMore();
     }
 
     [TestMethod]
@@ -188,39 +223,44 @@ public class PayTollTest
     public void 玩家不能重複支付過路費()
     {
         // Arrange
-        var map = new SevenXSevenMap();
-        var game = new Monopoly("Test", map, Utils.MockDice(2));
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", CurrentBlockId = "A4", CurrentDirection = "Down", Money = 2000m };
+        var A1 = new { Id = "A1", Price = 1000m };
+        var A4 = new { Id = "A4", Price = 1000m, HouseCount = 2 };
 
-        // 玩家AB
-        // A餘額1000, B餘額1000
-        var player_a = new Player("A", 1000);
-        var player_b = new Player("B", 2000);
+        var map = Map;
+        map.FindBlockById<Land>(A4.Id).Upgrade();
+        map.FindBlockById<Land>(A4.Id).Upgrade();
 
-        game.AddPlayer(player_a);
-        game.AddPlayer(player_b, "A4");
+        var player_a = new PlayerBuilder(A.Id)
+            .WithMap(map)
+            .WithMoney(A.Money)
+            .WithLandContract(A1.Id)
+            .WithLandContract(A4.Id)
+            .Build();
+        var player_b = new PlayerBuilder(B.Id)
+            .WithMap(map)
+            .WithMoney(B.Money)
+            .WithPosition(B.CurrentBlockId, B.CurrentDirection)
+            .Build();
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .WithPlayer(player_b)
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_b).Build())
+            .Build();
 
-        game.Initial();
 
-        //game.CurrentPlayer = player_b;
-
-        // A擁有A1, A4, A4有2房子
-        Land A1 = (Land)map.FindBlockById("A1");
-        player_a.AddLandContract(new(player_a, A1));
-
-        Land A4 = (Land)map.FindBlockById("A4");
-        player_a.AddLandContract(new(player_a, A4));
-        A4.Upgrade();
-        A4.Upgrade();
-
-        player_b.EndRoundFlag = false;
-
-        game.PayToll(player_b.Id);
+      
+        monopoly.PayToll(player_b.Id);
 
         // Act
-        game.PayToll(player_b.Id);
+        monopoly.PayToll(player_b.Id);
 
         // 1000 * 100% * 130% = 1300
-        Assert.AreEqual(2300, player_a.Money);
-        Assert.AreEqual(700, player_b.Money);
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerPayTollEvent(B.Id, 700, A.Id, 2300))
+            .NextShouldBe(new PlayerDoesntNeedToPayTollEvent(B.Id, 700))
+            .NoMore();
     }
 }
