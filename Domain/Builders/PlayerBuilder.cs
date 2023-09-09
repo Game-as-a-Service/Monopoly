@@ -18,7 +18,7 @@ public class PlayerBuilder
     {
         Id = id;
         Money = 15000;
-        BlockId = "StartPoint";
+        BlockId = "Start";
         CurrentDirection = Map.Direction.Right;
         LandContracts = new();
         Bankrupt = false;
