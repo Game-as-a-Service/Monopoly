@@ -1,10 +1,14 @@
-﻿using Domain.Maps;
+﻿using Domain.Builders;
+using Domain.Events;
+using Domain.Maps;
 
 namespace DomainTests.Testcases;
 
 [TestClass]
 public class MortgageTest
 {
+    private static Map Map => new SevenXSevenMap();
+
     [TestMethod]
     [Description(
         """
@@ -20,20 +24,98 @@ public class MortgageTest
     public void 玩家抵押房地產()
     {
         // Arrange
-        var map = new SevenXSevenMap();
-        Monopoly game = new("g1", map);
-        Player a = new("A", 5000);
-        game.AddPlayer(a);
-        game.Initial();
-        Land A1 = (Land)map.FindBlockById("A1");
-        a.AddLandContract(new(a, A1));
+        var A = new { Id = "A", Money = 5000m };
+        var A1 = new { Id = "A1", Price = 1000m };
+
+        var map = Map;
+
+        var player_a = new PlayerBuilder(A.Id)
+            .WithMap(map)
+            .WithMoney(A.Money)
+            .WithLandContract(A1.Id)
+            .Build();
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .Build();
 
         // Act
-        game.MortgageLandContract("A", "A1");
+        monopoly.MortgageLandContract("A", "A1");
 
         // Assert
-        Assert.AreEqual(a.Money, 5700);
-        Assert.IsNotNull(a.FindLandContract("A1"));
-        Assert.AreEqual(10, a.LandContractList[^1].Deadline);
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerMortgageEvent(A.Id, 5700, A1.Id, 10))
+            .NoMore();
+    }
+
+    [TestMethod]
+    [Description(
+        """
+        Given:  A 持有 A1，價值 1000元，抵押中
+                A 持有 1000元
+        When:   A 抵押 A1
+        Then:   A 無法再次抵押
+                A 持有 1000元
+        """)]
+    public void 玩家不能抵押已抵押房地產()
+    {
+        // Arrange
+        var A = new { Id = "A", Money = 1000m };
+        var A1 = new { Id = "A1", Price = 1000m, IsMortgage = true };
+
+        var map = Map;
+
+        var player_a = new PlayerBuilder(A.Id)
+            .WithMap(map)
+            .WithMoney(A.Money)
+            .WithLandContract(A1.Id, InMortgage: A1.IsMortgage)
+            .Build();
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .Build();
+
+        // Act
+        monopoly.MortgageLandContract("A", "A1");
+
+        // Assert
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerCannotMortgageEvent(A.Id, 1000, A1.Id))
+            .NoMore();
+    }
+
+    [TestMethod]
+    [Description(
+        """
+        Given:  A 持有 5000元
+        When:   A 抵押 A1
+        Then:   A 抵押 失敗
+        """)]
+    public void 玩家抵押非自有房地產()
+    {
+        // Arrange
+        var A = new { Id = "A", Money = 5000m };
+
+        var map = Map;
+
+        var player_a = new PlayerBuilder(A.Id)
+            .WithMap(map)
+            .WithMoney(A.Money)
+            .Build();
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .Build();
+
+        // Act
+        monopoly.MortgageLandContract("A", "A1");
+
+        // Assert
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerCannotMortgageEvent(A.Id, 5000, "A1"))
+            .NoMore();
     }
 }

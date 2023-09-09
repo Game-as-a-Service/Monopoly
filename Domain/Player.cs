@@ -169,15 +169,6 @@ public class Player
         }
     }
 
-    #region 測試用
-    public void MortgageForTest(string landId, int deadLine)
-    {
-        var landContract = _landContractList.First(l => l.Land.Id == landId);
-        landContract.GetMortgage();
-        landContract.SetDeadLine(deadLine);
-    }
-    #endregion
-
     internal void PayToll(Player owner, decimal amount)
     {
         Money -= amount;

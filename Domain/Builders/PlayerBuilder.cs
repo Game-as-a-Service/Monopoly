@@ -86,7 +86,18 @@ public class PlayerBuilder
                 throw new InvalidOperationException("Map must be set!");
             }
         }
-        LandContracts.ForEach(l => player.AddLandContract(new(player, Map.FindBlockById<Land>(l.LandId))));
+        foreach(var (LandId, InMortgage, Deadline) in LandContracts)
+        {
+            player.AddLandContract(new(player, Map.FindBlockById<Land>(LandId)));
+            if (InMortgage)
+            {
+                player.LandContractList[^1].GetMortgage();
+
+                #region 測試用
+                player.LandContractList[^1].SetDeadLine(Deadline);
+                #endregion
+            }
+        }
         return player;
     }
 
