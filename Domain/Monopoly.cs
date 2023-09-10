@@ -1,4 +1,3 @@
-using Domain.Builders;
 using Domain.Common;
 using Domain.Events;
 using Domain.Interfaces;
@@ -81,7 +80,7 @@ public class Monopoly : AbstractAggregateRoot
         {
             AddPlayerToRankList(player);
         }
-        foreach(var playerRank in _playerRankDictionary)
+        foreach (var playerRank in _playerRankDictionary)
         {
             AddDomainEvent(new SettlementEvent(playerRank.Key.Id, playerRank.Value));
         }
@@ -263,13 +262,13 @@ public class Monopoly : AbstractAggregateRoot
 
 
         //判斷是否踩在該土地
-        if (player.Chess.CurrentBlockId != BlockId)
+        if (player.Chess.CurrentBlockId == BlockId)
         {
-            AddDomainEvent(new PlayerBuyBlockMissedLandEvent(player.Id, BlockId));
+            AddDomainEvent(player.BuyLand(_map, BlockId));
         }
         else
         {
-            AddDomainEvent(player.BuyLand(_map, BlockId));
+            AddDomainEvent(new PlayerBuyBlockMissedLandEvent(player.Id, BlockId));
         }
     }
 }
