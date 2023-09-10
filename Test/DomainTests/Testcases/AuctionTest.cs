@@ -1,3 +1,4 @@
+using Domain.Builders;
 using Domain.Maps;
 
 namespace DomainTests.Testcases;
@@ -20,14 +21,14 @@ public class AuctionTest
     public void 拍賣結算時流拍()
     {
         // Arrange
-        var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var a, out var b);
+        var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var player_a, out var player_b);
 
         // Act
         game.EndAuction();
 
         // Assert
-        Assert.IsNull(a.FindLandContract("A1"));
-        Assert.AreEqual(a.Money, 1700);
+        Assert.IsNull(player_a.FindLandContract("A1"));
+        Assert.AreEqual(player_a.Money, 1700);
     }
 
     [TestMethod]
@@ -48,17 +49,17 @@ public class AuctionTest
     public void 拍賣結算時轉移金錢及地契()
     {
         // Arrange
-        var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var a, out var b);
-        game.PlayerBid(b.Id, 600);
+        var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var player_a, out var player_b);
+        game.PlayerBid(player_b.Id, 600);
 
         // Act
         game.EndAuction();
 
         // Assert
-        Assert.IsNull(a.FindLandContract("A1"));
-        Assert.AreEqual(a.Money, 1600);
-        Assert.AreEqual(b.Money, 1400);
-        Assert.IsNotNull(b.FindLandContract("A1"));
+        Assert.IsNull(player_a.FindLandContract("A1"));
+        Assert.AreEqual(player_a.Money, 1600);
+        Assert.AreEqual(player_b.Money, 1400);
+        Assert.IsNotNull(player_b.FindLandContract("A1"));
     }
 
     [TestMethod]
@@ -75,11 +76,13 @@ public class AuctionTest
     public void 不能喊出比自己的現金還要大的價錢()
     {
         // Arrange
-        var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var a, out var b);
+        var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var player_a, out var player_b);
 
         // Act
+        game.PlayerBid(player_b.Id, 3000);
+
         //Assert.ThrowsException<BidException>(() => game.PlayerBid(b.Id, 3000));
-        game.PlayerBid(b.Id, 3000);
+        game.PlayerBid(player_b.Id, 3000);
     }
 
     [TestMethod]
@@ -96,25 +99,41 @@ public class AuctionTest
     public void 玩家喊價成功()
     {
         // Arrange
-        var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var a, out var b);
-        b.Money = 3000;
+        var game = 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out var player_a, out var player_b);
+        player_b.Money = 3000;
 
         // Act
-        game.PlayerBid(b.Id, 3000);
+        game.PlayerBid(player_b.Id, 3000);
     }
 
-    private static Monopoly 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out Player a, out Player b)
+    private static Monopoly 玩家A持有1000元_玩家B持有2000元_玩家A擁有A1_玩家A正在拍賣A1(out Player player_a, out Player player_b)
     {
+
         var map = new SevenXSevenMap();
-        Monopoly game = new("g1", map);
-        a = new("A", 1000);
-        b = new("B", 2000);
-        game.AddPlayer(a);
-        game.AddPlayer(b);
-        game.Initial();
-        Land A1 = (Land)map.FindBlockById("A1");
-        a.AddLandContract(new(a, A1));
-        game.PlayerSellLandContract(a.Id, "A1");
-        return game;
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 2000m };
+        var A1 = new { Id = "A1", Price = 1000m };
+
+        player_a = new PlayerBuilder(A.Id)
+           .WithMap(map)
+           .WithMoney(A.Money)
+           .WithLandContract(A1.Id)
+           .Build();
+        player_b = new PlayerBuilder(B.Id)
+           .WithMap(map)
+           .WithMoney(B.Money)
+           .Build();
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .WithPlayer(player_b)
+            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .Build();
+
+        monopoly.Initial();
+
+        monopoly.PlayerSellLandContract(A.Id, A1.Id);
+
+        return monopoly;
     }
 }
