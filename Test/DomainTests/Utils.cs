@@ -28,9 +28,15 @@ static class DomainEventsExtension
         var first = domainEvents.First();
         if (first is PlayerNeedToChooseDirectionEvent playerNeedToChooseDirectionEvent)
         {
-            var directions = ((PlayerNeedToChooseDirectionEvent)e).Directions;
-            Assert.AreEqual(((PlayerNeedToChooseDirectionEvent)e).PlayerId, playerNeedToChooseDirectionEvent.PlayerId);
-            CollectionAssert.AreEquivalent(directions, playerNeedToChooseDirectionEvent.Directions);
+            var (PlayerId, Directions) = (((PlayerNeedToChooseDirectionEvent)e).PlayerId, ((PlayerNeedToChooseDirectionEvent)e).Directions);
+            Assert.AreEqual(PlayerId, playerNeedToChooseDirectionEvent.PlayerId);
+            CollectionAssert.AreEquivalent(Directions, playerNeedToChooseDirectionEvent.Directions);
+        }
+        else if (first is GameSettlementEvent gameSettlementEvent)
+        {
+            var (Rounds, Players) = (((GameSettlementEvent)e).Rounds, ((GameSettlementEvent)e).Players);
+            Assert.AreEqual(Rounds, gameSettlementEvent.Rounds);
+            CollectionAssert.AreEqual(Players, gameSettlementEvent.Players);
         }
         else
         {

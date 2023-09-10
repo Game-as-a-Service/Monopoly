@@ -11,6 +11,7 @@ public class PlayerBuilder
     public Map Map { get; set; }
     public List<(string LandId, bool InMortgage, int Deadline)> LandContracts { get; set; }
     public bool Bankrupt { get; set; }
+    public int BankruptRounds { get; private set; }
     public int RemainingSteps { get; set; }
     public bool IsChooseDirection { get; set; }
 
@@ -45,9 +46,10 @@ public class PlayerBuilder
         return this;
     }
 
-    public PlayerBuilder WithBankrupt()
+    public PlayerBuilder WithBankrupt(int Rounds)
     {
         Bankrupt = true;
+        BankruptRounds = Rounds;
         return this;
     }
 
@@ -71,7 +73,7 @@ public class PlayerBuilder
 
     public Player Build()
     {
-        Player player = new(Id, Money);
+        Player player = new(Id, Money, BankruptRounds);
         Chess chess = new(player: player,
                           currentBlockId: BlockId,
                           currentDirection: CurrentDirection,

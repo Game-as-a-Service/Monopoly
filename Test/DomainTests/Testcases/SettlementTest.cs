@@ -1,73 +1,52 @@
+using Domain.Builders;
+using Domain.Events;
+
 namespace DomainTests.Testcases;
 
 [TestClass]
-public class GameTest
+public class SettlementTest
 {
     [TestMethod]
-    public void 玩家ABC_玩家BC破產__當遊戲結算__名次為ACB()
+    [Description(
+        """
+        Given:  遊戲目前第 7 回合
+                A 持有 5000 元
+                B 第 6 回合破產
+                C 第 7 回合破產
+        When:   系統進行遊戲結算
+        Then:   A 第一名
+                B 第三名
+                C 第二名
+
+                DomainEvent:    遊戲結束，7 回合，名次為 A C B，A 剩餘 5000 元，C 第 7 回合破產，B 第 6 回合破產
+        """)]
+    public void 因為有人破產而進行遊戲結算()
     {
         // Arrange
-        Monopoly game = new("Test");
-        // 玩家 A B C
-        var player_a = new Player("A");
-        var player_b = new Player("B", 0);
-        var player_c = new Player("C", 0);
-        game.AddPlayer(player_a);
-        game.AddPlayer(player_b);
-        game.AddPlayer(player_c);
+        var A = new { Id = "A", Money = 5000 };
+        var B = new { Id = "B", Money = 0, BankruptRound = 6 };
+        var C = new { Id = "C", Money = 0, BankruptRound = 7 };
+        var expect = new { Rounds = 7 };
 
-        // 玩家 B、C 破產
-        game.UpdatePlayerState(player_b);
-        game.UpdatePlayerState(player_c);
+        var monopoly = new MonopolyBuilder()
+            .WithRounds(7)
+            .WithPlayer(A.Id, a => a.WithMoney(A.Money))
+            .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithBankrupt(B.BankruptRound))
+            .WithPlayer(C.Id, c => c.WithMoney(C.Money).WithBankrupt(C.BankruptRound))
+            .Build();
 
         // Act
-        // 遊戲結算
-        game.Settlement();
+        monopoly.Settlement();
 
         // Assert
-        // 玩家A獲勝
-        Assert.AreEqual(1, game.PlayerRankDictionary[player_a]);
-        Assert.AreEqual(3, game.PlayerRankDictionary[player_b]);
-        Assert.AreEqual(2, game.PlayerRankDictionary[player_c]);
+        var playerA = monopoly.Players.First(p => p.Id == A.Id);
+        var playerB = monopoly.Players.First(p => p.Id == B.Id);
+        var playerC = monopoly.Players.First(p => p.Id == C.Id);
+        monopoly.DomainEvents.NextShouldBe(new GameSettlementEvent(expect.Rounds, playerA, playerC, playerB));
     }
 
     [TestMethod]
     public void 玩家ABCD_遊戲時間結束_A的結算金額為5000_B的結算金額為4000_C的結算金額為3000_D的結算金額為2000__當遊戲結算__名次為ABCD()
     {
-        // Arrange
-        Monopoly game = new("Test");
-        // 玩家 A B C D
-        var player_a = new Player("A");
-        var player_b = new Player("B");
-        var player_c = new Player("C");
-        var player_d = new Player("D");
-        game.AddPlayer(player_a);
-        game.AddPlayer(player_b);
-        game.AddPlayer(player_c);
-        game.AddPlayer(player_d);
-
-        // 玩家 B 的結算金額為 5000
-        player_a.Money = 5000;
-
-        // 玩家 B 的結算金額為 4000
-        player_b.Money = 4000;
-
-        // 玩家 C 的結算金額為 3000
-        player_c.Money = 3000;
-
-        // 玩家 D 的結算金額為 2000
-        player_d.Money = 2000;
-
-        // Act
-        // 遊戲結算
-        game.Settlement();
-
-        // Assert
-        // 名次為 A B C D
-        var ranking = game.PlayerRankDictionary;
-        Assert.AreEqual(1, ranking[player_a]);
-        Assert.AreEqual(2, ranking[player_b]);
-        Assert.AreEqual(3, ranking[player_c]);
-        Assert.AreEqual(4, ranking[player_d]);
     }
 }

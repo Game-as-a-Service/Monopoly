@@ -16,16 +16,15 @@ public class Monopoly : AbstractAggregateRoot
 
     private readonly Map _map;
     private readonly List<Player> _players = new();
-    private readonly Dictionary<Player, int> _playerRankDictionary = new(); // 玩家名次 {玩家,名次}
     private CurrentPlayerState _currentPlayerState;
-
-    public IDictionary<Player, int> PlayerRankDictionary => _playerRankDictionary.AsReadOnly();
 
     public ICollection<Player> Players => _players.AsReadOnly();
 
     public string HostId { get; init; }
 
     public Map Map => _map;
+
+    public int Rounds { get; private set; }
 
     // 初始化遊戲
     public Monopoly(string id, Map? map = null, IDice[]? dices = null)
@@ -35,7 +34,7 @@ public class Monopoly : AbstractAggregateRoot
         Dices = dices ?? new IDice[2] { new Dice(), new Dice() };
     }
 
-    public Monopoly(string gameId, Player[] players, Map map, string hostId, CurrentPlayerState currentPlayerState, IDice[]? dices = null)
+    public Monopoly(string gameId, Player[] players, Map map, string hostId, CurrentPlayerState currentPlayerState, IDice[]? dices = null, int rounds = 0)
     {
         Id = gameId;
         _players = players.ToList();
@@ -48,6 +47,8 @@ public class Monopoly : AbstractAggregateRoot
         {
             player.Monopoly = this;
         }
+
+        Rounds = rounds;
     }
 
     public void AddPlayer(Player player, string blockId = "Start", Direction direction = Direction.Right)
@@ -61,29 +62,17 @@ public class Monopoly : AbstractAggregateRoot
     public void UpdatePlayerState(Player player)
     {
         AddDomainEvent(player.UpdateState());
-
-        if (player.IsBankrupt())
-            AddPlayerToRankList(player);
     }
 
     public void Settlement()
     {
         // 玩家資產計算方式: 土地價格+升級價格+剩餘金額 
         // 抵押的房地產不列入計算
-
-        // 排序未破產玩家的資產並加入名次清單
-        var playerList = from p in _players
-                         where !p.IsBankrupt()
-                         orderby p.Money + p.LandContractList.Where(l => !l.Mortgage).Sum(l => (l.Land.House + 1) * l.Land.Price) ascending
-                         select p;
-        foreach (var player in playerList)
-        {
-            AddPlayerToRankList(player);
-        }
-        foreach (var playerRank in _playerRankDictionary)
-        {
-            AddDomainEvent(new SettlementEvent(playerRank.Key.Id, playerRank.Value));
-        }
+        var PropertyCalculate = (Player player) => 
+            player.Money + player.LandContractList.Where(l => !l.Mortgage).Sum(l => (l.Land.House + 1) * l.Land.Price);
+        // 根據玩家資產進行排序，多的在前，若都已經破產了，則以破產時間晚的在前
+        var players = _players.OrderByDescending(PropertyCalculate).ThenByDescending(p => p.BankruptRounds).ToArray();
+        AddDomainEvent(new GameSettlementEvent(Rounds, players));
     }
 
     public Block GetPlayerPosition(string playerId)
@@ -224,15 +213,6 @@ public class Monopoly : AbstractAggregateRoot
     }
 
     #region Private Functions
-
-    private void AddPlayerToRankList(Player player)
-    {
-        foreach (var rank in _playerRankDictionary)
-        {
-            _playerRankDictionary[rank.Key] += 1;
-        }
-        _playerRankDictionary.Add(player, 1);
-    }
 
     private Player GetPlayer(string id)
     {

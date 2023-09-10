@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS8618 // 退出建構函式時，不可為 Null 的欄位必須包含非 Null 值。請考慮宣告為可為 Null。
 using Domain.Interfaces;
+using System.Linq.Expressions;
 
 namespace Domain.Builders;
 
@@ -16,7 +17,7 @@ public class MonopolyBuilder
     public CurrentPlayerState CurrentPlayerState { get; private set; }
 
     public Map Map { get; private set; }
-
+    public int Rounds { get; private set; }
 
     public MonopolyBuilder()
     {
@@ -41,6 +42,16 @@ public class MonopolyBuilder
         return this;
     }
 
+    public MonopolyBuilder WithPlayer(string id, Expression<Func<PlayerBuilder, PlayerBuilder>> expression)
+    {
+        var f = expression.Compile();
+        var playerBuilder = new PlayerBuilder(id);
+        f(playerBuilder);
+        playerBuilder.WithMap(Map);
+        Players.Add(playerBuilder.Build());
+        return this;
+    }
+
     public MonopolyBuilder WithCurrentPlayer(CurrentPlayerState currentPlayerState)
     {
         CurrentPlayerState = currentPlayerState;
@@ -60,8 +71,15 @@ public class MonopolyBuilder
                             Map,
                             HostId,
                             CurrentPlayerState,
-                            Dices
+                            Dices,
+                            Rounds
                             );
+    }
+
+    public MonopolyBuilder WithRounds(int rounds)
+    {
+        Rounds = rounds;
+        return this;
     }
 
     public MonopolyBuilder WithDices(IDice[] dices)
@@ -69,4 +87,6 @@ public class MonopolyBuilder
         Dices = dices;
         return this;
     }
+
+    
 }

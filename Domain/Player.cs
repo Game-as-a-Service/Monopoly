@@ -10,11 +10,12 @@ public class Player
     private readonly List<LandContract> _landContractList = new();
     private Auction auction;
 
-    public Player(string id, decimal money = 15000)
+    public Player(string id, decimal money = 15000, int bankruptRounds = 0)
     {
         Id = id;
         State = PlayerState.Normal;
         Money = money;
+        BankruptRounds = bankruptRounds;
     }
 
     public PlayerState State { get; private set; }
@@ -30,6 +31,7 @@ public class Player
     // false: 回合尚不能結束，true: 玩家可結束回合
     public bool EnableUpgrade { get; set; }
     public int SuspendRounds { get; private set; } = 0;
+    public int BankruptRounds { get; set; }
 
     internal DomainEvent UpdateState()
     {
@@ -178,7 +180,6 @@ public class Player
     internal DomainEvent BuildHouse(Map map)
     {
         Block block = map.FindBlockById(chess.CurrentBlockId);
-
         if (block is Land land && EnableUpgrade)
         {
             return land.BuildHouse(this);
