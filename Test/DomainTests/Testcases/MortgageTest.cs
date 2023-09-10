@@ -29,15 +29,10 @@ public class MortgageTest
 
         var map = Map;
 
-        var player_a = new PlayerBuilder(A.Id)
-            .WithMap(map)
-            .WithMoney(A.Money)
-            .WithLandContract(A1.Id)
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player_a)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A1.Id, false, 0))
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act
@@ -66,15 +61,10 @@ public class MortgageTest
 
         var map = Map;
 
-        var player_a = new PlayerBuilder(A.Id)
-            .WithMap(map)
-            .WithMoney(A.Money)
-            .WithLandContract(A1.Id, InMortgage: A1.IsMortgage)
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player_a)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A1.Id, A1.IsMortgage, 5))
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act
@@ -100,14 +90,10 @@ public class MortgageTest
 
         var map = Map;
 
-        var player_a = new PlayerBuilder(A.Id)
-            .WithMap(map)
-            .WithMoney(A.Money)
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player_a)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .WithPlayer(A.Id, a => a.WithMoney(A.Money))
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act

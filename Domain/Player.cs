@@ -6,6 +6,7 @@ namespace Domain;
 
 public class Player
 {
+    private decimal money;
     private Chess chess;
     private readonly List<LandContract> _landContractList = new();
     private Auction auction;
@@ -21,7 +22,18 @@ public class Player
     public PlayerState State { get; private set; }
     public Monopoly Monopoly { get; internal set; }
     public string Id { get; }
-    public decimal Money { get; set; }
+    public decimal Money
+    {
+        get { return money; } 
+        set
+        {
+            money = (int)value;
+            if (money < 0)
+            {
+                money = 0;
+            }
+        } 
+    }
 
     public IList<LandContract> LandContractList => _landContractList.AsReadOnly();
 

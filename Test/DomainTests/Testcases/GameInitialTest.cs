@@ -18,31 +18,22 @@ public class GameInitialTest
         var D = new { Id = "D" };
 
         var map = Map;
-
-        var player_a = new PlayerBuilder(A.Id)
-            .WithMap(map)
-            .Build();
-        var player_b = new PlayerBuilder(B.Id)
-            .WithMap(map)
-            .Build();
-        var player_c = new PlayerBuilder(C.Id)
-            .WithMap(map)
-            .Build();
-        var player_d = new PlayerBuilder(D.Id)
-            .WithMap(map)
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player_a)
-            .WithPlayer(player_b)
-            .WithPlayer(player_c)
-            .WithPlayer(player_d)
+            .WithPlayer(A.Id)
+            .WithPlayer(B.Id)
+            .WithPlayer(C.Id)
+            .WithPlayer(D.Id)
             .Build();
 
         // Act
         monopoly.Initial();
 
         // Assert
+        var player_a = monopoly.Players.First(p => p.Id == A.Id);
+        var player_b = monopoly.Players.First(p => p.Id == B.Id);
+        var player_c = monopoly.Players.First(p => p.Id == C.Id);
+        var player_d = monopoly.Players.First(p => p.Id == D.Id);
         Assert.AreEqual(15000, player_a.Money);
         Assert.AreEqual(15000, player_b.Money);
         Assert.AreEqual(15000, player_c.Money);

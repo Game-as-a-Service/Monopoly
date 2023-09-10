@@ -41,34 +41,32 @@ public class RollDiceTest
             RemainingSteps = 0
         };
 
-        var player = new PlayerBuilder(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition(A.CurrentBlockId, A.Direction)
-            .Build();
+            
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
+            .WithPlayer(A.Id, p => p.WithMoney(A.Money)
+                    .WithPosition(A.CurrentBlockId, A.Direction))
             .WithDices(Utils.MockDice(dicePoints))
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act
-        monopoly.PlayerRollDice(player.Id);
+        monopoly.PlayerRollDice(A.Id);
 
         // Assert
-        確認玩家目前位置(monopoly, player.Id, expected.BlockId, expected.Direction);
-        確認玩家持有金額(monopoly, player.Id, 5000m);
-        確認玩家剩餘步數(monopoly, player.Id, expected.RemainingSteps);
+        確認玩家目前位置(monopoly, A.Id, expected.BlockId, expected.Direction);
+        確認玩家持有金額(monopoly, A.Id, 5000m);
+        確認玩家剩餘步數(monopoly, A.Id, expected.RemainingSteps);
         monopoly.DomainEvents
-            .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "Start", "Up", 5))
-            .NextShouldBe(new ThroughStartEvent(player.Id, 3000, 5000m))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "A1", "Right", 4))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "Station1", "Right", 3))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "A2", "Right", 2))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "A3", "Right", 1))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "A4", "Down", 0))
-            .NextShouldBe(new PlayerCanBuyLandEvent(player.Id, "A4", 1000m))
+            .NextShouldBe(new PlayerRolledDiceEvent(A.Id, dicePoints))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "Start", "Up", 5))
+            .NextShouldBe(new ThroughStartEvent(A.Id, 3000, 5000m))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "A1", "Right", 4))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "Station1", "Right", 3))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "A2", "Right", 2))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "A3", "Right", 1))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "A4", "Down", 0))
+            .NextShouldBe(new PlayerCanBuyLandEvent(A.Id, "A4", 1000m))
             .NoMore();
     }
 
@@ -102,8 +100,8 @@ public class RollDiceTest
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.Direction))
+            .WithCurrentPlayer(A.Id)
             .WithDices(Utils.MockDice(dicePoints))
             .Build();
 
@@ -158,8 +156,8 @@ public class RollDiceTest
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.Direction).WithMoney(1000))
+            .WithCurrentPlayer(A.Id)
             .WithDices(Utils.MockDice(dicePoints))
             .Build();
 
@@ -217,8 +215,8 @@ public class RollDiceTest
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.Direction).WithMoney(A.Money))
+            .WithCurrentPlayer(A.Id)
             .WithDices(Utils.MockDice(dicePoints))
             .Build();
 
@@ -272,30 +270,25 @@ public class RollDiceTest
         map.FindBlockById<Land>(A2.Id).Upgrade();
         map.FindBlockById<Land>(A2.Id).Upgrade();
 
-        var player = new PlayerBuilder(A.Id)
-            .WithMap(map)
-            .WithPosition(A.CurrentBlockId, A.Direction)
-            .WithLandContract(A2.Id)
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.Direction).WithLandContract(A2.Id, false, 0))
+            .WithCurrentPlayer(A.Id)
             .WithDices(Utils.MockDice(dicePoints))
             .Build();
 
         // Act
-        monopoly.PlayerRollDice(player.Id);
+        monopoly.PlayerRollDice(A.Id);
 
         // Assert
-        確認玩家目前位置(monopoly, player.Id, expected.BlockId, expected.Direction);
-        確認玩家剩餘步數(monopoly, player.Id, expected.RemainingSteps);
+        確認玩家目前位置(monopoly, A.Id, expected.BlockId, expected.Direction);
+        確認玩家剩餘步數(monopoly, A.Id, expected.RemainingSteps);
 
         monopoly.DomainEvents
-            .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "Station1", "Right", 1))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "A2", "Right", 0))
-            .NextShouldBe(new PlayerCanBuildHouseEvent(player.Id, A2.Id, 3, 1000))
+            .NextShouldBe(new PlayerRolledDiceEvent(A.Id, dicePoints))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "Station1", "Right", 1))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "A2", "Right", 0))
+            .NextShouldBe(new PlayerCanBuildHouseEvent(A.Id, A2.Id, 3, 1000))
             .NoMore();
     }
 

@@ -40,7 +40,7 @@ public class PlayerBuilder
         return this;
     }
 
-    public PlayerBuilder WithLandContract(string LandId, bool InMortgage = false, int Deadline = 10)
+    public PlayerBuilder WithLandContract(string LandId, bool InMortgage, int Deadline)
     {
         LandContracts.Add(new (LandId, InMortgage, Deadline));
         return this;
@@ -53,7 +53,7 @@ public class PlayerBuilder
         return this;
     }
 
-    public PlayerBuilder WithMap(Map map)
+    internal PlayerBuilder WithMap(Map map)
     {
         Map = map;
         return this;

@@ -35,8 +35,10 @@ public class SelectDirectionTest
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
+                                    .WithRemainingSteps(A.RemainingSteps)
+                                    .WithNotChooseDirection())
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act
@@ -83,8 +85,10 @@ public class SelectDirectionTest
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
+                                    .WithRemainingSteps(A.RemainingSteps)
+                                    .WithNotChooseDirection())
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act
@@ -135,8 +139,10 @@ public class SelectDirectionTest
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
+                                    .WithRemainingSteps(A.RemainingSteps)
+                                    .WithNotChooseDirection())
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act
@@ -184,8 +190,10 @@ public class SelectDirectionTest
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
+                                    .WithRemainingSteps(A.RemainingSteps)
+                                    .WithNotChooseDirection())
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act
@@ -225,8 +233,9 @@ public class SelectDirectionTest
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
+                                    .WithRemainingSteps(A.RemainingSteps))
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act
@@ -266,8 +275,10 @@ public class SelectDirectionTest
             .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
-            .WithPlayer(player)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player).Build())
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
+                                    .WithRemainingSteps(A.RemainingSteps)
+                                    .WithNotChooseDirection())
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act

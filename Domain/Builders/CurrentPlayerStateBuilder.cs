@@ -2,15 +2,15 @@
 
 public class CurrentPlayerStateBuilder
 {
-    public Player Player { get; private set; }
+    public string PlayerId { get; private set; }
     public bool IsPayToll { get; private set; }
     public bool IsBoughtLand { get; private set; }
     public bool IsUpgradeLand { get; private set; }
     public Auction? Auction { get; private set; }
     public int RemainingSteps { get; private set; }
-    public CurrentPlayerStateBuilder(Player player)
+    public CurrentPlayerStateBuilder(string Id)
     {
-        Player = player;
+        PlayerId = Id;
         IsPayToll = false;
         IsBoughtLand = false;
         IsUpgradeLand = false;
@@ -49,7 +49,7 @@ public class CurrentPlayerStateBuilder
 
     public CurrentPlayerState Build()
     {
-        return new CurrentPlayerState(PlayerId: Player.Id,
+        return new CurrentPlayerState(PlayerId: PlayerId,
                                       IsPayToll: IsPayToll,
                                       IsBoughtLand: IsBoughtLand,
                                       IsUpgradeLand: IsUpgradeLand,

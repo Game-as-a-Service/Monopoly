@@ -26,25 +26,20 @@ public class BuyLandTest
         // 玩家A目前踩在價值為1000的土地F4上
         var A = new { Id = "A", Money = 5000m, CurrentBlockId = "F4", CurrentDirection = "Up" };
 
-        var player_a = new PlayerBuilder(A.Id)
-           .WithMap(map)
-           .WithMoney(A.Money)
-           .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-           .Build();
-
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player_a)
+            .WithPlayer(A.Id, pa=>pa.WithMoney(A.Money).WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .Build();
         monopoly.Initial();
 
         // Act
         // 玩家A進行購買F4
-        monopoly.BuyLand(player_a.Id, "F4");
+        monopoly.BuyLand(A.Id, "F4");
 
         // Assert
         // 玩家A持有金額為4000
         // 玩家A持有的房地產 F4
+        var player_a = monopoly.Players.First(p=>p.Id==A.Id);
         Assert.AreEqual(4000, player_a.Money);
         Assert.AreEqual(1, player_a.LandContractList.Count());
         Assert.IsTrue(player_a.LandContractList.Any(pa => pa.Land.Id == "F4"));
@@ -68,24 +63,20 @@ public class BuyLandTest
         // 玩家A目前踩在價值為1000的土地F4上
         var A = new { Id = "A", Money = 500m, CurrentBlockId = "F4", CurrentDirection = "Up" };
 
-        var player_a = new PlayerBuilder(A.Id)
-           .WithMap(map)
-           .WithMoney(A.Money)
-           .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-           .Build();
-
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player_a)
+            .WithPlayer(A.Id,pa=>pa.WithMoney(A.Money)
+                                   .WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .Build();
         monopoly.Initial();
 
         // Act
-        monopoly.BuyLand(player_a.Id, "F4");
+        monopoly.BuyLand(A.Id, "F4");
 
         // Assert
         // 玩家A持有金額為500
         // 玩家A無持有的房地產
+        var player_a = monopoly.Players.First(p => p.Id == A.Id);
         Assert.AreEqual(500, player_a.Money);
         Assert.AreEqual(0, player_a.LandContractList.Count);
     }
@@ -110,35 +101,28 @@ public class BuyLandTest
         var B = new { Id = "B", Money = 5000m };
         var F4 = new { Id = "F4", Price = 1000m };
 
-        var player_a = new PlayerBuilder(A.Id)
-           .WithMap(map)
-           .WithMoney(A.Money)
-           .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-           .Build();
-
-        var player_b = new PlayerBuilder(B.Id)
-           .WithMap(map)
-           .WithMoney(B.Money)
-           .WithLandContract(F4.Id)
-           .Build();
-
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player_a)
+            .WithPlayer(A.Id, pa => pa.WithMoney(A.Money)
+                                      .WithPosition(A.CurrentBlockId, A.CurrentDirection))
+            .WithPlayer(B.Id, pb => pb.WithMoney(B.Money)
+                                      .WithLandContract(F4.Id,false,0))
             .Build();
         monopoly.Initial();
 
         // Act
         // 玩家B進行購買F4
-        monopoly.BuyLand(player_a.Id, F4.Id);
+        monopoly.BuyLand(A.Id, F4.Id);
 
         // Assert
         // 玩家A持有金額為5000
         // 玩家A無持有的房地產
+        var player_a = monopoly.Players.First(p => p.Id == A.Id);
         Assert.AreEqual(5000, player_a.Money);
         Assert.AreEqual(0, player_a.LandContractList.Count);
         // 玩家B持有金額為5000
         // 玩家B持有的房地產F4
+        var player_b = monopoly.Players.First(p => p.Id == B.Id);
         Assert.AreEqual(5000, player_b.Money);
         Assert.AreEqual(1, player_b.LandContractList.Count);
         Assert.IsTrue(player_b.LandContractList.Any(pa => pa.Land.Id == F4.Id));
@@ -161,25 +145,21 @@ public class BuyLandTest
         var A = new { Id = "A", Money = 5000m, CurrentBlockId = "F2", CurrentDirection = "Up" };
         var F4 = new { Id = "F4", Price = 1000m };
 
-        var player_a = new PlayerBuilder(A.Id)
-           .WithMap(map)
-           .WithMoney(A.Money)
-           .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-           .Build();
-
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player_a)
+            .WithPlayer(A.Id, pa => pa.WithMoney(A.Money)
+                                      .WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .Build();
         monopoly.Initial();
 
         // Act
         // 玩家B進行購買F4
-        monopoly.BuyLand(player_a.Id, F4.Id);
+        monopoly.BuyLand(A.Id, F4.Id);
 
         // Assert
         // 玩家A持有金額為5000
         // 玩家A無持有的房地產
+        var player_a = monopoly.Players.First(p => p.Id == A.Id);
         Assert.AreEqual(5000, player_a.Money);
         Assert.AreEqual(0, player_a.LandContractList.Count);
     }

@@ -104,12 +104,6 @@ public class Monopoly : AbstractAggregateRoot
         };
     }
 
-    public Direction GetPlayerDirection(string playerId)
-    {
-        Player player = GetPlayer(playerId);
-        return player.Chess.CurrentDirection;
-    }
-
     public void Initial()
     {
         // 初始化目前玩家
@@ -174,9 +168,14 @@ public class Monopoly : AbstractAggregateRoot
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
         Land location = (Land)GetPlayerPosition(player.Id);
-
+        if (CurrentPlayerState.IsPayToll)
+        {
+            AddDomainEvent(new PlayerDoesntNeedToPayTollEvent(player.Id, player.Money));
+            return;
+        }
+        
         var domainEvent = location.PayToll(player);
-
+       
         AddDomainEvent(domainEvent);
     }
 

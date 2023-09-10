@@ -114,25 +114,19 @@ public class AuctionTest
         var B = new { Id = "B", Money = 2000m };
         var A1 = new { Id = "A1", Price = 1000m };
 
-        player_a = new PlayerBuilder(A.Id)
-           .WithMap(map)
-           .WithMoney(A.Money)
-           .WithLandContract(A1.Id)
-           .Build();
-        player_b = new PlayerBuilder(B.Id)
-           .WithMap(map)
-           .WithMoney(B.Money)
-           .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(player_a)
-            .WithPlayer(player_b)
-            .WithCurrentPlayer(new CurrentPlayerStateBuilder(player_a).Build())
+            .WithPlayer(A.Id, p => p.WithMoney(A.Money).WithLandContract(A1.Id, false, 0))
+            .WithPlayer(B.Id, p => p.WithMoney(B.Money))
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         monopoly.Initial();
 
         monopoly.PlayerSellLandContract(A.Id, A1.Id);
+
+        player_a = monopoly.Players.First(p => p.Id == A.Id);
+        player_b = monopoly.Players.First(p => p.Id == B.Id);
 
         return monopoly;
     }

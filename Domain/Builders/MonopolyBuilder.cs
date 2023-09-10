@@ -8,7 +8,7 @@ public class MonopolyBuilder
 {
     public string GameId { get; private set; }
 
-    public List<Player> Players { get; private set; }
+    public List<PlayerBuilder> PlayerBuilders { get; private set; }
 
     public string HostId { get; private set; }
 
@@ -21,7 +21,7 @@ public class MonopolyBuilder
 
     public MonopolyBuilder()
     {
-        Players = new();
+        PlayerBuilders = new();
     }
 
     public MonopolyBuilder WithId(string id)
@@ -36,25 +36,28 @@ public class MonopolyBuilder
         return this;
     }
 
-    public MonopolyBuilder WithPlayer(Player player)
+    public MonopolyBuilder WithPlayer(string id, Expression<Func<PlayerBuilder, PlayerBuilder>>? expression = null)
     {
-        Players.Add(player);
-        return this;
-    }
-
-    public MonopolyBuilder WithPlayer(string id, Expression<Func<PlayerBuilder, PlayerBuilder>> expression)
-    {
-        var f = expression.Compile();
         var playerBuilder = new PlayerBuilder(id);
-        f(playerBuilder);
-        playerBuilder.WithMap(Map);
-        Players.Add(playerBuilder.Build());
+        if (expression is not null)
+        {
+            var f = expression.Compile();
+            f(playerBuilder);
+        }
+        
+        PlayerBuilders.Add(playerBuilder);
         return this;
     }
 
-    public MonopolyBuilder WithCurrentPlayer(CurrentPlayerState currentPlayerState)
+    public MonopolyBuilder WithCurrentPlayer(string id, Expression<Func<CurrentPlayerStateBuilder, CurrentPlayerStateBuilder>>? expression = null)
     {
-        CurrentPlayerState = currentPlayerState;
+        var currentPlayerStateBuilder = new CurrentPlayerStateBuilder(id);
+        if (expression is not null)
+        {
+            var f = expression.Compile();
+            f(currentPlayerStateBuilder);
+        }
+        CurrentPlayerState = currentPlayerStateBuilder.Build();
         return this;
     }
 
@@ -66,8 +69,14 @@ public class MonopolyBuilder
 
     public Monopoly Build()
     {
+        var players = new List<Player>();
+        PlayerBuilders.ForEach(builder =>
+        {
+            builder.WithMap(Map);
+            players.Add(builder.Build());
+        });
         return new Monopoly(GameId,
-                            Players.ToArray(),
+                            players.ToArray(),
                             Map,
                             HostId,
                             CurrentPlayerState,
