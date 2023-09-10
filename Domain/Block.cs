@@ -109,7 +109,7 @@ public class Land : Block
             }
             else
             {
-                if(!player.LandContractList.Any(l => !l.Mortgage))
+                if(!player.LandContractList.Any(l => !l.InMortgage))
                 {
                     // 破產
                     player.PayToll(owner, player.Money);
@@ -188,7 +188,7 @@ public class Land : Block
         }
         else if (owner == player)
         {
-            if(player.LandContractList.Any(l => l.Land.Id == Id && !l.Mortgage))
+            if(player.LandContractList.Any(l => l.Land.Id == Id && !l.InMortgage))
             {
                 return new PlayerCanBuildHouseEvent(player.Id, land.Id, land.House, land.UpgradePrice);
             }
@@ -207,7 +207,7 @@ public class Land : Block
         {
             return;
         }
-        if (player.LandContractList.Any(l => l.Land.Id == Id && !l.Mortgage))
+        if (player.LandContractList.Any(l => l.Land.Id == Id && !l.InMortgage))
         {
             player.EnableUpgrade = true;
         }

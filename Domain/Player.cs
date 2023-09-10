@@ -9,7 +9,6 @@ public class Player
     private decimal money;
     private Chess chess;
     private readonly List<LandContract> _landContractList = new();
-    private Auction auction;
 
     public Player(string id, decimal money = 15000, int bankruptRounds = 0)
     {
@@ -38,7 +37,6 @@ public class Player
     public IList<LandContract> LandContractList => _landContractList.AsReadOnly();
 
     public Chess Chess { get => chess; set => chess = value; }
-    public Auction Auction => auction;
     public bool EndRoundFlag { get; set; }
     // false: 回合尚不能結束，true: 玩家可結束回合
     public bool EnableUpgrade { get; set; }
@@ -47,7 +45,7 @@ public class Player
 
     internal DomainEvent UpdateState()
     {
-        if (Money <= 0 && !LandContractList.Any(l => !l.Mortgage))
+        if (Money <= 0 && !LandContractList.Any(l => !l.InMortgage))
         {
             State = PlayerState.Bankrupt;
             foreach(var landContract in LandContractList)
@@ -116,14 +114,6 @@ public class Player
         }
     }
 
-    public void AuctionLandContract(string id)
-    {
-        var landContract = _landContractList.Where(landContract => landContract.Land.Id == id).FirstOrDefault();
-        if (landContract is null)
-            throw new Exception("找不到地契");
-        auction = new Auction(landContract);
-    }
-
     internal void RollDice(Map map, IDice[] dices)
     {
         foreach (var dice in dices)
@@ -145,7 +135,7 @@ public class Player
     internal DomainEvent MortgageLandContract(string landId)
     {
         // 玩家擁有地契並尚未抵押
-        if(_landContractList.Exists(l => l.Land.Id == landId && !l.Mortgage))
+        if(_landContractList.Exists(l => l.Land.Id == landId && !l.InMortgage))
         {
             var landContract = _landContractList.First(l => l.Land.Id == landId);
             landContract.GetMortgage();
@@ -163,7 +153,7 @@ public class Player
     internal DomainEvent RedeemLandContract(string landId)
     {
         // 玩家擁有地契並正在抵押
-        if (_landContractList.Exists(l => l.Land.Id == landId && l.Mortgage))
+        if (_landContractList.Exists(l => l.Land.Id == landId && l.InMortgage))
         {
             var landContract = _landContractList.First(l => l.Land.Id == landId);
             if (Money >= landContract.Land.GetPrice("Redeem"))
@@ -202,6 +192,8 @@ public class Player
     internal List<DomainEvent> BuyLand(Map map, string BlockId)
     {
         List<DomainEvent> events = new();
+
+        // TODO 重構:波動拳+前一個參考的判斷踩在土地上要移過來
 
         //判斷是否為空土地
         if (map.FindBlockById(chess.CurrentBlockId) is Land land)

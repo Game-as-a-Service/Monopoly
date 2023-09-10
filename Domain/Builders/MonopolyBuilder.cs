@@ -14,7 +14,7 @@ public class MonopolyBuilder
 
     public IDice[] Dices { get; private set; }
 
-    public CurrentPlayerState CurrentPlayerState { get; private set; }
+    public CurrentPlayerStateBuilder CurrentPlayerStateBuilder { get; private set; }
 
     public Map Map { get; private set; }
     public int Rounds { get; private set; }
@@ -57,7 +57,7 @@ public class MonopolyBuilder
             var f = expression.Compile();
             f(currentPlayerStateBuilder);
         }
-        CurrentPlayerState = currentPlayerStateBuilder.Build();
+        CurrentPlayerStateBuilder = currentPlayerStateBuilder;
         return this;
     }
 
@@ -75,11 +75,20 @@ public class MonopolyBuilder
             builder.WithMap(Map);
             players.Add(builder.Build());
         });
+        Auction? auction = null;
+        if (CurrentPlayerStateBuilder.HasAuction)
+        {
+            var (LandId, HighestBidder, HighestPrice) = CurrentPlayerStateBuilder.Auction;
+            var currentPlayer = players.First(p => p.Id == CurrentPlayerStateBuilder.PlayerId);
+            var landContract = currentPlayer.FindLandContract(LandId) ?? throw new InvalidOperationException("LandContract not found");
+            var highestBidder = players.FirstOrDefault(p => p.Id == HighestBidder);
+            auction = new Auction(landContract, highestBidder, HighestPrice);
+        }
         return new Monopoly(GameId,
                             players.ToArray(),
                             Map,
                             HostId,
-                            CurrentPlayerState,
+                            CurrentPlayerStateBuilder.Build(auction),
                             Dices,
                             Rounds
                             );

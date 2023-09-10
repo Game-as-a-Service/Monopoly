@@ -26,15 +26,8 @@ public class Monopoly : AbstractAggregateRoot
 
     public int Rounds { get; private set; }
 
-    // 初始化遊戲
-    public Monopoly(string id, Map? map = null, IDice[]? dices = null)
-    {
-        Id = id;
-        _map = map ?? new SevenXSevenMap();
-        Dices = dices ?? new IDice[2] { new Dice(), new Dice() };
-    }
 
-    public Monopoly(string gameId, Player[] players, Map map, string hostId, CurrentPlayerState currentPlayerState, IDice[]? dices = null, int rounds = 0)
+    internal Monopoly(string gameId, Player[] players, Map map, string hostId, CurrentPlayerState currentPlayerState, IDice[]? dices = null, int rounds = 0)
     {
         Id = gameId;
         _players = players.ToList();
@@ -69,7 +62,7 @@ public class Monopoly : AbstractAggregateRoot
         // 玩家資產計算方式: 土地價格+升級價格+剩餘金額 
         // 抵押的房地產不列入計算
         var PropertyCalculate = (Player player) => 
-            player.Money + player.LandContractList.Where(l => !l.Mortgage).Sum(l => (l.Land.House + 1) * l.Land.Price);
+            player.Money + player.LandContractList.Where(l => !l.InMortgage).Sum(l => (l.Land.House + 1) * l.Land.Price);
         // 根據玩家資產進行排序，多的在前，若都已經破產了，則以破產時間晚的在前
         var players = _players.OrderByDescending(PropertyCalculate).ThenByDescending(p => p.BankruptRounds).ToArray();
         AddDomainEvent(new GameSettlementEvent(Rounds, players));
@@ -126,14 +119,15 @@ public class Monopoly : AbstractAggregateRoot
 
     public void EndAuction()
     {
-        AddDomainEvent(CurrentPlayer?.Auction.End());
+        AddDomainEvent(_currentPlayerState.Auction.End());
     }
 
     public void PlayerSellLandContract(string playerId, string landId)
     {
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
-        player.AuctionLandContract(landId);
+        var landContract = player.FindLandContract(landId) ?? throw new Exception("找不到地契");
+        _currentPlayerState = CurrentPlayerState with { Auction = new Auction(landContract) };
     }
 
     public void PlayerBid(string playerId, decimal price)
@@ -145,7 +139,7 @@ public class Monopoly : AbstractAggregateRoot
         }
         else
         {
-            AddDomainEvent(CurrentPlayer?.Auction.Bid(player, price));
+            AddDomainEvent(_currentPlayerState?.Auction.Bid(player, price));
         }
     }
 

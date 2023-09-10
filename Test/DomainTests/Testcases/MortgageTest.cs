@@ -39,6 +39,11 @@ public class MortgageTest
         monopoly.MortgageLandContract("A", "A1");
 
         // Assert
+        Player player_a = monopoly.Players.First(p => p.Id == A.Id);
+        Assert.AreEqual(5700, player_a.Money);
+        Assert.AreEqual(1, player_a.LandContractList.Count);
+        Assert.IsTrue(player_a.LandContractList.Any(l => l.Land.Id == A1.Id));
+
         monopoly.DomainEvents
             .NextShouldBe(new PlayerMortgageEvent(A.Id, 5700, A1.Id, 10))
             .NoMore();
@@ -71,6 +76,11 @@ public class MortgageTest
         monopoly.MortgageLandContract("A", "A1");
 
         // Assert
+        var player_a = monopoly.Players.First(p => p.Id == A.Id);
+        Assert.AreEqual(1, player_a.LandContractList.Count);
+        Assert.IsTrue(player_a.LandContractList.Any(l => l.Land.Id == A1.Id));
+        Assert.AreEqual(A.Money, player_a.Money);
+
         monopoly.DomainEvents
             .NextShouldBe(new PlayerCannotMortgageEvent(A.Id, 1000, A1.Id))
             .NoMore();
@@ -87,6 +97,8 @@ public class MortgageTest
     {
         // Arrange
         var A = new { Id = "A", Money = 5000m };
+        var A1 = new { Id = "A1", Price = 1000m };
+
 
         var map = Map;
 
@@ -97,11 +109,16 @@ public class MortgageTest
             .Build();
 
         // Act
-        monopoly.MortgageLandContract("A", "A1");
+        monopoly.MortgageLandContract("A", A1.Id);
 
         // Assert
+        var player_a = monopoly.Players.First(p => p.Id == A.Id);
+        Assert.AreEqual(0, player_a.LandContractList.Count);
+        Assert.IsFalse(player_a.LandContractList.Any(l => l.Land.Id == A1.Id));
+        Assert.AreEqual(A.Money, player_a.Money);
+
         monopoly.DomainEvents
-            .NextShouldBe(new PlayerCannotMortgageEvent(A.Id, 5000, "A1"))
+            .NextShouldBe(new PlayerCannotMortgageEvent(A.Id, 5000, A1.Id))
             .NoMore();
     }
 }

@@ -6,7 +6,8 @@ public class CurrentPlayerStateBuilder
     public bool IsPayToll { get; private set; }
     public bool IsBoughtLand { get; private set; }
     public bool IsUpgradeLand { get; private set; }
-    public Auction? Auction { get; private set; }
+    public bool HasAuction { get; private set; }
+    public (string LandId, string? HighestBidder, decimal HighestPrice) Auction { get; private set; }
     public int RemainingSteps { get; private set; }
     public CurrentPlayerStateBuilder(string Id)
     {
@@ -14,6 +15,7 @@ public class CurrentPlayerStateBuilder
         IsPayToll = false;
         IsBoughtLand = false;
         IsUpgradeLand = false;
+        HasAuction = false;
     }
 
     public CurrentPlayerStateBuilder WithPayToll()
@@ -34,26 +36,20 @@ public class CurrentPlayerStateBuilder
         return this;
     }
 
-    internal CurrentPlayerStateBuilder WithAuction(LandContract landContract, Player? HighestBidder = null, decimal? HighestPrice = null)
+    public CurrentPlayerStateBuilder WithAuction(string landId, string HighestBidder, decimal HighestPrice)
     {
-        if (HighestBidder is null) 
-        {
-            Auction = new Auction(landContract);
-        }
-        else
-        {
-            Auction = new Auction(landContract, HighestBidder, (decimal)HighestPrice!);
-        }
+        HasAuction = true;
+        Auction = (landId, HighestBidder, HighestPrice);
         return this;
     }
 
-    public CurrentPlayerState Build()
+    internal CurrentPlayerState Build(Auction? auction)
     {
         return new CurrentPlayerState(PlayerId: PlayerId,
                                       IsPayToll: IsPayToll,
                                       IsBoughtLand: IsBoughtLand,
                                       IsUpgradeLand: IsUpgradeLand,
-                                      Auction: Auction);
+                                      Auction: auction);
     }
 
     

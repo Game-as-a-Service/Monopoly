@@ -1,4 +1,5 @@
 using Domain.Builders;
+using Domain.Events;
 using Domain.Maps;
 
 namespace DomainTests.Testcases;
@@ -29,8 +30,8 @@ public class BuyLandTest
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
             .WithPlayer(A.Id, pa=>pa.WithMoney(A.Money).WithPosition(A.CurrentBlockId, A.CurrentDirection))
+            .WithCurrentPlayer(A.Id)
             .Build();
-        monopoly.Initial();
 
         // Act
         // 玩家A進行購買F4
@@ -43,6 +44,10 @@ public class BuyLandTest
         Assert.AreEqual(4000, player_a.Money);
         Assert.AreEqual(1, player_a.LandContractList.Count());
         Assert.IsTrue(player_a.LandContractList.Any(pa => pa.Land.Id == "F4"));
+
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerBuyBlockEvent(A.Id, "F4"))
+            .NoMore();
     }
 
     [TestMethod]
@@ -67,8 +72,8 @@ public class BuyLandTest
             .WithMap(map)
             .WithPlayer(A.Id,pa=>pa.WithMoney(A.Money)
                                    .WithPosition(A.CurrentBlockId, A.CurrentDirection))
+            .WithCurrentPlayer(A.Id)
             .Build();
-        monopoly.Initial();
 
         // Act
         monopoly.BuyLand(A.Id, "F4");
@@ -79,6 +84,10 @@ public class BuyLandTest
         var player_a = monopoly.Players.First(p => p.Id == A.Id);
         Assert.AreEqual(500, player_a.Money);
         Assert.AreEqual(0, player_a.LandContractList.Count);
+
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerBuyBlockInsufficientFundsEvent(A.Id, "F4", 1000))
+            .NoMore();
     }
 
     [TestMethod]
@@ -107,8 +116,8 @@ public class BuyLandTest
                                       .WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .WithPlayer(B.Id, pb => pb.WithMoney(B.Money)
                                       .WithLandContract(F4.Id,false,0))
+            .WithCurrentPlayer(A.Id)
             .Build();
-        monopoly.Initial();
 
         // Act
         // 玩家B進行購買F4
@@ -126,6 +135,10 @@ public class BuyLandTest
         Assert.AreEqual(5000, player_b.Money);
         Assert.AreEqual(1, player_b.LandContractList.Count);
         Assert.IsTrue(player_b.LandContractList.Any(pa => pa.Land.Id == F4.Id));
+
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerBuyBlockOccupiedByOtherPlayerEvent(A.Id, F4.Id))
+            .NoMore();
     }
 
     [TestMethod]
@@ -149,8 +162,8 @@ public class BuyLandTest
             .WithMap(map)
             .WithPlayer(A.Id, pa => pa.WithMoney(A.Money)
                                       .WithPosition(A.CurrentBlockId, A.CurrentDirection))
+            .WithCurrentPlayer(A.Id)
             .Build();
-        monopoly.Initial();
 
         // Act
         // 玩家B進行購買F4
@@ -162,5 +175,9 @@ public class BuyLandTest
         var player_a = monopoly.Players.First(p => p.Id == A.Id);
         Assert.AreEqual(5000, player_a.Money);
         Assert.AreEqual(0, player_a.LandContractList.Count);
+
+        monopoly.DomainEvents
+            .NextShouldBe(new PlayerBuyBlockMissedLandEvent(A.Id, F4.Id))
+            .NoMore();
     }
 }

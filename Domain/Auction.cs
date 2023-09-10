@@ -10,6 +10,10 @@ public class Auction
     private Player? highestBidder;
     private decimal highestPrice;
 
+    public LandContract LandContract => landContract;
+    public Player? HighestBidder => highestBidder;
+    public decimal HighestPrice => highestPrice;
+
     public Auction(LandContract landContract)
     {
         this.landContract = landContract;

@@ -7,7 +7,7 @@ public class LandContract
 {
     public int Deadline { get; private set; }
 
-    internal bool Mortgage { get; private set; } = false;
+    public bool InMortgage { get; private set; } = false;
 
     public Player? Owner { get; set; }
 
@@ -21,7 +21,7 @@ public class LandContract
 
     internal DomainEvent EndRound()
     {
-        if(Mortgage)
+        if(InMortgage)
         {
             Deadline--;
             if (Deadline == 0)
@@ -40,12 +40,12 @@ public class LandContract
     internal void GetMortgage()
     {
         Deadline = 10;
-        Mortgage = true;
+        InMortgage = true;
     }
 
     internal void GetRedeem()
     {
-        Mortgage = false;
+        InMortgage = false;
     }
 
     #region 測試用

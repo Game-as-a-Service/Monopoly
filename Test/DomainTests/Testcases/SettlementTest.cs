@@ -33,6 +33,7 @@ public class SettlementTest
             .WithPlayer(A.Id, a => a.WithMoney(A.Money))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithBankrupt(B.BankruptRound))
             .WithPlayer(C.Id, c => c.WithMoney(C.Money).WithBankrupt(C.BankruptRound))
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act

@@ -24,6 +24,7 @@ public class GameInitialTest
             .WithPlayer(B.Id)
             .WithPlayer(C.Id)
             .WithPlayer(D.Id)
+            .WithCurrentPlayer(A.Id)
             .Build();
 
         // Act

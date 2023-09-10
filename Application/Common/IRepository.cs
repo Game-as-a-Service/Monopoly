@@ -17,13 +17,28 @@ internal static class RepositoryExtensions
         Monopoly monopoly = domainMonopoly.ToApplication();
         return repository.Save(monopoly);
     }
+    /// <summary>
+    /// (Monopoly) Domain to Application
+    /// </summary>
+    /// <param name="domainMonopoly"></param>
+    /// <returns></returns>
     private static Monopoly ToApplication(this Domain.Monopoly domainMonopoly)
     {
-        Player[] players = domainMonopoly.Players.Select(player => new Player(
-            player.Id, 
-            player.Money, 
-            new Chess(player.Chess.CurrentBlock.Id, player.Chess.CurrentDirection.ToApplicationDirection(), player.Chess.RemainingSteps)
-            )).ToArray();
+        Player[] players = domainMonopoly.Players.Select(player =>
+        {
+            var playerChess = player.Chess;
+
+            Chess chess = new(playerChess.CurrentBlockId, playerChess.CurrentDirection.ToApplicationDirection(), playerChess.RemainingSteps);
+
+            var landContracts = player.LandContractList.Select(contract =>
+            new LandContract(contract.Land.Id, contract.InMortgage, contract.Deadline)).ToArray();
+
+            return new Player(
+                        player.Id,
+                        player.Money,
+                        chess,
+                        landContracts);
+        }).ToArray();
 
         Map map = new(domainMonopoly.Map.Id, domainMonopoly.Map.Blocks
             .Select(row =>
@@ -31,8 +46,15 @@ internal static class RepositoryExtensions
                 return row.Select(block => block?.ToApplicationBlock()).ToArray();
             }).ToArray()
         );
-        var currentPlayerState = new CurrentPlayerState(domainMonopoly.Id);
-        return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.Host, currentPlayerState);
+        var currentPlayer = domainMonopoly.Players.First(player => player.Id == domainMonopoly.CurrentPlayerState.PlayerId);
+        var currentPlayerState = new CurrentPlayerState(
+            domainMonopoly.CurrentPlayerState.PlayerId,
+            domainMonopoly.CurrentPlayerState.IsPayToll,
+            domainMonopoly.CurrentPlayerState.IsBoughtLand,
+            domainMonopoly.CurrentPlayerState.IsUpgradeLand,
+            domainMonopoly.CurrentPlayerState.Auction is null ? null : new Auction(currentPlayer.Auction.LandContract.Land.Id, currentPlayer.Auction.HighestBidder?.Id, currentPlayer.Auction.HighestPrice)
+            );
+        return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.HostId, currentPlayerState);
     }
     private static Block ToApplicationBlock(this Domain.Block domainBlock)
     {
@@ -47,21 +69,38 @@ internal static class RepositoryExtensions
             _ => throw new NotImplementedException(),
         };
     }
+    /// <summary>
+    /// (Monopoly) Application to Domain
+    /// </summary>
+    /// <param name="monopoly"></param>
+    /// <returns></returns>
     internal static Domain.Monopoly ToDomain(this Monopoly monopoly)
     {
-        Domain.Player[] players = monopoly.Players.Select(player => new Domain.Player(player.Id)).ToArray();
         Domain.Map map = new(monopoly.Map.Id, monopoly.Map.Blocks
                        .Select(row =>
                        {
                            return row.Select(block => block?.ToDomainBlock()).ToArray();
                        }).ToArray()
                    );
-        var domainMonopoly = new Domain.Monopoly(monopoly.Id, map);
-        foreach (var player in players)
+        var builder = new Domain.Builders.MonopolyBuilder()
+            .WithId(monopoly.Id)
+            .WithHost(monopoly.HostId)
+            .WithMap(map);
+        monopoly.Players.ToList().ForEach(
+            p => builder.WithPlayer(p.Id, playerBuilder => 
+                playerBuilder.WithMoney(p.Money)
+                     .WithPosition(p.Chess.CurrentPosition, p.Chess.Direction.ToString())
+                     .WithLandContracts(p.LandContracts))
+            );
+        return builder.Build();
+    }
+    private static Domain.Builders.PlayerBuilder WithLandContracts(this Domain.Builders.PlayerBuilder builder, LandContract[] landContracts)
+    {
+        landContracts.ToList().ForEach(landContract =>
         {
-            domainMonopoly.AddPlayer(player);
-        }
-        return domainMonopoly;
+            builder.WithLandContract(landContract.LandId, landContract.InMortgage, landContract.Deadline);
+        });
+        return builder;
     }
     private static Domain.Block? ToDomainBlock(this Block? block)
     {
