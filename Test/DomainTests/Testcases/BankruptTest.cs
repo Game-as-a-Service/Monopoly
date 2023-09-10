@@ -1,4 +1,5 @@
-using static Domain.Map;
+using Domain.Builders;
+using Domain.Maps;
 
 namespace DomainTests.Testcases;
 
@@ -8,14 +9,26 @@ public class BankruptTest
     [TestMethod]
     public void 玩家A_A沒錢沒房__更新玩家A的狀態__玩家A的狀態為破產()
     {
-        string id_a = "a";
-        Player player_a = new(id_a, 0);
-        var game = new Monopoly("Test");
-        game.AddPlayer(player_a, "Start", Direction.Right);
-        game.Initial();
+        // Arrange
+        Map map = new SevenXSevenMap();
+        var A = new { Id = "a", Money = 0m, CurrentBlockId = "Start", CurrentDirection = "Right" };
 
-        game.UpdatePlayerState(player_a);
+        var player_a = new PlayerBuilder(A.Id)
+            .WithMoney(A.Money)
+            .WithMap(map)
+            .WithPosition(A.CurrentBlockId, A.CurrentDirection)
+            .Build();
 
-        Assert.AreEqual(player_a.State, PlayerState.Bankrupt);
+        var monopoly = new MonopolyBuilder()
+            .WithMap(map)
+            .WithPlayer(player_a)
+            .Build();
+        monopoly.Initial();
+
+        // Act
+        monopoly.UpdatePlayerState(player_a);
+
+        // Assert
+        Assert.AreEqual(PlayerState.Bankrupt, player_a.State);
     }
 }
