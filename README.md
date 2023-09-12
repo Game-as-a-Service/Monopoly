@@ -2,6 +2,7 @@
 |Branch| CI/CD Status| Frontend |
 |-|-|-|
 |develop|[![develop](https://github.com/Game-as-a-Service/Monopoly/actions/workflows/build-and-deploy.yml/badge.svg?branch=develop)](https://github.com/Game-as-a-Service/Monopoly/actions/workflows/build-and-deploy.yml)|https://game-as-a-service.github.io/Monopoly/|
+> miro：https://miro.com/app/board/uXjVPN2m5Tg=/?share_link_id=370163511761
 ## 簡介
 > **「買地吧，因為土地已經停產了！」 -- 馬克·吐溫（Mark Twain）**
 
