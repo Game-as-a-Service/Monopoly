@@ -1,7 +1,6 @@
 using Domain.Common;
 using Domain.Events;
 using Domain.Interfaces;
-using Domain.Maps;
 using static Domain.Map;
 
 namespace Domain;
@@ -61,7 +60,7 @@ public class Monopoly : AbstractAggregateRoot
     {
         // 玩家資產計算方式: 土地價格+升級價格+剩餘金額 
         // 抵押的房地產不列入計算
-        var PropertyCalculate = (Player player) => 
+        var PropertyCalculate = (Player player) =>
             player.Money + player.LandContractList.Where(l => !l.InMortgage).Sum(l => (l.Land.House + 1) * l.Land.Price);
         // 根據玩家資產進行排序，多的在前，若都已經破產了，則以破產時間晚的在前
         var players = _players.OrderByDescending(PropertyCalculate).ThenByDescending(p => p.BankruptRounds).ToArray();
@@ -167,9 +166,9 @@ public class Monopoly : AbstractAggregateRoot
             AddDomainEvent(new PlayerDoesntNeedToPayTollEvent(player.Id, player.Money));
             return;
         }
-        
+
         var domainEvent = location.PayToll(player);
-       
+
         AddDomainEvent(domainEvent);
     }
 
@@ -232,16 +231,6 @@ public class Monopoly : AbstractAggregateRoot
     public void BuyLand(string playerId, string BlockId)
     {
         Player player = GetPlayer(playerId);
-
-
-        //判斷是否踩在該土地
-        if (player.Chess.CurrentBlockId == BlockId)
-        {
-            AddDomainEvent(player.BuyLand(_map, BlockId));
-        }
-        else
-        {
-            AddDomainEvent(new PlayerBuyBlockMissedLandEvent(player.Id, BlockId));
-        }
+        AddDomainEvent(player.BuyLand(_map, BlockId));
     }
 }

@@ -23,7 +23,7 @@ public class Player
     public string Id { get; }
     public decimal Money
     {
-        get { return money; } 
+        get { return money; }
         set
         {
             money = (int)value;
@@ -31,7 +31,7 @@ public class Player
             {
                 money = 0;
             }
-        } 
+        }
     }
 
     public IList<LandContract> LandContractList => _landContractList.AsReadOnly();
@@ -48,7 +48,7 @@ public class Player
         if (Money <= 0 && !LandContractList.Any(l => !l.InMortgage))
         {
             State = PlayerState.Bankrupt;
-            foreach(var landContract in LandContractList)
+            foreach (var landContract in LandContractList)
             {
                 RemoveLandContract(landContract);
             }
@@ -135,7 +135,7 @@ public class Player
     internal DomainEvent MortgageLandContract(string landId)
     {
         // 玩家擁有地契並尚未抵押
-        if(_landContractList.Exists(l => l.Land.Id == landId && !l.InMortgage))
+        if (_landContractList.Exists(l => l.Land.Id == landId && !l.InMortgage))
         {
             var landContract = _landContractList.First(l => l.Land.Id == landId);
             landContract.GetMortgage();
@@ -193,35 +193,39 @@ public class Player
     {
         List<DomainEvent> events = new();
 
-        // TODO 重構:波動拳+前一個參考的判斷踩在土地上要移過來
-
-        //判斷是否為空土地
-        if (map.FindBlockById(chess.CurrentBlockId) is Land land)
+        //判斷是否為可購買土地
+        if (map.FindBlockById(chess.CurrentBlockId) is not Land land)
         {
-            if (land.GetOwner() is not null)
-            {
-                events.Add(new PlayerBuyBlockOccupiedByOtherPlayerEvent(Id, BlockId));
-            }
-            else
-            {
-                //判斷格子購買金額足夠
-                if (land.Price > Money)
-                {
-                    events.Add(new PlayerBuyBlockInsufficientFundsEvent(Id, BlockId, land.Price));
-                } 
-                else
-                {
-                    //玩家扣款
-                    Money -= land.Price;
-
-                    //過戶(?
-                    var landContract = new LandContract(this, land);
-                    AddLandContract(landContract);
-
-                    events.Add(new PlayerBuyBlockEvent(Id, BlockId));
-                }
-            }
+            events.Add(new PlayerBuyBlockOccupiedByOtherPlayerEvent(Id, BlockId));
         }
+        //判斷是否非空地
+        else if (land.GetOwner() is not null)
+        {
+            events.Add(new PlayerBuyBlockOccupiedByOtherPlayerEvent(Id, BlockId));
+        }
+        //判斷是否踩在該土地
+        else if (Chess.CurrentBlockId == BlockId)
+        {
+            events.Add(new PlayerBuyBlockMissedLandEvent(Id, BlockId));
+        }
+        //判斷格子購買金額足夠
+        else if (land.Price > Money)
+        {
+            events.Add(new PlayerBuyBlockInsufficientFundsEvent(Id, BlockId, land.Price));
+        }
+        else
+        {
+            //玩家扣款
+            Money -= land.Price;
+
+            //過戶(?
+            var landContract = new LandContract(this, land);
+            AddLandContract(landContract);
+
+            events.Add(new PlayerBuyBlockEvent(Id, BlockId));
+
+        }
+
         return events;
     }
 }
