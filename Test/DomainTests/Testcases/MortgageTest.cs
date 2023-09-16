@@ -20,6 +20,8 @@ public class MortgageTest
         Then:   玩家A持有金額為5000+1000*70% = 5700
                 玩家A持有的房地產 A1
                 A1在10回合後收回
+        DomainEvent: 玩家成功抵押房地產，並獲得 房地產價值* 70% 金額，持5700元
+                     A1在10回合後若無贖回則歸系統所有
         """)]
     public void 玩家抵押房地產()
     {
@@ -42,7 +44,7 @@ public class MortgageTest
         Player player_a = monopoly.Players.First(p => p.Id == A.Id);
         Assert.AreEqual(5700, player_a.Money);
         Assert.AreEqual(1, player_a.LandContractList.Count);
-        Assert.IsTrue(player_a.LandContractList.Any(l => l.Land.Id == A1.Id));
+        Assert.IsTrue(player_a.LandContractList.First(l => l.Land.Id == A1.Id).InMortgage);
 
         monopoly.DomainEvents
             .NextShouldBe(new PlayerMortgageEvent(A.Id, 5700, A1.Id, 10))
@@ -57,6 +59,7 @@ public class MortgageTest
         When:   A 抵押 A1
         Then:   A 無法再次抵押
                 A 持有 1000元
+        DomainEvent: 玩家已抵押過該房地產，因此再次抵押會失敗，持有金額沒有增加
         """)]
     public void 玩家不能抵押已抵押房地產()
     {
@@ -78,7 +81,7 @@ public class MortgageTest
         // Assert
         var player_a = monopoly.Players.First(p => p.Id == A.Id);
         Assert.AreEqual(1, player_a.LandContractList.Count);
-        Assert.IsTrue(player_a.LandContractList.Any(l => l.Land.Id == A1.Id));
+        Assert.IsTrue(player_a.LandContractList.First(l => l.Land.Id == A1.Id).InMortgage);
         Assert.AreEqual(A.Money, player_a.Money);
 
         monopoly.DomainEvents
@@ -92,13 +95,13 @@ public class MortgageTest
         Given:  A 持有 5000元
         When:   A 抵押 A1
         Then:   A 抵押 失敗
+        DomainEvent: 玩家抵押非自己的房地產，抵押失敗
         """)]
     public void 玩家抵押非自有房地產()
     {
         // Arrange
         var A = new { Id = "A", Money = 5000m };
         var A1 = new { Id = "A1", Price = 1000m };
-
 
         var map = Map;
 
@@ -114,7 +117,6 @@ public class MortgageTest
         // Assert
         var player_a = monopoly.Players.First(p => p.Id == A.Id);
         Assert.AreEqual(0, player_a.LandContractList.Count);
-        Assert.IsFalse(player_a.LandContractList.Any(l => l.Land.Id == A1.Id));
         Assert.AreEqual(A.Money, player_a.Money);
 
         monopoly.DomainEvents

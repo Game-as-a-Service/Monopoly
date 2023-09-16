@@ -19,6 +19,7 @@ public class PayTollTest
         When:   B扣除過路費1000 * 5% = 50給A
         Then:   玩家A持有金額為1000+50 = 1050
                 玩家A持有金額為1000-50 = 950
+        DomainEvent: 玩家成功支付過路費，玩家持有金額為950，地主持有金額為1050元
         """)]
     public void 玩家付過路費_無房_無同地段()
     {
@@ -43,6 +44,9 @@ public class PayTollTest
 
         // Assert
         // 1000 * 0.05 = 50
+        Assert.AreEqual(1050, monopoly.Players.First(p => p.Id == A.Id).Money);
+        Assert.AreEqual(950, monopoly.Players.First(p => p.Id == B.Id).Money);
+        
         monopoly.DomainEvents
             .NextShouldBe(new PlayerPayTollEvent(B.Id, 950, A.Id, 1050))
             .NoMore();
@@ -57,7 +61,8 @@ public class PayTollTest
                 B的回合移動到A4
         When:   B扣除過路費1000 * 100% * 130% = 1300給A
         Then:   玩家A持有金額為1000+1300 = 2300
-                玩家A持有金額為2000-1300 = 700
+                玩家B持有金額為2000-1300 = 700
+        DomainEvent: 玩家成功支付過路費，玩家持有金額為700元，地主持有金額為2300元
         """)]
     public void 玩家付過路費_有2房_有1同地段()
     {
@@ -83,7 +88,11 @@ public class PayTollTest
         // Act
         monopoly.PayToll(B.Id);
 
+        // Assert
         // 1000 * 100% * 130% = 1300
+        Assert.AreEqual(2300, monopoly.Players.First(p => p.Id == A.Id).Money);
+        Assert.AreEqual(700, monopoly.Players.First(p => p.Id == B.Id).Money);
+
         monopoly.DomainEvents
             .NextShouldBe(new PlayerPayTollEvent(B.Id, 700, A.Id, 2300))
             .NoMore();
@@ -100,6 +109,7 @@ public class PayTollTest
                 A1是B的土地，價值1000元
         When:   A付過路費
         Then:   A無須付過路費
+        DomainEvent: 因為地主在監獄，玩家不需要支付過路費，持有金額不變
         """)]
     public void 地主在監獄無需付過路費()
     {
@@ -123,8 +133,8 @@ public class PayTollTest
         monopoly.PayToll(A.Id);
 
         // Assert
-        Assert.AreEqual(1000, A.Money);
-        Assert.AreEqual(1000, B.Money);
+        Assert.AreEqual(1000, monopoly.Players.First(p => p.Id == A.Id).Money);
+        Assert.AreEqual(1000, monopoly.Players.First(p => p.Id == B.Id).Money);
 
         monopoly.DomainEvents
             .NextShouldBe(new PlayerDoesntNeedToPayTollEvent(A.Id, 1000))
@@ -142,6 +152,7 @@ public class PayTollTest
                 A1是B的土地，價值1000元
         When:   A付過路費
         Then:   A無須付過路費
+        DomainEvent: 因為地主在停車場，玩家不需要支付過路費，持有金額不變
         """)]
     public void 地主在停車場無需付過路費()
     {
@@ -181,6 +192,7 @@ public class PayTollTest
         Wheh:   B再支付一次過路費
         Then:   B第二次支付失敗
                 玩家B持有金額為2000
+        DomainEvent: 玩家因已支付過路費，重複支付會失敗，持有金額不變
         """)]
     public void 玩家不能重複支付過路費()
     {
@@ -206,7 +218,9 @@ public class PayTollTest
         // Act
         monopoly.PayToll(B.Id);
 
-        // 1000 * 100% * 130% = 1300
+        // Assert
+        Assert.AreEqual(1000, monopoly.Players.First(p => p.Id == A.Id).Money);
+        Assert.AreEqual(2000, monopoly.Players.First(p => p.Id == B.Id).Money);
         monopoly.DomainEvents
             .NextShouldBe(new PlayerDoesntNeedToPayTollEvent(B.Id, B.Money))
             .NoMore();
