@@ -49,7 +49,7 @@ public class AuctionTest
             )
             .WithCurrentPlayer(
                 new CurrentPlayerStateBuilder(A1.Id)
-                    .WithAuction(Auction.LandId)
+                    .WithAuction(Auction.LandId, null!, 1500)
                     .Build()
             );
 
@@ -100,7 +100,7 @@ public class AuctionTest
                     .Build()
             )
             .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
-                .WithAuction(A1.Id)
+                .WithAuction(A1.Id, null!, 1000)
                 .Build()
             );
 
@@ -151,7 +151,7 @@ public class AuctionTest
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
-            .WithAuction(A1.Id) 
+            .WithAuction(A1.Id, null!, 1000) 
             .Build()
         );
 
@@ -196,7 +196,7 @@ public class AuctionTest
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
-            .WithAuction(A1.Id)
+            .WithAuction(A1.Id, null!, 1000)
             .Build()
         );
 
@@ -306,7 +306,7 @@ public class AuctionTest
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
-            .WithAuction(LandId: A1.Id)
+            .WithAuction(LandId: A1.Id, null, 1500)
             .Build()
         );
 

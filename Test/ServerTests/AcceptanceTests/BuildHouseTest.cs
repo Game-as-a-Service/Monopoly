@@ -226,11 +226,6 @@ public class BuildHouseTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerBuildHouse), gameId, "A");
 
         // Assert
-        // A 蓋房子
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.PlayerBuyBlockEvent),
-                                  (playerId, blockId)
-                                  => playerId == "A" && blockId == "A1");
         hub.Verify<string, string>(
                        nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
                                   (playerId, blockId)

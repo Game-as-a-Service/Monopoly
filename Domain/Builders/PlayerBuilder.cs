@@ -10,7 +10,7 @@ public class PlayerBuilder
     public Map.Direction CurrentDirection { get; set; }
     public Map Map { get; set; }
     public List<(string LandId, bool InMortgage, int Deadline)> LandContracts { get; set; }
-    public bool Bankrupt { get; set; }
+    public bool IsBankrupt { get; set; }
     public int BankruptRounds { get; private set; }
     public int RemainingSteps { get; set; }
     public bool IsChooseDirection { get; set; }
@@ -22,7 +22,7 @@ public class PlayerBuilder
         BlockId = "Start";
         CurrentDirection = Map.Direction.Right;
         LandContracts = new();
-        Bankrupt = false;
+        IsBankrupt = false;
         RemainingSteps = 0;
         IsChooseDirection = true;
     }
@@ -46,9 +46,9 @@ public class PlayerBuilder
         return this;
     }
 
-    public PlayerBuilder WithBankrupt(int Rounds)
+    public PlayerBuilder WithBankrupt(bool isBankrupt, int Rounds)
     {
-        Bankrupt = true;
+        IsBankrupt = isBankrupt;
         BankruptRounds = Rounds;
         return this;
     }
@@ -73,7 +73,7 @@ public class PlayerBuilder
 
     public Player Build()
     {
-        Player player = new(Id, Money, BankruptRounds);
+        Player player = new(Id, Money, IsBankrupt, BankruptRounds);
         Chess chess = new(player: player,
                           currentBlockId: BlockId,
                           currentDirection: CurrentDirection,

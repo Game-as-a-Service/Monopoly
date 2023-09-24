@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Domain.Builders;
 using Domain.Common;
+using Domain.Maps;
 
 namespace Application.Usecases;
 
@@ -28,6 +29,8 @@ public class CreateGameUsecase : Usecase<CreateGameRequest>
             builder.WithPlayer(playerId);
         }
         builder.WithHost(request.HostId);
+        builder.WithCurrentPlayer(request.PlayerIds.First());
+        builder.WithMap(new SevenXSevenMap());
 
         // 存
         string id = Repository.Save(builder.Build());

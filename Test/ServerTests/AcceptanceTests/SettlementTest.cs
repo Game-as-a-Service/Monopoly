@@ -41,13 +41,13 @@ public class SettlementTest
         .WithPlayer(
             new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithBankrupt()
+            .WithBankrupt(5)
             .Build()
         )
         .WithPlayer(
             new PlayerBuilder(C.Id)
             .WithMoney(C.Money)
-            .WithBankrupt()
+            .WithBankrupt(6)
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());

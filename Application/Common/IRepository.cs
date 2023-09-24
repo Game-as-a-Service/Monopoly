@@ -1,4 +1,5 @@
 using Application.DataModels;
+using Domain.Maps;
 
 namespace Application.Common;
 
@@ -37,7 +38,9 @@ internal static class RepositoryExtensions
                         player.Id,
                         player.Money,
                         chess,
-                        landContracts);
+                        landContracts,
+                        player.IsBankrupt,
+                        player.BankruptRounds);
         }).ToArray();
 
         Map map = new(domainMonopoly.Map.Id, domainMonopoly.Map.Blocks
@@ -77,22 +80,36 @@ internal static class RepositoryExtensions
     /// <returns></returns>
     internal static Domain.Monopoly ToDomain(this Monopoly monopoly)
     {
-        Domain.Map map = new(monopoly.Map.Id, monopoly.Map.Blocks
-                       .Select(row =>
-                       {
-                           return row.Select(block => block?.ToDomainBlock()).ToArray();
-                       }).ToArray()
-                   );
+        //Domain.Map map = new(monopoly.Map.Id, monopoly.Map.Blocks
+        //               .Select(row =>
+        //               {
+        //                   return row.Select(block => block?.ToDomainBlock()).ToArray();
+        //               }).ToArray()
+        //           );
+        Domain.Map map = new SevenXSevenMap();
         var builder = new Domain.Builders.MonopolyBuilder()
             .WithId(monopoly.Id)
             .WithHost(monopoly.HostId)
             .WithMap(map);
         monopoly.Players.ToList().ForEach(
-            p => builder.WithPlayer(p.Id, playerBuilder => 
+            p => builder.WithPlayer(p.Id, playerBuilder =>
                 playerBuilder.WithMoney(p.Money)
                      .WithPosition(p.Chess.CurrentPosition, p.Chess.Direction.ToString())
-                     .WithLandContracts(p.LandContracts))
-            );
+                     .WithLandContracts(p.LandContracts)
+                     .WithBankrupt(p.IsBankrupt, p.BankruptRounds)
+            ));
+        var cps = monopoly.CurrentPlayerState;
+        if (cps.Auction is null)
+        {
+            builder.WithCurrentPlayer(cps.PlayerId, x => x.WithBoughtLand(cps.IsBoughtLand)
+                                                          .WithUpgradeLand(cps.IsUpgradeLand)
+                                                          .WithPayToll(cps.IsPayToll));
+            }
+        else
+        {
+            builder.WithCurrentPlayer(cps.PlayerId, x => x.WithAuction(
+                cps.Auction.LandId, cps.Auction.HighestBidderId, cps.Auction.HighestPrice));
+        }
         return builder.Build();
     }
     private static Domain.Builders.PlayerBuilder WithLandContracts(this Domain.Builders.PlayerBuilder builder, LandContract[] landContracts)

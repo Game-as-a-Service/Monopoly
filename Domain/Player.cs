@@ -10,11 +10,12 @@ public class Player
     private Chess chess;
     private readonly List<LandContract> _landContractList = new();
 
-    public Player(string id, decimal money = 15000, int bankruptRounds = 0)
+    public Player(string id, decimal money = 15000, bool isBankrupt = false, int bankruptRounds = 0)
     {
         Id = id;
         State = PlayerState.Normal;
         Money = money;
+        State = isBankrupt ? PlayerState.Bankrupt : PlayerState.Normal;
         BankruptRounds = bankruptRounds;
     }
 
@@ -58,10 +59,7 @@ public class Player
         return DomainEvent.EmptyEvent;
     }
 
-    internal bool IsBankrupt()
-    {
-        return State == PlayerState.Bankrupt;
-    }
+    public bool IsBankrupt => State == PlayerState.Bankrupt;
 
     public void AddLandContract(LandContract landContract)
     {

@@ -31,8 +31,8 @@ public class SettlementTest
         var monopoly = new MonopolyBuilder()
             .WithRounds(7)
             .WithPlayer(A.Id, a => a.WithMoney(A.Money))
-            .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithBankrupt(B.BankruptRound))
-            .WithPlayer(C.Id, c => c.WithMoney(C.Money).WithBankrupt(C.BankruptRound))
+            .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithBankrupt(true, B.BankruptRound))
+            .WithPlayer(C.Id, c => c.WithMoney(C.Money).WithBankrupt(true, C.BankruptRound))
             .WithCurrentPlayer(A.Id)
             .Build();
 

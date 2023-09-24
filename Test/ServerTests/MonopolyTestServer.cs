@@ -46,6 +46,7 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
         var hub = new HubConnectionBuilder()
             .WithUrl(uri, opt =>
             {
+                opt.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.ServerSentEvents;
                 opt.AccessTokenProvider = async () =>
                 {
                     var options = GetRequiredService<IOptionsMonitor<JwtBearerOptions>>();
@@ -200,27 +201,27 @@ internal class VerificationHub
         await Connection.SendCoreAsync(method, args);
     }
 
-    public void Verify<T1>(string methodName, Func<T1, bool> verify, int timeout = 5000)
+    public void Verify<T1>(string methodName, Func<T1, bool> verify, int timeout = 1000)
     {
         Verify(methodName, args => verify((T1)args[0]), timeout);
     }
 
-    public void Verify<T1, T2>(string methodName, Func<T1, T2, bool> verify, int timeout = 5000)
+    public void Verify<T1, T2>(string methodName, Func<T1, T2, bool> verify, int timeout = 1000)
     {
         Verify(methodName, args => verify((T1)args[0], (T2)args[1]), timeout);
     }
 
-    public void Verify<T1, T2, T3>(string methodName, Func<T1, T2, T3, bool> verify, int timeout = 5000)
+    public void Verify<T1, T2, T3>(string methodName, Func<T1, T2, T3, bool> verify, int timeout = 1000)
     {
         Verify(methodName, args => verify((T1)args[0], (T2)args[1], (T3)args[2]), timeout);
     }
 
-    public void Verify<T1, T2, T3, T4>(string methodName, Func<T1, T2, T3, T4, bool> verify, int timeout = 5000)
+    public void Verify<T1, T2, T3, T4>(string methodName, Func<T1, T2, T3, T4, bool> verify, int timeout = 1000)
     {
         Verify(methodName, args => verify((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3]), timeout);
     }
 
-    public void Verify<T1, T2, T3, T4, T5>(string methodName, Func<T1, T2, T3, T4, T5, bool> verify, int timeout = 5000)
+    public void Verify<T1, T2, T3, T4, T5>(string methodName, Func<T1, T2, T3, T4, T5, bool> verify, int timeout = 1000)
     {
         Verify(methodName, args => verify((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3], (T5)args[4]), timeout);
     }

@@ -212,7 +212,7 @@ public class PayTollTest
                                     .WithLandContract(A1.Id, false, 0)
                                     .WithLandContract(A4.Id, false, 0))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithPosition(B.CurrentBlockId, B.CurrentDirection))
-            .WithCurrentPlayer(B.Id, p => p.WithPayToll())
+            .WithCurrentPlayer(B.Id, p => p.WithPayToll(true))
             .Build();
 
         // Act

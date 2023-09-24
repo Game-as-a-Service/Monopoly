@@ -93,6 +93,7 @@ public class Utils
         public Direction Direction { get; set; }
         public List<LandContract> LandContracts { get; set; }
         public bool Bankrupt { get; set; }
+        public int BankruptRounds { get; set; }
 
         public PlayerBuilder(string id)
         {
@@ -124,9 +125,10 @@ public class Utils
             return this;
         }
 
-        public PlayerBuilder WithBankrupt()
+        public PlayerBuilder WithBankrupt(int rounds)
         {
             Bankrupt = true;
+            BankruptRounds = rounds;
             return this;
         }
 
@@ -138,7 +140,9 @@ public class Utils
             Player player = new(Id: Id,
                                     Money: Money,
                                     Chess: chess,
-                                    LandContracts: LandContracts.ToArray());
+                                    LandContracts: LandContracts.ToArray(),
+                                    Bankrupt,
+                                    BankruptRounds);
             return player;
         }
     }
@@ -184,7 +188,7 @@ public class Utils
             return this;
         }
 
-        internal CurrentPlayerStateBuilder WithAuction(string LandId, string? HighestBidderId = null, decimal? HighestPrice = null)
+        internal CurrentPlayerStateBuilder WithAuction(string LandId, string HighestBidderId, decimal HighestPrice)
         {
             Auction = new Auction(LandId, HighestBidderId, HighestPrice);
             return this;

@@ -18,21 +18,21 @@ public class CurrentPlayerStateBuilder
         HasAuction = false;
     }
 
-    public CurrentPlayerStateBuilder WithPayToll()
+    public CurrentPlayerStateBuilder WithPayToll(bool isPayToll = true)
     {
-        IsPayToll = true;
+        IsPayToll = isPayToll;
         return this;
     }
 
-    public CurrentPlayerStateBuilder WithBoughtLand()
+    public CurrentPlayerStateBuilder WithBoughtLand(bool isBoughtLand = true)
     {
-        IsBoughtLand = true;
+        IsBoughtLand = isBoughtLand;
         return this;
     }
 
-    public CurrentPlayerStateBuilder WithUpgradeLand()
+    public CurrentPlayerStateBuilder WithUpgradeLand(bool isUpgradeLand = true)
     {
-        IsUpgradeLand = true;
+        IsUpgradeLand = isUpgradeLand;
         return this;
     }
 
