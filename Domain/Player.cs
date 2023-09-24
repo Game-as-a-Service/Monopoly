@@ -204,7 +204,7 @@ public class Player
             events.Add(new PlayerBuyBlockOccupiedByOtherPlayerEvent(Id, BlockId));
         }
         //判斷是否踩在該土地
-        else if (Chess.CurrentBlockId == BlockId)
+        else if (Chess.CurrentBlockId != BlockId)
         {
             events.Add(new PlayerBuyBlockMissedLandEvent(Id, BlockId));
         }
