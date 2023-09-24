@@ -240,9 +240,9 @@ public class EndRoundTest
     public async Task 結束回合輪到下一個未破產玩家()
     {
         // Arrange
-        Player A = new("A", 1000);
-        Player B = new("B", 0);
-        Player C = new("C", 1000);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 0m };
+        var C = new { Id = "C", Money = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
@@ -250,21 +250,24 @@ public class EndRoundTest
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
             .WithPosition("A1", Direction.Right)
+            .Build()
         )
         .WithPlayer(
             new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
             .WithPosition("A1", Direction.Right)
             .WithBankrupt()
+            .Build()
         )
         .WithPlayer(
             new PlayerBuilder(C.Id)
             .WithMoney(C.Money)
             .WithPosition("A1", Direction.Right)
             .WithLandContract("A2")
+            .Build()
         )
         .WithMockDice(new[] { 1, 1 })
-        .WithCurrentPlayer(nameof(A), rollDice : true, payToll: true);
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
@@ -314,29 +317,32 @@ public class EndRoundTest
     public async Task 上一回合玩家剛到監獄這回合不能做任何事()
     {
         // Arrange
-        Player A = new("A", 1000);
-        Player B = new("B", 1000);
-        Player C = new("C", 1000);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 0m };
+        var C = new { Id = "C", Money = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition("A1", Direction.Right)
+            .Build()
         )
         .WithPlayer(
             new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("Jail", Direction.Right.ToString())
+            .WithPosition("Jail", Direction.Right)
+            .Build()
         )
         .WithPlayer(
             new PlayerBuilder(C.Id)
             .WithMoney(C.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition("A1", Direction.Right)
+            .Build()
         )
         .WithMockDice(new[] { 1, 1 })
-        .WithCurrentPlayer(nameof(A), rollDice : true);
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
 
