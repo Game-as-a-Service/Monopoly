@@ -234,7 +234,7 @@ public class RollDiceTest
         VerifyChessMovedEvent(hub, "A", "F4", "Up", 1);
         VerifyChessMovedEvent(hub, "A", "Start", "Right", 0);
         hub.Verify<string, int, decimal>(
-            nameof(IMonopolyResponses.OnStartEvent),
+            nameof(IMonopolyResponses.CannotGetRewardBecauseStandOnStartEvent),
             (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 1000);
         hub.VerifyNoElseEvent();
 

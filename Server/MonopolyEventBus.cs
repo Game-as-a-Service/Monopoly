@@ -26,11 +26,7 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
     {
         foreach (var e in events)
         {
-            if (e is GameCreatedEvent gce)
-            {
-                await _hubContext.Clients.All.GameCreatedEvent(gce.GameId);
-            }
-            else if (e is PlayerRolledDiceEvent prde)
+            if (e is PlayerRolledDiceEvent prde)
             {
                 await _hubContext.Clients.All.PlayerRolledDiceEvent(prde.PlayerId, prde.DiceCount);
             }
@@ -48,7 +44,7 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             }
             else if (e is CannotGetRewardBecauseStandOnStartEvent ose)
             {
-                await _hubContext.Clients.All.OnStartEvent(ose.PlayerId, ose.GainMoney, ose.TotalMoney);
+                await _hubContext.Clients.All.CannotGetRewardBecauseStandOnStartEvent(ose.PlayerId, ose.PlayerMoney);
             }
             else if (e is PlayerCanBuildHouseEvent cbhe)
             {
@@ -178,9 +174,9 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.BankruptEvent(be.PlayerId);
             }
-            else if (e is SettlementEvent se)
+            else if (e is GameSettlementEvent se)
             {
-                await _hubContext.Clients.All.SettlementEvent(se.PlayerId, se.Rank);
+                await _hubContext.Clients.All.SettlementEvent(se.Rounds, se.Players.Select(x => x.Id).ToArray());
             }
         }
     }

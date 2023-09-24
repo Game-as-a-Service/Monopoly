@@ -164,26 +164,27 @@ public class EndRoundTest
     public async Task 玩家10回合後沒贖回房地產失去房地產()
     {
         // Arrange
-        Player A = new("A", 1000);
-        Player B = new("B", 1000);
+        var A = new { Id = "A", Money = 1000m };
+        var B = new { Id = "B", Money = 1000m };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
-            .WithLandContract("A1", 2)
-            .WithMortgage("A1", 1)
+            .WithPosition("A1", Direction.Right)
+            .WithLandContract("A1", true, 1)
+            .Build()
         )
         .WithPlayer(
             new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition("A1", Direction.Right)
             .WithLandContract("A2")
+            .Build()
         )
         .WithMockDice(new[] { 1, 1 })
-        .WithCurrentPlayer(nameof(A), rollDice : true, payToll: true);
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).WithPayToll().Build());
 
         monopolyBuilder.Save(server);
 
@@ -248,18 +249,18 @@ public class EndRoundTest
         .WithPlayer(
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition("A1", Direction.Right)
         )
         .WithPlayer(
             new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition("A1", Direction.Right)
             .WithBankrupt()
         )
         .WithPlayer(
             new PlayerBuilder(C.Id)
             .WithMoney(C.Money)
-            .WithPosition("A1", Direction.Right.ToString())
+            .WithPosition("A1", Direction.Right)
             .WithLandContract("A2")
         )
         .WithMockDice(new[] { 1, 1 })

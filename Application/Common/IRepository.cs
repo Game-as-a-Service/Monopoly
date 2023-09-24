@@ -47,12 +47,13 @@ internal static class RepositoryExtensions
             }).ToArray()
         );
         var currentPlayer = domainMonopoly.Players.First(player => player.Id == domainMonopoly.CurrentPlayerState.PlayerId);
+        var auction = domainMonopoly.CurrentPlayerState.Auction;
         var currentPlayerState = new CurrentPlayerState(
             domainMonopoly.CurrentPlayerState.PlayerId,
             domainMonopoly.CurrentPlayerState.IsPayToll,
             domainMonopoly.CurrentPlayerState.IsBoughtLand,
             domainMonopoly.CurrentPlayerState.IsUpgradeLand,
-            domainMonopoly.CurrentPlayerState.Auction is null ? null : new Auction(currentPlayer.Auction.LandContract.Land.Id, currentPlayer.Auction.HighestBidder?.Id, currentPlayer.Auction.HighestPrice)
+            domainMonopoly.CurrentPlayerState.Auction is null ? null : new Auction(auction.LandContract.Land.Id, auction.HighestBidder?.Id, auction.HighestPrice)
             );
         return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.HostId, currentPlayerState);
     }

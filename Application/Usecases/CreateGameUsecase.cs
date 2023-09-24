@@ -1,5 +1,5 @@
 ﻿using Application.Common;
-using Domain;
+using Domain.Builders;
 using Domain.Common;
 
 namespace Application.Usecases;
@@ -21,19 +21,16 @@ public class CreateGameUsecase : Usecase<CreateGameRequest>
     {
         // 查
         // 改
-        Monopoly game = new(request.GameId);
-        request.PlayerIds.ToList().ForEach(playerId =>
+
+        var builder = new MonopolyBuilder();
+        foreach (var playerId in request.PlayerIds)
         {
-            Player player = new(playerId);
-            if (playerId == request.HostId)
-            {
-                player.IsHost = true;
-            }
-            game.AddPlayer(player);
-        });
+            builder.WithPlayer(playerId);
+        }
+        builder.WithHost(request.HostId);
 
         // 存
-        string id = Repository.Save(game);
+        string id = Repository.Save(builder.Build());
 
         return id;
     }

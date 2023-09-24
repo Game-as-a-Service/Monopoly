@@ -13,9 +13,9 @@ public interface IMonopolyResponses
 
     Task PlayerNeedToChooseDirectionEvent(string playerId, string[] directions);
 
-    Task ThroughStartEvent(string playerId, int gainMoney, decimal totalMoney);
+    Task ThroughStartEvent(string playerId, decimal gainMoney, decimal totalMoney);
 
-    Task OnStartEvent(string playerId, int gainMoney, decimal totalMoney);
+    Task CannotGetRewardBecauseStandOnStartEvent(string playerId, decimal playerMoney);
 
     Task PlayerCanBuildHouseEvent(string playerId, string blockId, int houseCount, decimal upgradeMoney);
 
@@ -81,5 +81,5 @@ public interface IMonopolyResponses
 
     Task BankruptEvent(string PlayerId);
 
-    Task SettlementEvent(string PlayerId, int Rank);
+    Task SettlementEvent(int Rounds, params string[] PlayerIds);
 }
