@@ -181,7 +181,7 @@ public class Monopoly : AbstractAggregateRoot
 
     public void EndRound()
     {
-        if (CurrentPlayerState.IsPayToll)
+        if (CurrentPlayerState.CanEndRound)
         {
             // 結束回合，輪到下一個玩家
             AddDomainEvent(CurrentPlayer.EndRound());
@@ -194,6 +194,7 @@ public class Monopoly : AbstractAggregateRoot
             AddDomainEvent(new EndRoundEvent(lastPlayerId, CurrentPlayer.Id));
             if (CurrentPlayer.SuspendRounds > 0)
             {
+                _currentPlayerState = _currentPlayerState with { IsPayToll = true }; // 當玩家暫停回合時，不需要繳過路費。 FIX: 這很奇怪
                 AddDomainEvent(new SuspendRoundEvent(CurrentPlayer.Id, CurrentPlayer.SuspendRounds));
                 EndRound();
             }

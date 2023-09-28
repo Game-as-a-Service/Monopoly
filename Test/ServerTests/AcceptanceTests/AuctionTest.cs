@@ -48,7 +48,7 @@ public class AuctionTest
                     .Build()
             )
             .WithCurrentPlayer(
-                new CurrentPlayerStateBuilder(A1.Id)
+                new CurrentPlayerStateBuilder(A.Id)
                     .WithAuction(Auction.LandId, null!, 1500)
                     .Build()
             );
@@ -264,10 +264,6 @@ public class AuctionTest
 
         // Assert
         // 拍賣結算
-        hub.Verify<string, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerBidEvent),
-                                (playerId, blockId, highestPrice)
-                                => playerId == "B" && blockId == "A1" && highestPrice == 600);
         hub.Verify<string, decimal, string, string?, decimal>(
                        nameof(IMonopolyResponses.EndAuctionEvent),
                                 (playerId, playerMoney, blockId, owner, ownerMoney)

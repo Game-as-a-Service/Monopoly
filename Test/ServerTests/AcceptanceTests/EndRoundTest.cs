@@ -280,7 +280,7 @@ public class EndRoundTest
             .Build()
         )
         .WithMockDice(new[] { 1, 1 })
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).WithPayToll().Build()); // TODO：是否可以結束回合應該不只有看玩家是否付完過路費，因為玩家有可能根本不需要付
 
         monopolyBuilder.Save(server);
 
@@ -292,14 +292,15 @@ public class EndRoundTest
         // Assert
         // A 結束回合，輪到下一個玩家 B
         // B 在監獄，輪到下一個玩家 C
-        hub.Verify<string, int>(
-                       nameof(IMonopolyResponses.SuspendRoundEvent),
-                                  (playerId, suspendRounds)
-                                  => playerId == "B" && suspendRounds == 1);
+
         hub.Verify<string, string>(
                        nameof(IMonopolyResponses.EndRoundEvent),
                                   (playerId, nextPlayer)
                                   => playerId == "A" && nextPlayer == "B");
+        hub.Verify<string, int>(
+                       nameof(IMonopolyResponses.SuspendRoundEvent),
+                                  (playerId, suspendRounds)
+                                  => playerId == "B" && suspendRounds == 1);
         hub.Verify<string, string>(
                        nameof(IMonopolyResponses.EndRoundEvent),
                                   (playerId, nextPlayer)

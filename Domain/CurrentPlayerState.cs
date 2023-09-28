@@ -5,4 +5,7 @@ public record CurrentPlayerState(string PlayerId,
                                  bool IsBoughtLand = false,
                                  bool IsUpgradeLand = false,
                                  Auction? Auction = null,
-                                 int RemainingSteps = 0);
+                                 int RemainingSteps = 0)
+{
+    public bool CanEndRound => IsPayToll;
+}
