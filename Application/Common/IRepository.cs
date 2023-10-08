@@ -32,7 +32,7 @@ internal static class RepositoryExtensions
             Chess chess = new(playerChess.CurrentBlockId, playerChess.CurrentDirection.ToApplicationDirection(), playerChess.RemainingSteps);
 
             var landContracts = player.LandContractList.Select(contract =>
-            new LandContract(contract.Land.Id, contract.InMortgage, contract.Deadline, contract.House)).ToArray();
+            new LandContract(contract.Land.Id, contract.InMortgage, contract.Deadline)).ToArray();
 
             return new Player(
                         player.Id,
@@ -58,7 +58,11 @@ internal static class RepositoryExtensions
             domainMonopoly.CurrentPlayerState.IsUpgradeLand,
             domainMonopoly.CurrentPlayerState.Auction is null ? null : new Auction(auction.LandContract.Land.Id, auction.HighestBidder?.Id, auction.HighestPrice)
             );
-        return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.HostId, currentPlayerState);
+        var LandHouses = domainMonopoly.Map.Blocks.SelectMany(block => block).OfType<Domain.Land>()
+                                                  .Where(land => land.House > 0)
+                                                  .Select(land => new LandHouse(land.Id, land.House)).ToArray();
+
+        return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.HostId, currentPlayerState, LandHouses);
     }
     private static Block ToApplicationBlock(this Domain.Block domainBlock)
     {
@@ -110,13 +114,15 @@ internal static class RepositoryExtensions
             builder.WithCurrentPlayer(cps.PlayerId, x => x.WithAuction(
                 cps.Auction.LandId, cps.Auction.HighestBidderId, cps.Auction.HighestPrice));
         }
+        monopoly.LandHouses.ToList().ForEach(LandHouse => builder.WithLandHouse(LandHouse.LandId, LandHouse.House));
+
         return builder.Build();
     }
     private static Domain.Builders.PlayerBuilder WithLandContracts(this Domain.Builders.PlayerBuilder builder, LandContract[] landContracts)
     {
         landContracts.ToList().ForEach(landContract =>
         {
-            builder.WithLandContract(landContract.LandId, landContract.InMortgage, landContract.Deadline, landContract.House);
+            builder.WithLandContract(landContract.LandId, landContract.InMortgage, landContract.Deadline);
         });
         return builder;
     }

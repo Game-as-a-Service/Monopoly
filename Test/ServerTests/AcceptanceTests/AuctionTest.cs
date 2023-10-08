@@ -192,13 +192,12 @@ public class AuctionTest
         .WithPlayer(
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithLandContract(A1.Id, House: A1.HouseCount)
-            .Build()
-        )
+            .WithLandContract(A1.Id)
+            .Build())
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .WithAuction(A1.Id, null!, 1000)
-            .Build()
-        );
+            .Build())
+        .WithLandHouse(A1.Id, A1.HouseCount);
 
         monopolyBuilder.Save(server);
 

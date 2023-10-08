@@ -38,12 +38,13 @@ public class BuildHouseTest
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
             .WithPosition(A1.Id, Direction.Right)
-            .WithLandContract(A1.Id, House: A1.House)
+            .WithLandContract(A1.Id)
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .Build()
-        );
+        )
+        .WithLandHouse(A1.Id, A1.House);
 
         monopolyBuilder.Save(server);
 
@@ -82,10 +83,11 @@ public class BuildHouseTest
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
             .WithPosition(A1.Id, Direction.Right)
-            .WithLandContract(A1.Id, House: A1.House)
+            .WithLandContract(A1.Id)
             .Build()
         )
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
+        .WithLandHouse(A1.Id, A1.House);
 
         monopolyBuilder.Save(server);
 
@@ -254,12 +256,13 @@ public class BuildHouseTest
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
             .WithPosition(A2.Id, Direction.Right)
-            .WithLandContract(A2.Id, InMortgage: A2.IsMortgage, House: A2.House)
+            .WithLandContract(A2.Id, InMortgage: A2.IsMortgage)
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .Build()
-        );
+        )
+        .WithLandHouse(A2.Id, A2.House);
 
         monopolyBuilder.Save(server);
 

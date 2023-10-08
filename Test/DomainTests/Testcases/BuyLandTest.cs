@@ -115,7 +115,7 @@ public class BuyLandTest
             .WithPlayer(A.Id, pa => pa.WithMoney(A.Money)
                                       .WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .WithPlayer(B.Id, pb => pb.WithMoney(B.Money)
-                                      .WithLandContract(F4.Id, false, 0, 0))
+                                      .WithLandContract(F4.Id, false, 0))
             .WithCurrentPlayer(A.Id)
             .Build();
 

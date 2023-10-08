@@ -417,11 +417,12 @@ public class RollDiceTest
         .WithPlayer(
             new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithLandContract(A2.Id, House: A2.HouseCount)
+            .WithLandContract(A2.Id)
             .Build()
         )
         .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
+        .WithLandHouse(A2.Id, A2.HouseCount);
 
         monopolyBuilder.Save(server);
 

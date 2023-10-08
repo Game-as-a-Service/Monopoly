@@ -18,6 +18,7 @@ public class MonopolyBuilder
 
     public Map Map { get; private set; }
     public int Rounds { get; private set; }
+    public List<(string LandId, int House)> LandHouses { get; private set; } = new();
 
     public MonopolyBuilder()
     {
@@ -44,7 +45,7 @@ public class MonopolyBuilder
             var f = expression.Compile();
             f(playerBuilder);
         }
-        
+
         PlayerBuilders.Add(playerBuilder);
         return this;
     }
@@ -66,6 +67,11 @@ public class MonopolyBuilder
         HostId = id;
         return this;
     }
+    public MonopolyBuilder WithLandHouse(string LandId, int House)
+    {
+        LandHouses.Add(new(LandId, House));
+        return this;
+    }
 
     public Monopoly Build()
     {
@@ -83,6 +89,11 @@ public class MonopolyBuilder
             var landContract = currentPlayer.FindLandContract(LandId) ?? throw new InvalidOperationException("LandContract not found");
             var highestBidder = players.FirstOrDefault(p => p.Id == HighestBidder);
             auction = new Auction(landContract, highestBidder, HighestPrice);
+        }
+        foreach (var landHouse in LandHouses)
+        {
+            var land = Map.FindBlockById<Land>(landHouse.LandId);
+            for (int i = 0; i < landHouse.House; i++) land.Upgrade();
         }
         return new Monopoly(GameId,
                             players.ToArray(),
@@ -106,5 +117,5 @@ public class MonopolyBuilder
         return this;
     }
 
-    
+
 }

@@ -265,16 +265,12 @@ public class RollDiceTest
             RemainingSteps = 0
         };
 
-        var map = Map;
-        map.FindBlockById<Land>(A2.Id).Upgrade();
-        map.FindBlockById<Land>(A2.Id).Upgrade();
-        map.FindBlockById<Land>(A2.Id).Upgrade();
-
         var monopoly = new MonopolyBuilder()
-            .WithMap(map)
-            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.Direction).WithLandContract(A2.Id, false, 0, A2.HouseCount))
+            .WithMap(Map)
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.Direction).WithLandContract(A2.Id, false, 0))
             .WithCurrentPlayer(A.Id)
             .WithDices(Utils.MockDice(dicePoints))
+            .WithLandHouse(A2.Id, A2.HouseCount)
             .Build();
 
         // Act

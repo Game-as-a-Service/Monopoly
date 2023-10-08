@@ -37,6 +37,7 @@ public class Utils
         public int[] Dices { get; private set; }
 
         public CurrentPlayerState CurrentPlayerState { get; private set; }
+        public List<LandHouse> LandHouses { get; private set; } = new();
         public Map Map { get; private set; }
 
         public MonopolyBuilder(string id)
@@ -68,13 +69,20 @@ public class Utils
             return this;
         }
 
+        public MonopolyBuilder WithLandHouse(string id, int house)
+        {
+            LandHouses.Add(new LandHouse(id, house));
+            return this;
+        }
+
         public Monopoly Build()
         {
             return new Monopoly(Id: GameId,
                                 Players: Players.ToArray(),
                                 Map: Map,
                                 HostId: HostId,
-                                CurrentPlayerState: CurrentPlayerState);
+                                CurrentPlayerState: CurrentPlayerState,
+                                LandHouses: LandHouses.ToArray());
         }
 
         internal void Save(MonopolyTestServer server)
@@ -116,12 +124,11 @@ public class Utils
             return this;
         }
 
-        public PlayerBuilder WithLandContract(string LandId, bool InMortgage = false, int Deadline = 10, int House = 0)
+        public PlayerBuilder WithLandContract(string LandId, bool InMortgage = false, int Deadline = 10)
         {
             LandContracts.Add(new LandContract(LandId: LandId,
                                                InMortgage: InMortgage,
-                                               Deadline: Deadline,
-                                               House: House));
+                                               Deadline: Deadline));
             return this;
         }
 

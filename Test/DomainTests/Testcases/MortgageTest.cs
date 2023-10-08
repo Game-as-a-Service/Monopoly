@@ -33,7 +33,7 @@ public class MortgageTest
 
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A1.Id, false, 0, 0))
+            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A1.Id, false, 0))
             .WithCurrentPlayer(A.Id)
             .Build();
 
@@ -71,7 +71,7 @@ public class MortgageTest
 
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A1.Id, A1.IsMortgage, 5, 0))
+            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A1.Id, A1.IsMortgage, 5))
             .WithCurrentPlayer(A.Id)
             .Build();
 

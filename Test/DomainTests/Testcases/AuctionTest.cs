@@ -65,7 +65,7 @@ public class AuctionTest
 
         var game = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(A.Id, p => p.WithMoney(A.Money).WithLandContract(A1.Id, false, 0, 0))
+            .WithPlayer(A.Id, p => p.WithMoney(A.Money).WithLandContract(A1.Id, false, 0))
             .WithPlayer(B.Id, p => p.WithMoney(B.Money))
             .WithCurrentPlayer(A.Id, p => p.WithAuction(A1.Id, B.Id, 600m))
             .Build();
@@ -156,7 +156,7 @@ public class AuctionTest
 
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(A.Id, p => p.WithMoney(A.Money).WithLandContract(A1.Id, false, 0, 0))
+            .WithPlayer(A.Id, p => p.WithMoney(A.Money).WithLandContract(A1.Id, false, 0))
             .WithPlayer(B.Id, p => p.WithMoney(B.Money))
             .WithCurrentPlayer(A.Id, p => p.WithAuction(A1.Id, null, 1000m))
             .Build();

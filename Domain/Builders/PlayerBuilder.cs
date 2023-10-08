@@ -7,7 +7,7 @@ public class PlayerBuilder
     public string BlockId { get; set; }
     public Map.Direction CurrentDirection { get; set; }
     public Map Map { get; set; }
-    public List<(string LandId, bool InMortgage, int Deadline, int House)> LandContracts { get; set; }
+    public List<(string LandId, bool InMortgage, int Deadline)> LandContracts { get; set; }
     public bool IsBankrupt { get; set; }
     public int BankruptRounds { get; private set; }
     public int RemainingSteps { get; set; }
@@ -38,9 +38,9 @@ public class PlayerBuilder
         return this;
     }
 
-    public PlayerBuilder WithLandContract(string LandId, bool InMortgage, int Deadline, int House)
+    public PlayerBuilder WithLandContract(string LandId, bool InMortgage, int Deadline)
     {
-        LandContracts.Add(new(LandId, InMortgage, Deadline, House));
+        LandContracts.Add(new(LandId, InMortgage, Deadline));
         return this;
     }
 
@@ -84,7 +84,7 @@ public class PlayerBuilder
             throw new InvalidOperationException("Map must be set!");
 
         }
-        foreach (var (LandId, InMortgage, Deadline, House) in LandContracts)
+        foreach (var (LandId, InMortgage, Deadline) in LandContracts)
         {
             var land = Map.FindBlockById<Land>(LandId);
             player.AddLandContract(new(player, land));
@@ -96,7 +96,6 @@ public class PlayerBuilder
                 player.LandContractList[^1].SetDeadLine(Deadline);
                 #endregion
             }
-            for (int i = 0; i < House; i++) land.Upgrade();
         }
         return player;
     }

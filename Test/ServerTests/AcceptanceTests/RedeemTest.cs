@@ -38,10 +38,11 @@ public class RedeemTest
         .WithPlayer(
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithLandContract(A1.Id, A1.IsMortgage, House: A1.House)
+            .WithLandContract(A1.Id, A1.IsMortgage)
             .Build()
         )
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
+        .WithLandHouse(A1.Id, A1.House);
 
         monopolyBuilder.Save(server);
 
@@ -81,10 +82,12 @@ public class RedeemTest
         .WithPlayer(
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithLandContract(A1.Id, A1.IsMortgage, House: A1.House)
+            .WithLandContract(A1.Id, A1.IsMortgage)
+
             .Build()
         )
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
+        .WithLandHouse(A1.Id, A1.House);
 
         monopolyBuilder.Save(server);
 

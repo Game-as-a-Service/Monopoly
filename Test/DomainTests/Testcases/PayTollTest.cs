@@ -34,7 +34,7 @@ public class PayTollTest
 
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A4.Id, false, 0, 0))
+            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A4.Id, false, 0))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithPosition(B.CurrentBlockId, B.CurrentDirection))
             .WithCurrentPlayer(B.Id)
             .Build();
@@ -73,16 +73,15 @@ public class PayTollTest
         var A4 = new { Id = "A4", Price = 1000m, HouseCount = 2 };
 
         var map = Map;
-        map.FindBlockById<Land>(A4.Id).Upgrade();
-        map.FindBlockById<Land>(A4.Id).Upgrade();
 
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
             .WithPlayer(A.Id, a => a.WithMoney(A.Money)
-                                    .WithLandContract(A1.Id, false, 10, 0)
-                                    .WithLandContract(A4.Id, false, 0, A4.HouseCount))
+                                    .WithLandContract(A1.Id, false, 10)
+                                    .WithLandContract(A4.Id, false, 0))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithPosition(B.CurrentBlockId, B.CurrentDirection))
             .WithCurrentPlayer(B.Id)
+            .WithLandHouse(A4.Id, A4.HouseCount)
             .Build();
 
         // Act
@@ -125,7 +124,7 @@ public class PayTollTest
             .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money)
                                     .WithPosition(B.CurrentBlockId, B.CurrentDirection)
-                                    .WithLandContract(A1.Id, false, 0, 0))
+                                    .WithLandContract(A1.Id, false, 0))
             .WithCurrentPlayer(A.Id)
             .Build();
 
@@ -168,7 +167,7 @@ public class PayTollTest
             .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money)
                                     .WithPosition(B.CurrentBlockId, B.CurrentDirection)
-                                    .WithLandContract(A1.Id, false, 0, 0))
+                                    .WithLandContract(A1.Id, false, 0))
             .WithCurrentPlayer(A.Id)
             .Build();
 
@@ -209,10 +208,11 @@ public class PayTollTest
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
             .WithPlayer(A.Id, a => a.WithMoney(A.Money)
-                                    .WithLandContract(A1.Id, false, 0, 0)
-                                    .WithLandContract(A4.Id, false, 0, A4.HouseCount))
+                                    .WithLandContract(A1.Id, false, 0)
+                                    .WithLandContract(A4.Id, false, 0))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithPosition(B.CurrentBlockId, B.CurrentDirection))
             .WithCurrentPlayer(B.Id, p => p.WithPayToll(true))
+            .WithLandHouse(A4.Id, A4.HouseCount)
             .Build();
 
         // Act

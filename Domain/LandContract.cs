@@ -13,7 +13,7 @@ public class LandContract
 
     public Land Land { get; }
 
-    public int House { get; private set; } = 0;
+    public int House => Land.House;
 
     public LandContract(Player? Owner, Land Land)
     {
@@ -48,11 +48,6 @@ public class LandContract
     internal void GetRedeem()
     {
         InMortgage = false;
-    }
-
-    internal void AddHouse(int house)
-    {
-        House += house;
     }
 
     #region 測試用
