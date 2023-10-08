@@ -41,7 +41,7 @@ public class RollDiceTest
             RemainingSteps = 0
         };
 
-            
+
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(A.Id, p => p.WithMoney(A.Money)
@@ -255,8 +255,8 @@ public class RollDiceTest
     public void 玩家擲骰後移動棋子到自己擁有地()
     {
         // Arrange
-        var A = new { Id = "A", CurrentBlockId = "A1", Direction = "Right"};
-        var A2 = new { Id = "A2", Price = 1000m , HouseCount = 3 };
+        var A = new { Id = "A", CurrentBlockId = "A1", Direction = "Right" };
+        var A2 = new { Id = "A2", Price = 1000m, HouseCount = 3 };
         var dicePoints = 2;
         var expected = new
         {
@@ -272,7 +272,7 @@ public class RollDiceTest
 
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.Direction).WithLandContract(A2.Id, false, 0))
+            .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.Direction).WithLandContract(A2.Id, false, 0, A2.HouseCount))
             .WithCurrentPlayer(A.Id)
             .WithDices(Utils.MockDice(dicePoints))
             .Build();
@@ -292,7 +292,7 @@ public class RollDiceTest
             .NoMore();
     }
 
-    
+
     private static void 確認玩家目前位置(Monopoly monopoly, string playerId, string blockId, string direction)
     {
         Assert.AreEqual(blockId, monopoly.Players.First(p => p.Id == playerId).Chess.CurrentBlockId);

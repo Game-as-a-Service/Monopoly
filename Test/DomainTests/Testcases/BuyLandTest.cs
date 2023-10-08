@@ -29,7 +29,7 @@ public class BuyLandTest
 
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(A.Id, pa=>pa.WithMoney(A.Money).WithPosition(A.CurrentBlockId, A.CurrentDirection))
+            .WithPlayer(A.Id, pa => pa.WithMoney(A.Money).WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .WithCurrentPlayer(A.Id)
             .Build();
 
@@ -40,7 +40,7 @@ public class BuyLandTest
         // Assert
         // 玩家A持有金額為4000
         // 玩家A持有的房地產 F4
-        var player_a = monopoly.Players.First(p=>p.Id==A.Id);
+        var player_a = monopoly.Players.First(p => p.Id == A.Id);
         Assert.AreEqual(4000, player_a.Money);
         Assert.AreEqual(1, player_a.LandContractList.Count());
         Assert.IsTrue(player_a.LandContractList.Any(pa => pa.Land.Id == "F4"));
@@ -70,7 +70,7 @@ public class BuyLandTest
 
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(A.Id,pa=>pa.WithMoney(A.Money)
+            .WithPlayer(A.Id, pa => pa.WithMoney(A.Money)
                                    .WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .WithCurrentPlayer(A.Id)
             .Build();
@@ -115,7 +115,7 @@ public class BuyLandTest
             .WithPlayer(A.Id, pa => pa.WithMoney(A.Money)
                                       .WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .WithPlayer(B.Id, pb => pb.WithMoney(B.Money)
-                                      .WithLandContract(F4.Id,false,0))
+                                      .WithLandContract(F4.Id, false, 0, 0))
             .WithCurrentPlayer(A.Id)
             .Build();
 

@@ -1,6 +1,5 @@
 using Application.Common;
 using Application.DataModels;
-using Moq;
 using SharedLibrary;
 
 namespace ServerTests;
@@ -117,11 +116,12 @@ public class Utils
             return this;
         }
 
-        public PlayerBuilder WithLandContract(string LandId, bool InMortgage = false, int Deadline = 10)
+        public PlayerBuilder WithLandContract(string LandId, bool InMortgage = false, int Deadline = 10, int House = 0)
         {
             LandContracts.Add(new LandContract(LandId: LandId,
                                                InMortgage: InMortgage,
-                                               Deadline: Deadline));
+                                               Deadline: Deadline,
+                                               House: House));
             return this;
         }
 

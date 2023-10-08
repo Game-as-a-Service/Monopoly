@@ -34,7 +34,7 @@ public class PayTollTest
 
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
-            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A4.Id, false, 0))
+            .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithLandContract(A4.Id, false, 0, 0))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithPosition(B.CurrentBlockId, B.CurrentDirection))
             .WithCurrentPlayer(B.Id)
             .Build();
@@ -46,7 +46,7 @@ public class PayTollTest
         // 1000 * 0.05 = 50
         Assert.AreEqual(1050, monopoly.Players.First(p => p.Id == A.Id).Money);
         Assert.AreEqual(950, monopoly.Players.First(p => p.Id == B.Id).Money);
-        
+
         monopoly.DomainEvents
             .NextShouldBe(new PlayerPayTollEvent(B.Id, 950, A.Id, 1050))
             .NoMore();
@@ -79,8 +79,8 @@ public class PayTollTest
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
             .WithPlayer(A.Id, a => a.WithMoney(A.Money)
-                                    .WithLandContract(A1.Id, false, 10)
-                                    .WithLandContract(A4.Id, false, 0))
+                                    .WithLandContract(A1.Id, false, 10, 0)
+                                    .WithLandContract(A4.Id, false, 0, A4.HouseCount))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithPosition(B.CurrentBlockId, B.CurrentDirection))
             .WithCurrentPlayer(B.Id)
             .Build();
@@ -125,7 +125,7 @@ public class PayTollTest
             .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money)
                                     .WithPosition(B.CurrentBlockId, B.CurrentDirection)
-                                    .WithLandContract(A1.Id, false, 0))
+                                    .WithLandContract(A1.Id, false, 0, 0))
             .WithCurrentPlayer(A.Id)
             .Build();
 
@@ -168,7 +168,7 @@ public class PayTollTest
             .WithPlayer(A.Id, a => a.WithMoney(A.Money).WithPosition(A.CurrentBlockId, A.CurrentDirection))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money)
                                     .WithPosition(B.CurrentBlockId, B.CurrentDirection)
-                                    .WithLandContract(A1.Id, false, 0))
+                                    .WithLandContract(A1.Id, false, 0, 0))
             .WithCurrentPlayer(A.Id)
             .Build();
 
@@ -209,8 +209,8 @@ public class PayTollTest
         var monopoly = new MonopolyBuilder()
             .WithMap(map)
             .WithPlayer(A.Id, a => a.WithMoney(A.Money)
-                                    .WithLandContract(A1.Id, false, 0)
-                                    .WithLandContract(A4.Id, false, 0))
+                                    .WithLandContract(A1.Id, false, 0, 0)
+                                    .WithLandContract(A4.Id, false, 0, A4.HouseCount))
             .WithPlayer(B.Id, b => b.WithMoney(B.Money).WithPosition(B.CurrentBlockId, B.CurrentDirection))
             .WithCurrentPlayer(B.Id, p => p.WithPayToll(true))
             .Build();

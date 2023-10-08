@@ -154,15 +154,16 @@ public class Player
         if (_landContractList.Exists(l => l.Land.Id == landId && l.InMortgage))
         {
             var landContract = _landContractList.First(l => l.Land.Id == landId);
-            if (Money >= landContract.Land.GetPrice("Redeem"))
+            var RedeemMoney = landContract.Land.GetPrice("Redeem");
+            if (Money >= RedeemMoney)
             {
                 landContract.GetRedeem();
-                Money -= landContract.Land.GetPrice("Redeem");
+                Money -= RedeemMoney;
                 return new PlayerRedeemEvent(Id, Money, landId);
             }
             else
             {
-                return new PlayerTooPoorToRedeemEvent(Id, Money, landId, landContract.Land.GetPrice("Redeem"));
+                return new PlayerTooPoorToRedeemEvent(Id, Money, landId, RedeemMoney);
             }
         }
         else

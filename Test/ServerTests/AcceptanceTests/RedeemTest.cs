@@ -38,7 +38,7 @@ public class RedeemTest
         .WithPlayer(
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithLandContract(A1.Id, A1.IsMortgage)
+            .WithLandContract(A1.Id, A1.IsMortgage, House: A1.House)
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
@@ -81,7 +81,7 @@ public class RedeemTest
         .WithPlayer(
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithLandContract(A1.Id, A1.IsMortgage)
+            .WithLandContract(A1.Id, A1.IsMortgage, House: A1.House)
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());

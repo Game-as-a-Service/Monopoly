@@ -32,7 +32,7 @@ internal static class RepositoryExtensions
             Chess chess = new(playerChess.CurrentBlockId, playerChess.CurrentDirection.ToApplicationDirection(), playerChess.RemainingSteps);
 
             var landContracts = player.LandContractList.Select(contract =>
-            new LandContract(contract.Land.Id, contract.InMortgage, contract.Deadline)).ToArray();
+            new LandContract(contract.Land.Id, contract.InMortgage, contract.Deadline, contract.House)).ToArray();
 
             return new Player(
                         player.Id,
@@ -104,7 +104,7 @@ internal static class RepositoryExtensions
             builder.WithCurrentPlayer(cps.PlayerId, x => x.WithBoughtLand(cps.IsBoughtLand)
                                                           .WithUpgradeLand(cps.IsUpgradeLand)
                                                           .WithPayToll(cps.IsPayToll));
-            }
+        }
         else
         {
             builder.WithCurrentPlayer(cps.PlayerId, x => x.WithAuction(
@@ -116,7 +116,7 @@ internal static class RepositoryExtensions
     {
         landContracts.ToList().ForEach(landContract =>
         {
-            builder.WithLandContract(landContract.LandId, landContract.InMortgage, landContract.Deadline);
+            builder.WithLandContract(landContract.LandId, landContract.InMortgage, landContract.Deadline, landContract.House);
         });
         return builder;
     }

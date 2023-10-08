@@ -417,7 +417,7 @@ public class RollDiceTest
         .WithPlayer(
             new PlayerBuilder(B.Id)
             .WithMoney(B.Money)
-            .WithLandContract(A2.Id)
+            .WithLandContract(A2.Id, House: A2.HouseCount)
             .Build()
         )
         .WithMockDice(new[] { 2 })

@@ -151,7 +151,7 @@ public class AuctionTest
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
-            .WithAuction(A1.Id, null!, 1000) 
+            .WithAuction(A1.Id, null!, 1000)
             .Build()
         );
 
@@ -192,7 +192,7 @@ public class AuctionTest
         .WithPlayer(
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
-            .WithLandContract(A1.Id)
+            .WithLandContract(A1.Id, House: A1.HouseCount)
             .Build()
         )
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
