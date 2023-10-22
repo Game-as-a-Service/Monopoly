@@ -56,7 +56,7 @@ internal static class RepositoryExtensions
             domainMonopoly.CurrentPlayerState.IsPayToll,
             domainMonopoly.CurrentPlayerState.IsBoughtLand,
             domainMonopoly.CurrentPlayerState.IsUpgradeLand,
-            domainMonopoly.CurrentPlayerState.Auction is null ? null : new Auction(auction!.LandContract.Land.Id, auction.HighestBidder!.Id, auction.HighestPrice),
+            domainMonopoly.CurrentPlayerState.Auction is null ? null : new Auction(auction!.LandContract.Land.Id, auction.HighestBidder?.Id, auction.HighestPrice),
             domainMonopoly.CurrentPlayerState.RemainingSteps,
             domainMonopoly.CurrentPlayerState.HadSelectedDirection
             );

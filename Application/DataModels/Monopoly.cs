@@ -6,7 +6,7 @@ public record Player(string Id, decimal Money, Chess Chess, LandContract[] LandC
 public record CurrentPlayerState(string PlayerId, bool IsPayToll, bool IsBoughtLand, bool IsUpgradeLand, Auction? Auction, int RemainingSteps, bool HadSelectedDirection);
 public record Chess(string CurrentPosition, Direction Direction);
 public record LandContract(string LandId, bool InMortgage, int Deadline);
-public record Auction(string LandId, string HighestBidderId, decimal HighestPrice);
+public record Auction(string LandId, string? HighestBidderId, decimal HighestPrice);
 public record LandHouse(string LandId, int House);
 public enum Direction
 {
