@@ -245,4 +245,17 @@ public class Monopoly : AbstractAggregateRoot
         Player player = GetPlayer(playerId);
         AddDomainEvent(player.BuyLand(_map, BlockId));
     }
+
+    /// <summary>
+    /// 選擇房間位置
+    /// </summary>
+    /// <param name="playerId"></param>
+    /// <param name="locationID"></param>
+    /// <exception cref="NotImplementedException"></exception>
+    public void SelectRoomLocation(string playerId, int locationID)
+    {
+        Player player = GetPlayer(playerId);
+        player.LocationId = locationID;
+        AddDomainEvent(new PlaySelectRoomLocationEvent(playerId, player.LocationId));
+    }
 }
