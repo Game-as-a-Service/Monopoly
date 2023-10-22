@@ -3,8 +3,8 @@
 public record Monopoly(string Id, Player[] Players, Map Map, string HostId, CurrentPlayerState CurrentPlayerState, LandHouse[] LandHouses);
 
 public record Player(string Id, decimal Money, Chess Chess, LandContract[] LandContracts, bool IsBankrupt, int BankruptRounds);
-public record CurrentPlayerState(string PlayerId, bool IsPayToll, bool IsBoughtLand, bool IsUpgradeLand, Auction? Auction);
-public record Chess(string CurrentPosition, Direction Direction, int RemainSteps);
+public record CurrentPlayerState(string PlayerId, bool IsPayToll, bool IsBoughtLand, bool IsUpgradeLand, Auction? Auction, int RemainingSteps, bool HadSelectedDirection);
+public record Chess(string CurrentPosition, Direction Direction);
 public record LandContract(string LandId, bool InMortgage, int Deadline);
 public record Auction(string LandId, string HighestBidderId, decimal HighestPrice);
 public record LandHouse(string LandId, int House);

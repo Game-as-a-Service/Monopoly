@@ -13,7 +13,9 @@ public class CreateGameUsecase : Usecase<CreateGameRequest>
     {
     }
 
+#pragma warning disable CS1998 // Async 方法缺乏 'await' 運算子，將同步執行
     public override async Task ExecuteAsync(CreateGameRequest request)
+#pragma warning restore CS1998 // Async 方法缺乏 'await' 運算子，將同步執行
     {
         throw new NotImplementedException();
     }

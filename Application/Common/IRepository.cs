@@ -29,7 +29,7 @@ internal static class RepositoryExtensions
         {
             var playerChess = player.Chess;
 
-            Chess chess = new(playerChess.CurrentBlockId, playerChess.CurrentDirection.ToApplicationDirection(), playerChess.RemainingSteps);
+            Chess chess = new(playerChess.CurrentBlockId, playerChess.CurrentDirection.ToApplicationDirection());
 
             var landContracts = player.LandContractList.Select(contract =>
             new LandContract(contract.Land.Id, contract.InMortgage, contract.Deadline)).ToArray();
@@ -56,7 +56,9 @@ internal static class RepositoryExtensions
             domainMonopoly.CurrentPlayerState.IsPayToll,
             domainMonopoly.CurrentPlayerState.IsBoughtLand,
             domainMonopoly.CurrentPlayerState.IsUpgradeLand,
-            domainMonopoly.CurrentPlayerState.Auction is null ? null : new Auction(auction.LandContract.Land.Id, auction.HighestBidder?.Id, auction.HighestPrice)
+            domainMonopoly.CurrentPlayerState.Auction is null ? null : new Auction(auction!.LandContract.Land.Id, auction.HighestBidder!.Id, auction.HighestPrice),
+            domainMonopoly.CurrentPlayerState.RemainingSteps,
+            domainMonopoly.CurrentPlayerState.HadSelectedDirection
             );
         var LandHouses = domainMonopoly.Map.Blocks.SelectMany(block => block).OfType<Domain.Land>()
                                                   .Where(land => land.House > 0)
@@ -107,7 +109,8 @@ internal static class RepositoryExtensions
         {
             builder.WithCurrentPlayer(cps.PlayerId, x => x.WithBoughtLand(cps.IsBoughtLand)
                                                           .WithUpgradeLand(cps.IsUpgradeLand)
-                                                          .WithPayToll(cps.IsPayToll));
+                                                          .WithPayToll(cps.IsPayToll)
+                                                          .WithSelectedDirection(cps.HadSelectedDirection));
         }
         else
         {

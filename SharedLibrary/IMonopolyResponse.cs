@@ -23,8 +23,6 @@ public interface IMonopolyResponses
 
     Task PlayerChooseDirectionEvent(string playerId, string direction);
 
-    Task PlayerCannotMoveEvent(string playerId, int suspendRounds);
-
     Task PlayerNeedsToPayTollEvent(string playerId, string ownerId, decimal toll);
 
     Task PlayerBuyBlockEvent(string playerId, string blockId);

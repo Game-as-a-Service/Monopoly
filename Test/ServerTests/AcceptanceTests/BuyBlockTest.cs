@@ -172,7 +172,8 @@ public class BuyBlockTest
                 玩家A持有金額為5000
                 玩家A持有房地產數量為0
         """)]
-    public async Task 玩家無法購買非腳下的土地()
+    [Ignore]
+    public void 玩家無法購買非腳下的土地()
     {
         // Arrange
         //var A = new { Id = "A", Money = 5000m };

@@ -142,8 +142,7 @@ public class Utils
         public Player Build()
         {
             Chess chess = new(CurrentPosition: BlockId,
-                              Direction: Enum.Parse<Application.DataModels.Direction>(Direction.ToString()),
-                              RemainSteps: 0);
+                              Direction: Enum.Parse<Application.DataModels.Direction>(Direction.ToString()));
             Player player = new(Id: Id,
                                     Money: Money,
                                     Chess: chess,
@@ -169,12 +168,17 @@ public class Utils
         public bool IsBoughtLand { get; private set; }
         public bool IsUpgradeLand { get; private set; }
         public Auction? Auction { get; private set; }
+        public int RemainingSteps { get; private set; }
+        public bool HadSelectedDirection { get; private set; }
+
         public CurrentPlayerStateBuilder(string id)
         {
             Id = id;
             IsPayToll = false;
             IsBoughtLand = false;
             IsUpgradeLand = false;
+            RemainingSteps = 0;
+            HadSelectedDirection = false;
         }
 
         public CurrentPlayerStateBuilder WithPayToll()
@@ -201,13 +205,27 @@ public class Utils
             return this;
         }
 
+        internal CurrentPlayerStateBuilder WithRemainingSteps(int remainingSteps)
+        {
+            RemainingSteps = remainingSteps;
+            return this;
+        }
+
+        internal CurrentPlayerStateBuilder HadNotSelectedDirection()
+        {
+            HadSelectedDirection = false;
+            return this;
+        }
+
         public CurrentPlayerState Build()
         {
             return new CurrentPlayerState(PlayerId: Id,
                                           IsPayToll: IsPayToll,
                                           IsBoughtLand: IsBoughtLand,
                                           IsUpgradeLand: IsUpgradeLand,
-                                          Auction: Auction);
+                                          Auction: Auction,
+                                          RemainingSteps: RemainingSteps,
+                                          HadSelectedDirection: HadSelectedDirection);
         }
     }
 }

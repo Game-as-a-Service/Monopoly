@@ -1,3 +1,4 @@
+using Domain.Builders;
 using Domain.Common;
 using Domain.Events;
 using Domain.Interfaces;
@@ -45,7 +46,7 @@ public class Monopoly : AbstractAggregateRoot
 
     public void AddPlayer(Player player, string blockId = "Start", Direction direction = Direction.Right)
     {
-        Chess chess = new(player, blockId, direction, 0, true);
+        Chess chess = new(player, blockId, direction, 0);
         player.Chess = chess;
         player.Monopoly = this;
         _players.Add(player);
@@ -76,11 +77,21 @@ public class Monopoly : AbstractAggregateRoot
     // 玩家選擇方向
     // 1.不能選擇回頭的方向
     // 2.不能選擇沒有的方向
-    public void PlayerChooseDirection(string playerId, string direction)
+    public void PlayerSelectDirection(string playerId, string direction)
     {
         Player player = GetPlayer(playerId);
         VerifyCurrentPlayer(player);
+        if (CurrentPlayerState.HadSelectedDirection)
+        {
+            AddDomainEvent(new PlayerHadSelectedDirectionEvent(playerId));
+            return;
+        }
         var d = GetDirection(direction);
+        if (CurrentPlayer.CanNotSelectDirection(d))
+        {
+            AddDomainEvent(new PlayerChooseInvalidDirectionEvent(playerId, direction));
+            return;
+        }
         player.SelectDirection(_map, d);
     }
 
@@ -99,7 +110,7 @@ public class Monopoly : AbstractAggregateRoot
     public void Initial()
     {
         // 初始化目前玩家
-        _currentPlayerState = new CurrentPlayerState(_players[0].Id);
+        _currentPlayerState = new CurrentPlayerStateBuilder(_players[0].Id).Build(null);
         CurrentPlayer.StartRound();
     }
 
@@ -188,7 +199,7 @@ public class Monopoly : AbstractAggregateRoot
             string lastPlayerId = CurrentPlayer.Id;
             do
             {
-                _currentPlayerState = new CurrentPlayerState(_players[(_players.IndexOf(CurrentPlayer) + 1) % _players.Count].Id);
+                _currentPlayerState = new CurrentPlayerStateBuilder(_players[(_players.IndexOf(CurrentPlayer) + 1) % _players.Count].Id).Build(null);
                 CurrentPlayer.StartRound();
             } while (CurrentPlayer.State == PlayerState.Bankrupt);
             AddDomainEvent(new EndRoundEvent(lastPlayerId, CurrentPlayer.Id));

@@ -58,10 +58,6 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerChooseDirectionEvent(pcde.PlayerId, pcde.Direction);
             }
-            else if (e is PlayerCannotMoveEvent pcme)
-            {
-                await _hubContext.Clients.All.PlayerCannotMoveEvent(pcme.PlayerId, pcme.SuspendRounds);
-            }
             else if (e is PlayerNeedsToPayTollEvent pntpte)
             {
                 await _hubContext.Clients.All.PlayerNeedsToPayTollEvent(pntpte.PlayerId, pntpte.ownerId, pntpte.toll);

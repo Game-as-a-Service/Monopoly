@@ -9,6 +9,8 @@ public class CurrentPlayerStateBuilder
     public bool HasAuction { get; private set; }
     public (string LandId, string? HighestBidder, decimal HighestPrice) Auction { get; private set; }
     public int RemainingSteps { get; private set; }
+    public bool HadSelectedDirection { get; private set; }
+
     public CurrentPlayerStateBuilder(string Id)
     {
         PlayerId = Id;
@@ -16,6 +18,7 @@ public class CurrentPlayerStateBuilder
         IsBoughtLand = false;
         IsUpgradeLand = false;
         HasAuction = false;
+        HadSelectedDirection = true;
     }
 
     public CurrentPlayerStateBuilder WithPayToll(bool isPayToll = true)
@@ -43,13 +46,21 @@ public class CurrentPlayerStateBuilder
         return this;
     }
 
+    public CurrentPlayerStateBuilder WithSelectedDirection(bool hadSelectedDirection)
+    {
+        HadSelectedDirection = hadSelectedDirection;
+        return this;
+    }
+
     internal CurrentPlayerState Build(Auction? auction)
     {
         return new CurrentPlayerState(PlayerId: PlayerId,
                                       IsPayToll: IsPayToll,
                                       IsBoughtLand: IsBoughtLand,
                                       IsUpgradeLand: IsUpgradeLand,
-                                      Auction: auction);
+                                      Auction: auction,
+                                      RemainingSteps: RemainingSteps,
+                                      HadSelectedDirection: HadSelectedDirection);
     }
 
     

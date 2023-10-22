@@ -28,21 +28,15 @@ public class SelectDirectionTest
         var direction = "Left";
         var expected = new { Id = "A", CurrentBlockId = "ParkingLot", CurrentDirection = "Left", RemainingSteps = 0 };
 
-        var player = new PlayerBuilder(A.Id)
-            .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-            .WithRemainingSteps(A.RemainingSteps)
-            .WithNotChooseDirection()
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
-                                    .WithRemainingSteps(A.RemainingSteps)
-                                    .WithNotChooseDirection())
-            .WithCurrentPlayer(A.Id)
+                                    .WithRemainingSteps(A.RemainingSteps))
+            .WithCurrentPlayer(A.Id, x => x.WithSelectedDirection(false))
             .Build();
 
         // Act
-        monopoly.PlayerChooseDirection(A.Id, direction);
+        monopoly.PlayerSelectDirection(A.Id, direction);
 
         // Assert
         確認玩家目前位置(monopoly, A.Id, expected.CurrentBlockId, expected.CurrentDirection);
@@ -78,21 +72,15 @@ public class SelectDirectionTest
         var direction = "Left";
         var expected = new { Id = "A", CurrentBlockId = "B4", CurrentDirection = "Down", RemainingSteps = 0 };
 
-        var player = new PlayerBuilder(A.Id)
-            .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-            .WithRemainingSteps(A.RemainingSteps)
-            .WithNotChooseDirection()
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
-                                    .WithRemainingSteps(A.RemainingSteps)
-                                    .WithNotChooseDirection())
-            .WithCurrentPlayer(A.Id)
+                                    .WithRemainingSteps(A.RemainingSteps))
+            .WithCurrentPlayer(A.Id, x => x.WithSelectedDirection(false))
             .Build();
 
         // Act
-        monopoly.PlayerChooseDirection(A.Id, direction);
+        monopoly.PlayerSelectDirection(A.Id, direction);
 
         // Assert
         確認玩家目前位置(monopoly, A.Id, expected.CurrentBlockId, expected.CurrentDirection);
@@ -132,21 +120,15 @@ public class SelectDirectionTest
         var direction = "Left";
         var expected = new { Id = "A", CurrentBlockId = "Jail", CurrentDirection = "Down", RemainingSteps = 0 };
         
-        var player = new PlayerBuilder(A.Id)
-            .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-            .WithRemainingSteps(A.RemainingSteps)
-            .WithNotChooseDirection()
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
-                                    .WithRemainingSteps(A.RemainingSteps)
-                                    .WithNotChooseDirection())
-            .WithCurrentPlayer(A.Id)
+                                    .WithRemainingSteps(A.RemainingSteps))
+            .WithCurrentPlayer(A.Id, x => x.WithSelectedDirection(false))
             .Build();
 
         // Act
-        monopoly.PlayerChooseDirection("A", "Left");
+        monopoly.PlayerSelectDirection("A", "Left");
 
         // Assert
         確認玩家目前位置(monopoly, A.Id, expected.CurrentBlockId, expected.CurrentDirection);
@@ -183,21 +165,15 @@ public class SelectDirectionTest
         var direction = "Left";
         var expected = new { Id = "A", CurrentBlockId = "Jail", CurrentDirection = "Left", RemainingSteps = 0 };
 
-        var player = new PlayerBuilder(A.Id)
-            .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-            .WithRemainingSteps(A.RemainingSteps)
-            .WithNotChooseDirection()
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
-                                    .WithRemainingSteps(A.RemainingSteps)
-                                    .WithNotChooseDirection())
-            .WithCurrentPlayer(A.Id)
+                                    .WithRemainingSteps(A.RemainingSteps))
+            .WithCurrentPlayer(A.Id, x => x.WithSelectedDirection(false))
             .Build();
 
         // Act
-        monopoly.PlayerChooseDirection("A", "Left");
+        monopoly.PlayerSelectDirection("A", "Left");
 
         // Assert
         確認玩家目前位置(monopoly, A.Id, expected.CurrentBlockId, expected.CurrentDirection);
@@ -227,10 +203,6 @@ public class SelectDirectionTest
         var direction = "Right";
         var expected = new { Id = "A", CurrentBlockId = "ParkingLot", CurrentDirection = "Left", RemainingSteps = 0 };
 
-        var player = new PlayerBuilder(A.Id)
-            .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-            .WithRemainingSteps(A.RemainingSteps)
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
@@ -239,14 +211,14 @@ public class SelectDirectionTest
             .Build();
 
         // Act
-        monopoly.PlayerChooseDirection(A.Id, direction);
+        monopoly.PlayerSelectDirection(A.Id, direction);
 
         // Assert
         確認玩家目前位置(monopoly, A.Id, expected.CurrentBlockId, expected.CurrentDirection);
         確認玩家剩餘步數(monopoly, A.Id, expected.RemainingSteps);
 
         monopoly.DomainEvents
-            .NextShouldBe(new PlayerAlreadyChooseDirectionEvent(A.Id))
+            .NextShouldBe(new PlayerHadSelectedDirectionEvent(A.Id))
             .NoMore();
     }
 
@@ -268,21 +240,15 @@ public class SelectDirectionTest
         var direction = "Up";
         var expected = new { Id = "A", CurrentBlockId = "ParkingLot", CurrentDirection = "Down", RemainingSteps = 0 };
 
-        var player = new PlayerBuilder(A.Id)
-            .WithPosition(A.CurrentBlockId, A.CurrentDirection)
-            .WithRemainingSteps(A.RemainingSteps)
-            .WithNotChooseDirection()
-            .Build();
         var monopoly = new MonopolyBuilder()
             .WithMap(Map)
             .WithPlayer(A.Id, p => p.WithPosition(A.CurrentBlockId, A.CurrentDirection)
-                                    .WithRemainingSteps(A.RemainingSteps)
-                                    .WithNotChooseDirection())
-            .WithCurrentPlayer(A.Id)
+                                    .WithRemainingSteps(A.RemainingSteps))
+            .WithCurrentPlayer(A.Id, x => x.WithSelectedDirection(false))
             .Build();
 
         // Act
-        monopoly.PlayerChooseDirection(A.Id, direction);
+        monopoly.PlayerSelectDirection(A.Id, direction);
 
         // Assert
         確認玩家目前位置(monopoly, A.Id, expected.CurrentBlockId, expected.CurrentDirection);

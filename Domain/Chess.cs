@@ -10,19 +10,16 @@ public class Chess
     private string currentBlockId;
     private Direction currentDirection;
     private int remainingSteps;
-    private bool isChooseDirection = true;
 
     public Chess(Player player,
                  string currentBlockId,
                  Direction currentDirection,
-                 int remainingSteps,
-                 bool isChooseDirection)
+                 int remainingSteps)
     {
         this.player = player;
         this.currentBlockId = currentBlockId;
         this.currentDirection = currentDirection;
         this.remainingSteps = remainingSteps;
-        this.isChooseDirection = isChooseDirection;
     }
 
     public Direction CurrentDirection => currentDirection;
@@ -54,7 +51,6 @@ public class Chess
             {
                 // 可選方向多於一個
                 // 代表棋子會停在這個區塊
-                isChooseDirection = false;
                 yield return new PlayerNeedToChooseDirectionEvent(
                     player.Id,
                     directions.Select(d => d.ToString()).ToArray());
@@ -77,17 +73,6 @@ public class Chess
     internal IEnumerable<DomainEvent> ChangeDirection(Map map, Direction direction)
     {
         List<DomainEvent> events = new() { };
-        if (isChooseDirection)
-        {
-            events.Add(new PlayerAlreadyChooseDirectionEvent(player.Id));
-            return events;
-        }
-        if (!DirectionOptions(map).Contains(direction))
-        {
-            events.Add(new PlayerChooseInvalidDirectionEvent(player.Id, direction.ToString()));
-            return events;
-        }
-        isChooseDirection = false;
         currentDirection = direction;
         events.Add(new PlayerChooseDirectionEvent(player.Id, direction.ToString()));
         events.AddRange(Move(map));

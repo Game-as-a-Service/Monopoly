@@ -227,4 +227,9 @@ public class Player
 
         return events;
     }
+
+    internal bool CanNotSelectDirection(Map.Direction d)
+    {
+        return d == chess.CurrentDirection.Opposite();
+    }
 }

@@ -58,7 +58,7 @@ public class SelectDirectionTest
         // A 下一回合無法行動，暫停2回合
         hub.Verify<string, string>(nameof(IMonopolyResponses.PlayerChooseDirectionEvent),
             (playerId, direction) => playerId == A.Id && direction == "Left");
-        hub.Verify<string, int>(nameof(IMonopolyResponses.PlayerCannotMoveEvent),
+        hub.Verify<string, int>(nameof(IMonopolyResponses.SuspendRoundEvent),
                        (playerId, suspendRounds) => playerId == A.Id && suspendRounds == 2);
         hub.VerifyNoElseEvent();
 
@@ -82,18 +82,21 @@ public class SelectDirectionTest
     public async Task 玩家選擇方向後在停車場停住()
     {
         // Arrange
-        var A = new { Id = "A", Money = 1000m };
+        var A = new { Id = "A" };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new PlayerBuilder(A.Id)
-            .WithMoney(A.Money)
             .WithPosition("ParkingLot", Direction.Down)
             .Build()
         )
         .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
+        .WithCurrentPlayer(
+            new CurrentPlayerStateBuilder(A.Id)
+                .WithRemainingSteps(0)
+                .HadNotSelectedDirection().Build()
+            );
 
         monopolyBuilder.Save(server);
 
@@ -108,8 +111,6 @@ public class SelectDirectionTest
 
         hub.Verify<string, string>(nameof(IMonopolyResponses.PlayerChooseDirectionEvent),
             (playerId, direction) => playerId == A.Id && direction == Direction.Left.ToString());
-        hub.Verify<string, int>(nameof(IMonopolyResponses.PlayerCannotMoveEvent),
-                       (playerId, suspendRounds) => playerId == A.Id && suspendRounds == 1);
 
         hub.VerifyNoElseEvent();
 
