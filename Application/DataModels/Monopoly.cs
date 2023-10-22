@@ -1,6 +1,6 @@
 ﻿namespace Application.DataModels;
 
-public record Monopoly(string Id, Player[] Players, Map Map, string HostId, CurrentPlayerState CurrentPlayerState, LandHouse[] LandHouses);
+public record Monopoly(string Id, Player[] Players, Map Map, string HostId, CurrentPlayerState CurrentPlayerState, LandHouse[] LandHouses, GameStage GameStage);
 
 public record Player(string Id, decimal Money, Chess Chess, LandContract[] LandContracts, bool IsBankrupt, int BankruptRounds);
 public record CurrentPlayerState(string PlayerId, bool IsPayToll, bool IsBoughtLand, bool IsUpgradeLand, Auction? Auction, int RemainingSteps, bool HadSelectedDirection);
@@ -31,3 +31,9 @@ public record Jail(string Id) : Block(Id);
 public record StartPoint(string Id) : Block(Id);
 
 public record Station(string Id) : Land(Id);
+
+public enum GameStage
+{
+    Preparing,
+    Gaming,
+}

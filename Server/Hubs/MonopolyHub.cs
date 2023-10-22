@@ -67,6 +67,11 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new SettlementRequest(gameId, userId));
     }
 
+    public async Task PlayerSelectRole(string gameId, string userId, string roleId, SelectRoleUsecase usecase)
+    {
+        await usecase.ExecuteAsync(new SelectRoleRequest(gameId, userId, roleId));
+    }
+
     public MonopolyHub(IRepository repository)
     {
         _repository = repository;

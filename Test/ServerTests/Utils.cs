@@ -39,10 +39,12 @@ public class Utils
         public CurrentPlayerState CurrentPlayerState { get; private set; }
         public List<LandHouse> LandHouses { get; private set; } = new();
         public Map Map { get; private set; }
+        public GameStage GameStage { get; private set; }
 
         public MonopolyBuilder(string id)
         {
             GameId = id;
+            GameStage = GameStage.Gaming;
         }
 
         public MonopolyBuilder WithPlayer(Player player)
@@ -81,6 +83,7 @@ public class Utils
                                 Players: Players.ToArray(),
                                 Map: Map,
                                 HostId: HostId,
+                                GameStage: GameStage,
                                 CurrentPlayerState: CurrentPlayerState,
                                 LandHouses: LandHouses.ToArray());
         }
@@ -89,6 +92,12 @@ public class Utils
         {
             var monopoly = Build();
             server.GetRequiredService<IRepository>().Save(monopoly);
+        }
+
+        internal MonopolyBuilder WithGameStage(GameStage gameStage)
+        {
+            GameStage = gameStage;
+            return this;
         }
     }
 

@@ -49,6 +49,16 @@ internal static class RepositoryExtensions
                 return row.Select(block => block?.ToApplicationBlock()).ToArray();
             }).ToArray()
         );
+        var gamestage = domainMonopoly.GameStage switch
+        {
+            Domain.GameStage.Preparing => GameStage.Preparing,
+            Domain.GameStage.Gaming => GameStage.Gaming,
+            _ => throw new NotImplementedException(),
+        };
+        if (gamestage == GameStage.Preparing)
+        {
+            return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.HostId, null!, null!, gamestage);
+        }
         var currentPlayer = domainMonopoly.Players.First(player => player.Id == domainMonopoly.CurrentPlayerState.PlayerId);
         var auction = domainMonopoly.CurrentPlayerState.Auction;
         var currentPlayerState = new CurrentPlayerState(
@@ -63,8 +73,9 @@ internal static class RepositoryExtensions
         var LandHouses = domainMonopoly.Map.Blocks.SelectMany(block => block).OfType<Domain.Land>()
                                                   .Where(land => land.House > 0)
                                                   .Select(land => new LandHouse(land.Id, land.House)).ToArray();
+        
 
-        return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.HostId, currentPlayerState, LandHouses);
+        return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.HostId, currentPlayerState, LandHouses, gamestage);
     }
     private static Block ToApplicationBlock(this Domain.Block domainBlock)
     {
@@ -104,6 +115,16 @@ internal static class RepositoryExtensions
                      .WithLandContracts(p.LandContracts)
                      .WithBankrupt(p.IsBankrupt, p.BankruptRounds)
             ));
+        builder.WithGameStage(monopoly.GameStage switch
+        {
+            GameStage.Preparing => Domain.GameStage.Preparing,
+            GameStage.Gaming => Domain.GameStage.Gaming,
+            _ => throw new NotImplementedException(),
+        });
+        if (monopoly.GameStage == GameStage.Preparing)
+        {
+            return builder.Build();
+        }
         var cps = monopoly.CurrentPlayerState;
         if (cps.Auction is null)
         {

@@ -60,6 +60,8 @@ public class Player
 
     public bool IsBankrupt => State == PlayerState.Bankrupt;
 
+    public string RoleId { get; set; }
+
     public void AddLandContract(LandContract landContract)
     {
         _landContractList.Add(landContract);

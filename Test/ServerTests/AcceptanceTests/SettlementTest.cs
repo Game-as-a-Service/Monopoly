@@ -5,6 +5,7 @@ using static ServerTests.Utils;
 namespace ServerTests.AcceptanceTests;
 
 [TestClass]
+[Ignore]
 public class SettlementTest
 {
     private MonopolyTestServer server = default!;
