@@ -110,6 +110,7 @@ public class Utils
         public List<LandContract> LandContracts { get; set; }
         public bool Bankrupt { get; set; }
         public int BankruptRounds { get; set; }
+        public string RoleId { get; private set; }
 
         public PlayerBuilder(string id)
         {
@@ -159,6 +160,12 @@ public class Utils
                                     Bankrupt,
                                     BankruptRounds);
             return player;
+        }
+
+        internal PlayerBuilder WithRole(string roleId) // TODO: 這目前沒有作用，因為還沒有需要讀角色
+        {
+            RoleId = roleId;
+            return this;
         }
     }
 
