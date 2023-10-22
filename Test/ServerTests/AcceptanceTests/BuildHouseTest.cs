@@ -244,7 +244,7 @@ public class BuildHouseTest
                 When:   A 蓋房子
                 Then:   A 不能蓋房子
                 """)]
-    public async Task 玩家擲骰後移動棋子到自己已抵押土地()
+    public async Task 已抵押的土地不能蓋房子()
     {
         // Arrange
         var A = new { Id = "A", Money = 1000m };
@@ -273,11 +273,6 @@ public class BuildHouseTest
 
         // Assert
         // A 蓋房子失敗
-        hub.Verify<string, int>(
-                       nameof(IMonopolyResponses.PlayerRolledDiceEvent),
-                                  (playerId, diceCount) => playerId == "A" && diceCount == 2);
-        VerifyChessMovedEvent(hub, "A", "Station1", "Right", 1);
-        VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
         hub.Verify<string, string>(
                        nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
                                   (playerId, blockId)
