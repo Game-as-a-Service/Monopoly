@@ -1,4 +1,9 @@
-﻿namespace Server;
+﻿using Application.Common;
+using Domain.Common;
+using Microsoft.AspNetCore.SignalR;
+using Server.Hubs;
+
+namespace Server;
 
 public class MonopolyEventBus : IEventBus<DomainEvent>
 {
