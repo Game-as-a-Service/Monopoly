@@ -1,14 +1,9 @@
-using Domain.Builders;
-using Domain.Common;
-using Domain.Events;
-using Domain.Interfaces;
-using static Domain.Map;
-
 namespace Domain;
 
 public class Monopoly : AbstractAggregateRoot
 {
     public string Id { get; set; }
+    public GameStage GameStage { get; }
     public int[]? CurrentDice { get; set; } = null;
     public CurrentPlayerState CurrentPlayerState => _currentPlayerState;
     public IDice[] Dices { get; init; }
@@ -27,9 +22,10 @@ public class Monopoly : AbstractAggregateRoot
     public int Rounds { get; private set; }
 
 
-    internal Monopoly(string gameId, Player[] players, Map map, string hostId, CurrentPlayerState currentPlayerState, IDice[]? dices = null, int rounds = 0)
+    internal Monopoly(string gameId, Player[] players, GameStage gameStage, Map map, string hostId, CurrentPlayerState currentPlayerState, IDice[]? dices = null, int rounds = 0)
     {
         Id = gameId;
+        GameStage = gameStage;
         _players = players.ToList();
         _map = map;
         HostId = hostId;
@@ -244,6 +240,13 @@ public class Monopoly : AbstractAggregateRoot
     {
         Player player = GetPlayer(playerId);
         AddDomainEvent(player.BuyLand(_map, BlockId));
+    }
+
+    public void SelectRole(string playerId, string roleId)
+    {
+        Player player = GetPlayer(playerId);
+        player.RoleId = roleId;
+        AddDomainEvent(new PlayerSelectRoleEvent(playerId, roleId));
     }
 
     /// <summary>

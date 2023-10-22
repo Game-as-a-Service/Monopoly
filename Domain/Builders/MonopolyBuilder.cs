@@ -19,10 +19,12 @@ public class MonopolyBuilder
     public Map Map { get; private set; }
     public int Rounds { get; private set; }
     public List<(string LandId, int House)> LandHouses { get; private set; } = new();
+    internal GameStage GameStage { get; private set; }
 
     public MonopolyBuilder()
     {
         PlayerBuilders = new();
+        GameStage = GameStage.Gaming;
     }
 
     public MonopolyBuilder WithId(string id)
@@ -81,25 +83,38 @@ public class MonopolyBuilder
             builder.WithMap(Map);
             players.Add(builder.Build());
         });
-        Auction? auction = null;
-        if (CurrentPlayerStateBuilder.HasAuction)
+        if ((GameStage == GameStage.Gaming))
         {
-            var (LandId, HighestBidder, HighestPrice) = CurrentPlayerStateBuilder.Auction;
-            var currentPlayer = players.First(p => p.Id == CurrentPlayerStateBuilder.PlayerId);
-            var landContract = currentPlayer.FindLandContract(LandId) ?? throw new InvalidOperationException("LandContract not found");
-            var highestBidder = players.FirstOrDefault(p => p.Id == HighestBidder);
-            auction = new Auction(landContract, highestBidder, HighestPrice);
-        }
-        foreach (var landHouse in LandHouses)
-        {
-            var land = Map.FindBlockById<Land>(landHouse.LandId);
-            for (int i = 0; i < landHouse.House; i++) land.Upgrade();
-        }
-        return new Monopoly(GameId,
+            Auction? auction = null;
+            if (CurrentPlayerStateBuilder.HasAuction)
+            {
+                var (LandId, HighestBidder, HighestPrice) = CurrentPlayerStateBuilder.Auction;
+                var currentPlayer = players.First(p => p.Id == CurrentPlayerStateBuilder.PlayerId);
+                var landContract = currentPlayer.FindLandContract(LandId) ?? throw new InvalidOperationException("LandContract not found");
+                var highestBidder = players.FirstOrDefault(p => p.Id == HighestBidder);
+                auction = new Auction(landContract, highestBidder, HighestPrice);
+            }
+            foreach (var landHouse in LandHouses)
+            {
+                var land = Map.FindBlockById<Land>(landHouse.LandId);
+                for (int i = 0; i < landHouse.House; i++) land.Upgrade();
+            }
+            return new Monopoly(GameId,
                             players.ToArray(),
+                            GameStage,
                             Map,
                             HostId,
                             CurrentPlayerStateBuilder.Build(auction),
+                            Dices,
+                            Rounds
+                            );
+        }
+        return new Monopoly(GameId,
+                            players.ToArray(),
+                            GameStage,
+                            Map,
+                            HostId,
+                            null!,
                             Dices,
                             Rounds
                             );
@@ -117,5 +132,9 @@ public class MonopolyBuilder
         return this;
     }
 
-
+    public MonopolyBuilder WithGameStage(GameStage gameStage)
+    {
+        GameStage = gameStage;
+        return this;
+    }
 }

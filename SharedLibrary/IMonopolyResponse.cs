@@ -80,5 +80,7 @@ public interface IMonopolyResponses
     Task BankruptEvent(string PlayerId);
 
     Task SettlementEvent(int Rounds, params string[] PlayerIds);
+
+    Task PlayerSelectRoleEvent(string PlayerId, string RoleId);
     Task PlaySelectRoomLocationEvent(string PlayerId, int LocationId);
 }

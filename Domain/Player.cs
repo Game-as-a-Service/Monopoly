@@ -1,7 +1,3 @@
-using Domain.Common;
-using Domain.Events;
-using Domain.Interfaces;
-
 namespace Domain;
 
 public class Player
@@ -59,6 +55,8 @@ public class Player
     }
 
     public bool IsBankrupt => State == PlayerState.Bankrupt;
+
+    public string RoleId { get; set; }
 
     public int LocationId { get; set; }
 

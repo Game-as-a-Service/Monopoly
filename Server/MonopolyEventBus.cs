@@ -174,6 +174,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.SettlementEvent(se.Rounds, se.Players.Select(x => x.Id).ToArray());
             }
+            else if (e is PlayerSelectRoleEvent psre)
+            {
+                await _hubContext.Clients.All.PlayerSelectRoleEvent(psre.PlayerId, psre.RoleId);
+            }
         }
     }
 }
