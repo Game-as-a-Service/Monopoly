@@ -1,3 +1,9 @@
+using Domain.Builders;
+using Domain.Common;
+using Domain.Events;
+using Domain.Interfaces;
+using static Domain.Map;
+
 namespace Domain;
 
 public class Monopoly : AbstractAggregateRoot

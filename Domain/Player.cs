@@ -1,3 +1,7 @@
+using Domain.Common;
+using Domain.Events;
+using Domain.Interfaces;
+
 namespace Domain;
 
 public class Player

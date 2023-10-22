@@ -178,6 +178,10 @@ public class MonopolyEventBus : IEventBus<DomainEvent>
             {
                 await _hubContext.Clients.All.PlayerSelectRoleEvent(psre.PlayerId, psre.RoleId);
             }
+            else if (e is PlaySelectRoomLocationEvent psrle)
+            {
+                await _hubContext.Clients.All.PlaySelectRoomLocationEvent(psrle.PlayerId, psrle.LocationId);
+            }
         }
     }
 }

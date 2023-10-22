@@ -1,4 +1,5 @@
-﻿using Server.Hubs;
+﻿using Application.DataModels;
+using Server.Hubs;
 using SharedLibrary;
 using static ServerTests.Utils;
 
@@ -28,6 +29,7 @@ public class SelectLocation
         var A = new { Id = "A", locationId = 1 };
 
         var monopolyBuilder = new MonopolyBuilder("1")
+            .WithGameStage(GameStage.Preparing)
             .WithPlayer(
                 new PlayerBuilder("A")
                 .Build()
@@ -42,8 +44,8 @@ public class SelectLocation
         //Assert
         hub.Verify<string, int>(
             nameof(IMonopolyResponses.PlaySelectRoomLocationEvent),
-            (playerId, locationId)
-                                  => playerId == A.Id && locationId == A.locationId);
+            (playerId, locationId) => (playerId, locationId) == (A.Id, A.locationId)
+            );
         hub.VerifyNoElseEvent();
     }
 }
