@@ -2,5 +2,6 @@
 
 namespace Domain.Events;
 
-public record PlaySelectRoomLocationEvent(string PlayerId, int LocationId)
+public record PlaySelectLocationEvent(string PlayerId, int LocationId) : DomainEvent;
+public record PlayCannotSelectLocationEvent(string PlayerId, int LocationId)
     : DomainEvent;

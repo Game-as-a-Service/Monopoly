@@ -110,7 +110,8 @@ public class Utils
         public List<LandContract> LandContracts { get; set; }
         public bool Bankrupt { get; set; }
         public int BankruptRounds { get; set; }
-        public string RoleId { get; private set; }
+        public string RoleId { get; set; }
+        public int LocationId { get; set; }
 
         public PlayerBuilder(string id)
         {
@@ -158,13 +159,21 @@ public class Utils
                                     Chess: chess,
                                     LandContracts: LandContracts.ToArray(),
                                     Bankrupt,
-                                    BankruptRounds);
+                                    BankruptRounds,
+                                    locationId: LocationId
+                                    );
             return player;
         }
 
         internal PlayerBuilder WithRole(string roleId) // TODO: 這目前沒有作用，因為還沒有需要讀角色
         {
             RoleId = roleId;
+            return this;
+        }
+
+        internal PlayerBuilder WithLocation(int locationId)
+        {
+            LocationId = locationId;
             return this;
         }
     }

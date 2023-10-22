@@ -32,9 +32,9 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new PayTollRequest(gameId, userId));
     }
 
-    public async Task PlaySelectRoomLocation(string gameId, string userId, int LocationID, SelectRoomLocationUsecase usecase)
+    public async Task PlaySelectLocation(string gameId, string userId, int LocationID, SelectLocationUsecase usecase)
     {
-        await usecase.ExecuteAsync(new SelectRoomLocationRequest(gameId, userId, LocationID));
+        await usecase.ExecuteAsync(new SelectLocationRequest(gameId, userId, LocationID));
     }
 
     public async Task PlayerBuildHouse(string gameId, string userId, BuildHouseUsecase usecase)

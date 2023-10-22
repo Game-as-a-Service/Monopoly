@@ -3,23 +3,23 @@ using Domain.Common;
 
 namespace Application.Usecases;
 
-public record SelectRoomLocationRequest(string GameId, string PlayerId, int LocationID)
+public record SelectLocationRequest(string GameId, string PlayerId, int LocationID)
     : Request(GameId, PlayerId);
 
-public class SelectRoomLocationUsecase : Usecase<SelectRoomLocationRequest>
+public class SelectLocationUsecase : Usecase<SelectLocationRequest>
 {
-    public SelectRoomLocationUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
+    public SelectLocationUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
         : base(repository, eventBus)
     {
     }
 
-    public override async Task ExecuteAsync(SelectRoomLocationRequest request)
+    public override async Task ExecuteAsync(SelectLocationRequest request)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
 
         //改
-        game.SelectRoomLocation(request.PlayerId, request.LocationID);
+        game.SelectLocation(request.PlayerId, request.LocationID);
 
         //存
         Repository.Save(game);

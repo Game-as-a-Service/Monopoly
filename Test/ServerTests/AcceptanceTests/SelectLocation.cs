@@ -19,19 +19,20 @@ public class SelectLocation
 
     [TestMethod]
     [Description("""
-        Given:  玩家A:未選擇位置
-        When:   玩家A選擇位置紅(位置ID=1)
+        Given:  玩家A:位置未選擇
+        When:   玩家A選擇位置1
         Then:   玩家A的位置為1
         """)]
-    public async Task 玩家選擇房間位置()
+    public async Task 玩家選擇沒人的位置()
     {
         //Arrange
-        var A = new { Id = "A", locationId = 1 };
+        var A = new { Id = "A", locationId = 0, selectLocationId = 1 };
 
         var monopolyBuilder = new MonopolyBuilder("1")
             .WithGameStage(GameStage.Preparing)
             .WithPlayer(
                 new PlayerBuilder("A")
+                .WithLocation(A.locationId)
                 .Build()
             );
         monopolyBuilder.Save(server);
@@ -39,12 +40,85 @@ public class SelectLocation
         var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         //Act
-        await hub.SendAsync(nameof(MonopolyHub.PlaySelectRoomLocation), gameId, A.Id, A.locationId);
+        await hub.SendAsync(nameof(MonopolyHub.PlaySelectLocation), gameId, A.Id, A.selectLocationId);
 
         //Assert
         hub.Verify<string, int>(
-            nameof(IMonopolyResponses.PlaySelectRoomLocationEvent),
+            nameof(IMonopolyResponses.PlaySelectLocationEvent),
+            (playerId, locationId) => (playerId, locationId) == (A.Id, A.selectLocationId)
+            );
+        hub.VerifyNoElseEvent();
+    }
+
+    [TestMethod]
+    [Description("""
+        Given:  玩家A:位置未選擇
+                玩家B:位置1
+        When:   玩家A選擇位置1
+        Then:   玩家A的位置為未選擇
+        """)]
+    public async Task 玩家選擇有人的位置()
+    {
+        //Arrange
+        var A = new { Id = "A", locationId = 0, selectLocationId = 1 };
+        var B = new { Id = "B", locationId = 1 };
+
+        var monopolyBuilder = new MonopolyBuilder("1")
+            .WithGameStage(GameStage.Preparing)
+            .WithPlayer(
+                new PlayerBuilder(A.Id)
+                .WithLocation(A.locationId)
+                .Build()
+            )
+            .WithPlayer(
+                new PlayerBuilder(B.Id)
+                .WithLocation(B.locationId)
+                .Build()
+            );
+        monopolyBuilder.Save(server);
+
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+
+        //Act
+        await hub.SendAsync(nameof(MonopolyHub.PlaySelectLocation), gameId, A.Id, A.selectLocationId);
+
+        //Assert
+        hub.Verify<string, int>(
+            nameof(IMonopolyResponses.PlayCannotSelectLocationEvent),
             (playerId, locationId) => (playerId, locationId) == (A.Id, A.locationId)
+            );
+        hub.VerifyNoElseEvent();
+    }
+
+    [TestMethod]
+    [Description("""
+        Given:  玩家A:位置1
+        When:   玩家A選擇位置2
+        Then:   玩家A的位置為2
+        """)]
+    public async Task 有選位置的玩家更換到沒人的位置()
+    {
+        //Arrange
+        var A = new { Id = "A", locationId = 1, selectLocationId = 2 };
+
+        var monopolyBuilder = new MonopolyBuilder("1")
+            .WithGameStage(GameStage.Preparing)
+            .WithPlayer(
+                new PlayerBuilder("A")
+                .WithLocation(A.locationId)
+                .Build()
+            );
+        monopolyBuilder.Save(server);
+
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+
+        //Act
+        await hub.SendAsync(nameof(MonopolyHub.PlaySelectLocation), gameId, A.Id, A.selectLocationId);
+
+        //Assert
+        hub.Verify<string, int>(
+            nameof(IMonopolyResponses.PlaySelectLocationEvent),
+            (playerId, locationId) => (playerId, locationId) == (A.Id, A.selectLocationId)
             );
         hub.VerifyNoElseEvent();
     }

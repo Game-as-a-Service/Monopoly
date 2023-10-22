@@ -40,7 +40,9 @@ internal static class RepositoryExtensions
                         chess,
                         landContracts,
                         player.IsBankrupt,
-                        player.BankruptRounds);
+                        player.BankruptRounds,
+                        player.LocationId
+                        );
         }).ToArray();
 
         Map map = new(domainMonopoly.Map.Id, domainMonopoly.Map.Blocks
@@ -73,7 +75,7 @@ internal static class RepositoryExtensions
         var LandHouses = domainMonopoly.Map.Blocks.SelectMany(block => block).OfType<Domain.Land>()
                                                   .Where(land => land.House > 0)
                                                   .Select(land => new LandHouse(land.Id, land.House)).ToArray();
-        
+
 
         return new Monopoly(domainMonopoly.Id, players, map, domainMonopoly.HostId, currentPlayerState, LandHouses, gamestage);
     }
@@ -114,6 +116,7 @@ internal static class RepositoryExtensions
                      .WithPosition(p.Chess.CurrentPosition, p.Chess.Direction.ToString())
                      .WithLandContracts(p.LandContracts)
                      .WithBankrupt(p.IsBankrupt, p.BankruptRounds)
+                     .WithLocation(p.locationId)
             ));
         builder.WithGameStage(monopoly.GameStage switch
         {
