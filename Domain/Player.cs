@@ -40,7 +40,6 @@ public class Player
     public Chess Chess { get => chess; set => chess = value; }
     public bool EndRoundFlag { get; set; }
     // false: 回合尚不能結束，true: 玩家可結束回合
-    public bool EnableUpgrade { get; set; }
     public int SuspendRounds { get; private set; } = 0;
     public int BankruptRounds { get; set; }
 
@@ -104,7 +103,6 @@ public class Player
     internal void StartRound()
     {
         EndRoundFlag = true;
-        EnableUpgrade = false;
 
         if (SuspendRounds > 0)
         {
@@ -181,11 +179,44 @@ public class Player
     internal DomainEvent BuildHouse(Map map)
     {
         Block block = map.FindBlockById(chess.CurrentBlockId);
-        if (block is Land land && EnableUpgrade)
+        if (block is not Land land)
+        {
+            return new PlayerCannotBuildHouseEvent(Id, block.Id);
+        }
+        // 玩家站在該土地上
+        else if (Chess.CurrentBlockId != land.Id)
+        {
+            return new PlayerBuyBlockMissedLandEvent(Id, land.Id);
+        }
+        // 玩家擁有該土地
+        else if (land.GetOwner() != this)
+        {
+            return new PlayerCannotBuildHouseEvent(Id, land.Id);
+        }
+        // 此土地沒有被抵押
+        else if (LandContractList.Any(l => l.Land == land && l.InMortgage))
+        {
+            return new PlayerCannotBuildHouseEvent(Id, land.Id);
+        }
+        // 玩家有足夠的錢
+        else if (land.UpgradePrice > Money)
+        {
+            return new PlayerTooPoorToBuildHouseEvent(Id, land.Id, Money, land.UpgradePrice);
+        }
+        // 玩家這回合沒有買地
+        else if (Monopoly.CurrentPlayerState.IsBoughtLand)
+        {
+            return new PlayerCannotBuildHouseEvent(Id, land.Id);
+        }
+        // 玩家這回合沒有蓋房子
+        else if (Monopoly.CurrentPlayerState.IsUpgradeLand)
+        {
+            return new PlayerCannotBuildHouseEvent(Id, land.Id);
+        }
+        else
         {
             return land.BuildHouse(this);
         }
-        return new PlayerCannotBuildHouseEvent(Id, block.Id);
     }
 
     internal List<DomainEvent> BuyLand(Map map, string BlockId)

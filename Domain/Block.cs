@@ -154,28 +154,16 @@ public class Land : Block
 
     internal virtual DomainEvent BuildHouse(Player player)
     {
-        if (GetOwner() == player)
+        if (_house >= MAX_HOUSE)
         {
-            if (_house == MAX_HOUSE) return new HouseMaxEvent(player.Id, Id, _house);
-
-            if (UpgradePrice <= player.Money)
-            {
-                player.Money -= UpgradePrice;
-                _house++;
-                player.EnableUpgrade = false;
-                return new PlayerBuildHouseEvent(player.Id, Id, player.Money, _house);
-            }
-            else
-            {
-                return new PlayerTooPoorToBuildHouseEvent(player.Id, Id, player.Money, UpgradePrice);
-            }
-
+            return new HouseMaxEvent(player.Id, Id, _house);
         }
         else
         {
-            return new PlayerCannotBuildHouseEvent(player.Id, Id);
+            player.Money -= UpgradePrice;
+            _house++;
+            return new PlayerBuildHouseEvent(player.Id, Id, player.Money, _house);
         }
-
     }
 
     internal override DomainEvent OnBlockEvent(Player player)
@@ -207,11 +195,7 @@ public class Land : Block
         {
             return;
         }
-        if (player.LandContractList.Any(l => l.Land.Id == Id && !l.InMortgage))
-        {
-            player.EnableUpgrade = true;
-        }
-        else if (owner.SuspendRounds <= 0)
+        if (owner.SuspendRounds <= 0)
         {
             player.EndRoundFlag = false;
 
