@@ -12,7 +12,7 @@ public class Monopoly : AbstractAggregateRoot
     public GameStage GameStage { get; }
     public int[]? CurrentDice { get; set; } = null;
     public CurrentPlayerState CurrentPlayerState => _currentPlayerState;
-    public IDice[] Dices { get; init; }
+    public IDice[] Dices { set; get; }
     private Player CurrentPlayer => _players.First(p => p.Id == _currentPlayerState.PlayerId);
 
     private readonly Map _map;

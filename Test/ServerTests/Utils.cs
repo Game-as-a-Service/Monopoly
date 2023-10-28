@@ -1,5 +1,7 @@
 using Application.Common;
 using Application.DataModels;
+using Domain.Interfaces;
+using ServerTests.Usecases;
 using SharedLibrary;
 
 namespace ServerTests;
@@ -92,6 +94,7 @@ public class Utils
         {
             var monopoly = Build();
             server.GetRequiredService<IRepository>().Save(monopoly);
+            server.GetRequiredService<MockDiceService>().Dices = Dices.Select(value => new MockDice(value)).ToArray<IDice>();
         }
 
         internal MonopolyBuilder WithGameStage(GameStage gameStage)

@@ -11,6 +11,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using Server.DataModels;
 using Server.Services;
+using ServerTests.Usecases;
 using SharedLibrary;
 using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
@@ -86,6 +87,10 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
                     options.Configuration = config;
                     options.Authority = null;
                 });
+
+            services.RemoveAll<RollDiceUsecase>();
+            services.AddScoped<RollDiceUsecase, MockRollDiceUsecase>();
+            services.AddSingleton<MockDiceService>();
         });
     }
 }
