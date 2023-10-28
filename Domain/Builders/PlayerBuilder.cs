@@ -11,6 +11,7 @@ public class PlayerBuilder
     public bool IsBankrupt { get; set; }
     public int BankruptRounds { get; private set; }
     public int RemainingSteps { get; set; }
+    public int LocationId { get; set; }
 
     public PlayerBuilder(string id)
     {
@@ -61,9 +62,15 @@ public class PlayerBuilder
         return this;
     }
 
+    public PlayerBuilder WithLocation(int locationId)
+    {
+        LocationId = locationId;
+        return this;
+    }
+
     public Player Build()
     {
-        Player player = new(Id, Money, IsBankrupt, BankruptRounds);
+        Player player = new(Id, Money, IsBankrupt, BankruptRounds, LocationId);
         Chess chess = new(player: player,
                           currentBlockId: BlockId,
                           currentDirection: CurrentDirection,

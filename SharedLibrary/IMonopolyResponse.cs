@@ -82,4 +82,8 @@ public interface IMonopolyResponses
     Task SettlementEvent(int Rounds, params string[] PlayerIds);
 
     Task PlayerSelectRoleEvent(string PlayerId, string RoleId);
+
+    Task PlaySelectLocationEvent(string PlayerId, int LocationId);
+
+    Task PlayCannotSelectLocationEvent(string PlayerId, int LocationId);
 }

@@ -254,4 +254,24 @@ public class Monopoly : AbstractAggregateRoot
         player.RoleId = roleId;
         AddDomainEvent(new PlayerSelectRoleEvent(playerId, roleId));
     }
+
+    /// <summary>
+    /// 選擇房間位置
+    /// </summary>
+    /// <param name="playerId">玩家ID</param>
+    /// <param name="locationID">位置ID</param>
+    /// <exception cref="NotImplementedException"></exception>
+    public void SelectLocation(string playerId, int locationID)
+    {
+        Player player = GetPlayer(playerId);
+        if (_players.Exists(p => p.LocationId == locationID))
+        {
+            AddDomainEvent(new PlayCannotSelectLocationEvent(playerId, player.LocationId));
+        }
+        else
+        {
+            player.LocationId = locationID;
+            AddDomainEvent(new PlaySelectLocationEvent(playerId, player.LocationId));
+        }
+    }
 }

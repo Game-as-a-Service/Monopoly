@@ -10,13 +10,14 @@ public class Player
     private Chess chess;
     private readonly List<LandContract> _landContractList = new();
 
-    public Player(string id, decimal money = 15000, bool isBankrupt = false, int bankruptRounds = 0)
+    public Player(string id, decimal money = 15000, bool isBankrupt = false, int bankruptRounds = 0, int locationId = 0)
     {
         Id = id;
         State = PlayerState.Normal;
         Money = money;
         State = isBankrupt ? PlayerState.Bankrupt : PlayerState.Normal;
         BankruptRounds = bankruptRounds;
+        LocationId = locationId;
     }
 
     public PlayerState State { get; private set; }
@@ -61,6 +62,8 @@ public class Player
     public bool IsBankrupt => State == PlayerState.Bankrupt;
 
     public string RoleId { get; set; }
+
+    public int LocationId { get; set; }
 
     public void AddLandContract(LandContract landContract)
     {

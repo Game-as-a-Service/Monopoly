@@ -1,10 +1,7 @@
 ﻿using Application.Common;
 using Domain.Common;
-using Domain.Events;
 using Microsoft.AspNetCore.SignalR;
 using Server.Hubs;
-using SharedLibrary;
-using System.Reflection;
 
 namespace Server;
 
