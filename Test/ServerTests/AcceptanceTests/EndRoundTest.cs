@@ -47,6 +47,7 @@ public class EndRoundTest
             .WithLandContract(A2.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .Build()
         );
@@ -99,6 +100,7 @@ public class EndRoundTest
             .WithLandContract(A2.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .WithPayToll()
             .Build()

@@ -31,7 +31,8 @@ public class SelectRoleTest
             .WithPlayer(
                 new PlayerBuilder("A")
                 .Build()
-            );
+            )
+            .WithMockDice(new[] { 1 });
 
         monopolyBuilder.Save(server);
 
@@ -62,7 +63,8 @@ public class SelectRoleTest
                 new PlayerBuilder("A")
                 .WithRole("1")
                 .Build()
-            );
+            )
+            .WithMockDice(new[] { 1 });
 
         monopolyBuilder.Save(server);
 

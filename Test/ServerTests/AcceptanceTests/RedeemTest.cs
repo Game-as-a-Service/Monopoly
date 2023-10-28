@@ -41,6 +41,7 @@ public class RedeemTest
             .WithLandContract(A1.Id, A1.IsMortgage)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
         .WithLandHouse(A1.Id, A1.House);
 
@@ -86,6 +87,7 @@ public class RedeemTest
 
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
         .WithLandHouse(A1.Id, A1.House);
 

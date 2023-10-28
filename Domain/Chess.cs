@@ -1,4 +1,4 @@
-﻿using Domain.Common;
+using Domain.Common;
 using Domain.Events;
 using static Domain.Map;
 
@@ -40,7 +40,6 @@ public class Chess
             var nextBlock = map.FindBlockById(currentBlockId).GetDirectionBlock(CurrentDirection) ?? throw new Exception("找不到下一個區塊");
             currentBlockId = nextBlock.Id;
             remainingSteps--;
-            yield return new ChessMovedEvent(player.Id, currentBlockId, currentDirection.ToString(), remainingSteps);
             if (currentBlockId == "Start" && remainingSteps > 0) // 如果移動到起點，且還有剩餘步數，則獲得獎勵金
             {
                 player.Money += 3000;
@@ -59,6 +58,7 @@ public class Chess
             // 只剩一個方向
             // 代表棋子會繼續往這個方向移動
             currentDirection = directions.First();
+            yield return new ChessMovedEvent(player.Id, currentBlockId, currentDirection.ToString(), remainingSteps);
         }
         map.FindBlockById(currentBlockId).DoBlockAction(player);
         yield return map.FindBlockById(currentBlockId).OnBlockEvent(player);

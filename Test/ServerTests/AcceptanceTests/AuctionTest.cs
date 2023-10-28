@@ -47,6 +47,7 @@ public class AuctionTest
                     .WithMoney(B.Money)
                     .Build()
             )
+            .WithMockDice(new[] { 1 })
             .WithCurrentPlayer(
                 new CurrentPlayerStateBuilder(A.Id)
                     .WithAuction(Auction.LandId, null!, 1500)
@@ -99,6 +100,7 @@ public class AuctionTest
                     .WithMoney(B.Money)
                     .Build()
             )
+            .WithMockDice(new[] { 1 })
             .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
                 .WithAuction(A1.Id, null!, 1000)
                 .Build()
@@ -150,6 +152,7 @@ public class AuctionTest
             .WithMoney(B.Money)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .WithAuction(A1.Id, null!, 1000)
             .Build()
@@ -193,10 +196,14 @@ public class AuctionTest
             new PlayerBuilder(A.Id)
             .WithMoney(A.Money)
             .WithLandContract(A1.Id)
-            .Build())
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
+            .Build()
+        )
+        .WithMockDice(new[] { 1 })
+        .WithCurrentPlayer(
+            new CurrentPlayerStateBuilder(A.Id)
             .WithAuction(A1.Id, null!, 1000)
-            .Build())
+            .Build()
+        )
         .WithLandHouse(A1.Id, A1.HouseCount);
 
         monopolyBuilder.Save(server);
@@ -249,6 +256,7 @@ public class AuctionTest
             .WithMoney(B.Money)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .WithAuction(LandId: A1.Id, HighestBidderId: B.Id, HighestPrice: 600)
             .Build()
@@ -300,6 +308,7 @@ public class AuctionTest
             .WithMoney(B.Money)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .WithAuction(LandId: A1.Id, null, 1500)
             .Build()

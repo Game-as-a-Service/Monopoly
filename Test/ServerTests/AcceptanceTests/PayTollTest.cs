@@ -47,6 +47,7 @@ public class PayTollTest
             .WithLandContract(A1.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -99,6 +100,7 @@ public class PayTollTest
             .WithLandContract(A1.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -151,6 +153,7 @@ public class PayTollTest
             .WithLandContract(A1.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -202,6 +205,7 @@ public class PayTollTest
             .WithLandContract(A1.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -252,6 +256,7 @@ public class PayTollTest
             .WithLandContract(Station1.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -267,6 +272,61 @@ public class PayTollTest
                        nameof(IMonopolyResponses.PlayerPayTollEvent),
                                   (playerId, playerMoney, ownerId, ownerMoney)
                                   => playerId == "A" && playerMoney == 2000 && ownerId == "B" && ownerMoney == 2000);
+        hub.VerifyNoElseEvent();
+    }
+
+    [TestMethod]
+    [Description("""
+                Given:  A 在 A1，持有 200元
+                        B 持有 A2，1000元
+                        A2 有 2棟 房子
+                        A 擲骰得到2點
+                When:   A 需付過路費 1000
+                Then:   宣告 A 破產
+                        A 持有 0元
+                        B 持有 1000 + 200 = 1200元
+                """)]
+    public async Task 玩家的資產為0時破產()
+    {
+        // Arrange
+        var A = new { Id = "A", Money = 200 };
+        var B = new { Id = "B", Money = 1000 };
+        var A2 = new { Id = "A2", HouseCount = 2 };
+
+        const string gameId = "1";
+        var monopolyBuilder = new MonopolyBuilder("1")
+        .WithPlayer(
+            new PlayerBuilder(A.Id)
+            .WithMoney(A.Money)
+            .WithPosition("A2", Direction.Right)
+            .Build()
+        )
+        .WithPlayer(
+            new PlayerBuilder(B.Id)
+            .WithMoney(B.Money)
+            .WithLandContract(A2.Id)
+            .Build()
+        )
+        .WithMockDice(new[] { 1 })
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
+        .WithLandHouse(A2.Id, A2.HouseCount);
+
+        monopolyBuilder.Save(server);
+
+        var hub = await server.CreateHubConnectionAsync(gameId, "A");
+        // Act
+        await hub.SendAsync(nameof(MonopolyHub.PlayerPayToll), "1", "A");
+        // Assert
+        // A 須支付過路費1000元
+        // A 破產
+        hub.Verify<string, decimal, string, decimal>(
+                       nameof(IMonopolyResponses.PlayerPayTollEvent),
+                                  (playerId, playerMoney, ownerId, ownerMoney)
+                                  => playerId == "A" && playerMoney == 0 && ownerId == "B" && ownerMoney == 1200);
+        hub.Verify<string>(
+                       nameof(IMonopolyResponses.BankruptEvent),
+                                  (playerId)
+                                  => playerId == "A");
         hub.VerifyNoElseEvent();
     }
 }

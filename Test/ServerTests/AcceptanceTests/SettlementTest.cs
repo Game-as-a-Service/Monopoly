@@ -51,6 +51,7 @@ public class SettlementTest
             .WithBankrupt(6)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -112,6 +113,7 @@ public class SettlementTest
             .WithMoney(C.Money)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -174,6 +176,7 @@ public class SettlementTest
             .WithMoney(C.Money)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);

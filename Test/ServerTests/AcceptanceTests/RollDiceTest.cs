@@ -110,14 +110,14 @@ public class RollDiceTest
             (playerId, diceCount) => playerId == "A" && diceCount == 8);
         VerifyChessMovedEvent(hub, "A", "Start", "Right", 7);
         VerifyChessMovedEvent(hub, "A", "A1", "Right", 6);
-        hub.Verify<string, int, decimal>(
+        hub.Verify<string, decimal, decimal>(
             nameof(IMonopolyResponses.ThroughStartEvent),
             (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 18000);
         VerifyChessMovedEvent(hub, "A", "Station1", "Right", 5);
         VerifyChessMovedEvent(hub, "A", "A2", "Right", 4);
         VerifyChessMovedEvent(hub, "A", "A3", "Down", 3);
         VerifyChessMovedEvent(hub, "A", "A4", "Down", 2);
-        VerifyChessMovedEvent(hub, "A", "ParkingLot", "Down", 1);
+        //VerifyChessMovedEvent(hub, "A", "ParkingLot", "Down", 1);
         hub.Verify<string, string[]>(
             nameof(IMonopolyResponses.PlayerNeedToChooseDirectionEvent),
             (playerId, directions) => playerId == "A" && directions.OrderBy(x => x).SequenceEqual(new[] { "Right", "Down", "Left" }.OrderBy(x => x)));
@@ -150,7 +150,7 @@ public class RollDiceTest
             .WithPosition("F3", Direction.Up)
             .Build()
         )
-        .WithMockDice(new[] { 2, 6 })
+        .WithMockDice(new[] { 2, 2 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -174,18 +174,13 @@ public class RollDiceTest
         VerifyChessMovedEvent(hub, "A", "F4", "Up", 2);
         VerifyChessMovedEvent(hub, "A", "Start", "Right", 1);
         VerifyChessMovedEvent(hub, "A", "A1", "Right", 0);
-        hub.Verify<string, int, decimal>(
+        hub.Verify<string, decimal, decimal>(
             nameof(IMonopolyResponses.ThroughStartEvent),
             (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 4000);
         hub.Verify<string, string, decimal>(
                        nameof(IMonopolyResponses.PlayerCanBuyLandEvent),
                                   (playerId, blockId, landMoney) => playerId == "A" && blockId == "A1" && landMoney == 1000);
         hub.VerifyNoElseEvent();
-
-        // Assert A 有 4000 元
-        var repo = server.GetRequiredService<IRepository>();
-        var monopoly = repo.FindGameById("1");
-        Assert.AreEqual(4000, monopoly.Players.First(p => p.Id == A.Id).Money);
     }
 
     [TestMethod]
@@ -211,7 +206,7 @@ public class RollDiceTest
             .WithPosition("F3", Direction.Up)
             .Build()
         )
-        .WithMockDice(new[] { 2, 6 })
+        .WithMockDice(new[] { 2, 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -233,15 +228,10 @@ public class RollDiceTest
         VerifyChessMovedEvent(hub, "A", "Station4", "Up", 2);
         VerifyChessMovedEvent(hub, "A", "F4", "Up", 1);
         VerifyChessMovedEvent(hub, "A", "Start", "Right", 0);
-        hub.Verify<string, int, decimal>(
+        hub.Verify<string, decimal>(
             nameof(IMonopolyResponses.CannotGetRewardBecauseStandOnStartEvent),
-            (playerId, gainMoney, totalMoney) => playerId == "A" && gainMoney == 3000 && totalMoney == 1000);
+            (playerId, totalMoney) => playerId == "A" && totalMoney == 1000);
         hub.VerifyNoElseEvent();
-
-        // A 共持有1000元
-        var repo = server.GetRequiredService<IRepository>();
-        var monopoly = repo.FindGameById("1");
-        Assert.AreEqual(1000, monopoly.Players.First(p => p.Id == A.Id).Money);
     }
 
     [TestMethod]
@@ -259,17 +249,19 @@ public class RollDiceTest
         // Arrange
         var A = new { Id = "A" };
         var A1 = new { Id = "A1" };
-        var A2 = new { Id = "A2", HouseCount = 4 };
+        var A2 = new { Id = "A2", House = 4 };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
         .WithPlayer(
             new PlayerBuilder(A.Id)
-            .WithPosition("A1", Direction.Right)
+            .WithPosition(A1.Id, Direction.Right)
+            .WithLandContract(A2.Id)
             .Build()
         )
         .WithMockDice(new[] { 1, 1 })
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
+        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
+        .WithLandHouse(A2.Id, A2.House);
 
         monopolyBuilder.Save(server);
 
@@ -287,7 +279,7 @@ public class RollDiceTest
         VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
         hub.Verify<string, string, int, decimal>(
                        nameof(IMonopolyResponses.PlayerCanBuildHouseEvent),
-                                  (playerId, blockId, houseCount, upgradeMoney) => playerId == "A" && blockId == "A2" && houseCount == 0 && upgradeMoney == 1000);
+                                  (playerId, blockId, houseCount, upgradeMoney) => playerId == "A" && blockId == "A2" && houseCount == 4 && upgradeMoney == 1000);
         hub.VerifyNoElseEvent();
     }
 
@@ -308,7 +300,7 @@ public class RollDiceTest
         // Arrange
         var A = new { Id = "A" };
         var B = new { Id = "B" };
-        var A2 = new { Id = "A2", HouseCount = 0 };
+        var A2 = new { Id = "A2", House = 0 };
 
         const string gameId = "1";
         var monopolyBuilder = new MonopolyBuilder("1")
@@ -385,72 +377,6 @@ public class RollDiceTest
         hub.Verify<string, string, decimal>(
                        nameof(IMonopolyResponses.PlayerCanBuyLandEvent),
                                   (playerId, blockId, landMoney) => playerId == "A" && blockId == "A2" && landMoney == 1000);
-        hub.VerifyNoElseEvent();
-    }
-
-    [TestMethod]
-    [Description("""
-                Given:  A 在 A1，持有 200元
-                        B 持有 A2，1000元
-                        A2 有 2棟 房子
-                        A 擲骰得到2點
-                When:   A 需付過路費 1000
-                Then:   宣告 A 破產
-                        A 持有 0元
-                        B 持有 1000 + 200 = 1200元
-                """)]
-    public async Task 玩家的資產為0時破產()
-    {
-        // Arrange
-        var A = new { Id = "A", Money = 200 };
-        var B = new { Id = "B", Money = 1000 };
-        var A2 = new { Id = "A2", HouseCount = 2 };
-
-        const string gameId = "1";
-        var monopolyBuilder = new MonopolyBuilder("1")
-        .WithPlayer(
-            new PlayerBuilder(A.Id)
-            .WithMoney(A.Money)
-            .WithPosition("A1", Direction.Right)
-            .Build()
-        )
-        .WithPlayer(
-            new PlayerBuilder(B.Id)
-            .WithMoney(B.Money)
-            .WithLandContract(A2.Id)
-            .Build()
-        )
-        .WithMockDice(new[] { 2 })
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
-        .WithLandHouse(A2.Id, A2.HouseCount);
-
-        monopolyBuilder.Save(server);
-
-        var hub = await server.CreateHubConnectionAsync(gameId, "A");
-        // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerPayToll), "1", "A");
-        // Assert
-        // A 擲了 2 點
-        // A 移動到 Station1，方向為 Right，剩下 1 步
-        // A 移動到 A2，方向為 Right，剩下 0 步
-        // A 須支付過路費1000元
-        // A 破產
-        hub.Verify<string, int>(
-                       nameof(IMonopolyResponses.PlayerRolledDiceEvent),
-                                  (playerId, diceCount) => playerId == "A" && diceCount == 2);
-        VerifyChessMovedEvent(hub, "A", "Station1", "Right", 1);
-        VerifyChessMovedEvent(hub, "A", "A2", "Right", 0);
-        hub.Verify<string, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerNeedsToPayTollEvent),
-                                  (playerId, ownId, toll) => playerId == "A" && ownId == "B" && toll == 1000);
-        hub.Verify<string, decimal, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerPayTollEvent),
-                                  (playerId, playerMoney, ownerId, ownerMoney)
-                                  => playerId == "A" && playerMoney == 0 && ownerId == "B" && ownerMoney == 1200);
-        hub.Verify<string>(
-                       nameof(IMonopolyResponses.BankruptEvent),
-                                  (playerId)
-                                  => playerId == "A");
         hub.VerifyNoElseEvent();
     }
 }

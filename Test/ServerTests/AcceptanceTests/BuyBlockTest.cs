@@ -39,6 +39,7 @@ public class BuyBlockTest
             .WithPosition(F4.Id, Direction.Up)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .Build()
         );
@@ -85,6 +86,7 @@ public class BuyBlockTest
             .WithPosition(F4.Id, Direction.Up)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .Build()
         );
@@ -140,6 +142,7 @@ public class BuyBlockTest
             .WithLandContract(F4.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .Build()
         );
@@ -186,6 +189,7 @@ public class BuyBlockTest
         //    .WithMoney(A.Money)
         //    .WithPosition("F2", Direction.Up.ToString())
         //)
+        //.WithMockDice(new[] { 1 })
         //.WithCurrentPlayer(nameof(A));
 
         //monopolyBuilder.Save(server);

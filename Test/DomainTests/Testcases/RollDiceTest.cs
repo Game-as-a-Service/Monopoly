@@ -59,12 +59,12 @@ public class RollDiceTest
         確認玩家剩餘步數(monopoly, A.Id, expected.RemainingSteps);
         monopoly.DomainEvents
             .NextShouldBe(new PlayerRolledDiceEvent(A.Id, dicePoints))
-            .NextShouldBe(new ChessMovedEvent(A.Id, "Start", "Up", 5))
-            .NextShouldBe(new ThroughStartEvent(A.Id, 3000, 5000m))
+            .NextShouldBe(new ThroughStartEvent(A.Id, 3000m, 5000m))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "Start", "Right", 5))
             .NextShouldBe(new ChessMovedEvent(A.Id, "A1", "Right", 4))
             .NextShouldBe(new ChessMovedEvent(A.Id, "Station1", "Right", 3))
             .NextShouldBe(new ChessMovedEvent(A.Id, "A2", "Right", 2))
-            .NextShouldBe(new ChessMovedEvent(A.Id, "A3", "Right", 1))
+            .NextShouldBe(new ChessMovedEvent(A.Id, "A3", "Down", 1))
             .NextShouldBe(new ChessMovedEvent(A.Id, "A4", "Down", 0))
             .NextShouldBe(new PlayerCanBuyLandEvent(A.Id, "A4", 1000m))
             .NoMore();
@@ -114,7 +114,7 @@ public class RollDiceTest
 
         monopoly.DomainEvents
             .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "ParkingLot", "Down", 1))
+            //.NextShouldBe(new ChessMovedEvent(player.Id, "ParkingLot", "Down", 1))
             .NextShouldBe(new PlayerNeedToChooseDirectionEvent(player.Id, "Left", "Right", "Down"))
             .NoMore();
     }
@@ -173,8 +173,8 @@ public class RollDiceTest
             .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
             .NextShouldBe(new ChessMovedEvent(player.Id, "Station4", "Up", 3))
             .NextShouldBe(new ChessMovedEvent(player.Id, "F4", "Up", 2))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "Start", "Up", 1))
             .NextShouldBe(new ThroughStartEvent(player.Id, 3000m, 4000m))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "Start", "Right", 1))
             .NextShouldBe(new ChessMovedEvent(player.Id, "A1", "Right", 0))
             .NextShouldBe(new PlayerCanBuyLandEvent(player.Id, "A1", 1000m))
             .NoMore();
@@ -232,7 +232,7 @@ public class RollDiceTest
             .NextShouldBe(new PlayerRolledDiceEvent(player.Id, dicePoints))
             .NextShouldBe(new ChessMovedEvent(player.Id, "Station4", "Up", 2))
             .NextShouldBe(new ChessMovedEvent(player.Id, "F4", "Up", 1))
-            .NextShouldBe(new ChessMovedEvent(player.Id, "Start", "Up", 0))
+            .NextShouldBe(new ChessMovedEvent(player.Id, "Start", "Right", 0))
             .NextShouldBe(new CannotGetRewardBecauseStandOnStartEvent(player.Id, expected.Money))
             .NoMore();
     }

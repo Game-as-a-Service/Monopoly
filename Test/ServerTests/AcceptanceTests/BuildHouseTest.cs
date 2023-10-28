@@ -41,6 +41,7 @@ public class BuildHouseTest
             .WithLandContract(A1.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .Build()
         )
@@ -86,6 +87,7 @@ public class BuildHouseTest
             .WithLandContract(A1.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
         .WithLandHouse(A1.Id, A1.House);
 
@@ -128,6 +130,7 @@ public class BuildHouseTest
             .WithLandContract(Station1.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -170,7 +173,9 @@ public class BuildHouseTest
             .WithLandContract(A1.Id)
             .Build()
         )
-        .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
+        .WithMockDice(new[] { 1 })
+        .WithCurrentPlayer(
+            new CurrentPlayerStateBuilder(A.Id)
             .WithUpgradeLand()
             .Build()
         );
@@ -215,6 +220,7 @@ public class BuildHouseTest
             .WithLandContract(A1.Id)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .WithBoughtLand()
             .Build()
@@ -259,6 +265,7 @@ public class BuildHouseTest
             .WithLandContract(A2.Id, InMortgage: A2.IsMortgage)
             .Build()
         )
+        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .Build()
         )
