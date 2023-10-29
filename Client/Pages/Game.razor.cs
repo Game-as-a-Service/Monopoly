@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 using MudBlazor;
+using SharedLibrary;
 using SharedLibrary.MonopolyMap;
 using System.Net.Http.Json;
 
@@ -34,9 +35,9 @@ public partial class Game
                 options.AccessTokenProvider = async () => await Task.FromResult(AccessToken);
             })
             .Build();
+        SetupHubConnection();
         try
         {
-            SetupHubConnection();
             await hubConnection.StartAsync();
             Snackbar.Add("連線成功!", Severity.Success);
         }
@@ -44,6 +45,7 @@ public partial class Game
         {
             Snackbar.Add(ex.Message, Severity.Error);
         }
+        await hubConnection.SendAsync("GetGameStatus");
         await GetMapFromApiAsync("1");
     }
 
@@ -66,17 +68,14 @@ public partial class Game
     {
         hubConnection.Closed += async (exception) =>
         {
-            if (exception == null)
-            {
-                Snackbar.Add("中斷連線", Severity.Error);
-            }
-            else
-            {
-                Snackbar.Add($"中斷連線: {exception.Message}", Severity.Error);
-            }
+            var errorMessage = exception?.Message;
+            Snackbar.Add($"中斷連線: {errorMessage}", Severity.Error);
             await Task.CompletedTask;
         };
-        hubConnection.On<string>("PlayerJoinGameEvent", id =>
+        
+        TypedHubConnection<IMonopolyResponses> connection = new(hubConnection);
+
+        connection.On(x => x.PlayerJoinGameEvent, (string id) =>
         {
             Snackbar.Add($"player {id} joined game!", Severity.Success);
             messages.Add($"player {id} joined game!");
