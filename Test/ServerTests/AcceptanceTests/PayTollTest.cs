@@ -153,7 +153,6 @@ public class PayTollTest
             .WithLandContract(A1.Id)
             .Build()
         )
-        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -205,7 +204,6 @@ public class PayTollTest
             .WithLandContract(A1.Id)
             .Build()
         )
-        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -256,7 +254,6 @@ public class PayTollTest
             .WithLandContract(Station1.Id)
             .Build()
         )
-        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -307,7 +304,6 @@ public class PayTollTest
             .WithLandContract(A2.Id)
             .Build()
         )
-        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build())
         .WithLandHouse(A2.Id, A2.HouseCount);
 

@@ -40,7 +40,6 @@ public class MortgageTest
             .WithLandContract(A1.Id)
             .Build()
         )
-        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -82,7 +81,6 @@ public class MortgageTest
             .WithLandContract(A1.Id, InMortgage: A1.IsMortgage)
             .Build()
         )
-        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -120,7 +118,6 @@ public class MortgageTest
             .WithMoney(A.Money)
             .Build()
         )
-        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);

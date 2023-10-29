@@ -47,7 +47,6 @@ public class EndRoundTest
             .WithLandContract(A2.Id)
             .Build()
         )
-        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .Build()
         );
@@ -100,7 +99,6 @@ public class EndRoundTest
             .WithLandContract(A2.Id)
             .Build()
         )
-        .WithMockDice(new[] { 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id)
             .WithPayToll()
             .Build()
@@ -157,7 +155,6 @@ public class EndRoundTest
             .WithLandContract("A2")
             .Build()
         )
-        .WithMockDice(new[] { 1, 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).WithPayToll().Build());
 
         monopolyBuilder.Save(server);
@@ -223,7 +220,6 @@ public class EndRoundTest
             .WithLandContract("A2")
             .Build()
         )
-        .WithMockDice(new[] { 1, 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).WithPayToll().Build());
 
         monopolyBuilder.Save(server);
@@ -281,7 +277,6 @@ public class EndRoundTest
             .WithPosition("A1", Direction.Right)
             .Build()
         )
-        .WithMockDice(new[] { 1, 1 })
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).WithPayToll().Build()); // TODO：是否可以結束回合應該不只有看玩家是否付完過路費，因為玩家有可能根本不需要付
 
         monopolyBuilder.Save(server);

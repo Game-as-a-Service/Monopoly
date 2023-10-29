@@ -36,7 +36,7 @@ public class Utils
 
         public string HostId { get; private set; }
 
-        public int[] Dices { get; private set; }
+        public int[] Dices { get; private set; } = {0};
 
         public CurrentPlayerState CurrentPlayerState { get; private set; }
         public List<LandHouse> LandHouses { get; private set; } = new();

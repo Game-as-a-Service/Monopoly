@@ -34,8 +34,7 @@ public class SelectLocation
                 new PlayerBuilder("A")
                 .WithLocation(A.locationId)
                 .Build()
-            )
-            .WithMockDice(new[] { 1 });
+            );
         monopolyBuilder.Save(server);
 
         var hub = await server.CreateHubConnectionAsync(gameId, "A");
@@ -75,8 +74,7 @@ public class SelectLocation
                 new PlayerBuilder(B.Id)
                 .WithLocation(B.locationId)
                 .Build()
-            )
-            .WithMockDice(new[] { 1 });
+            );
         monopolyBuilder.Save(server);
 
         var hub = await server.CreateHubConnectionAsync(gameId, "A");
@@ -109,8 +107,7 @@ public class SelectLocation
                 new PlayerBuilder("A")
                 .WithLocation(A.locationId)
                 .Build()
-            )
-            .WithMockDice(new[] { 1 });
+            );
         monopolyBuilder.Save(server);
 
         var hub = await server.CreateHubConnectionAsync(gameId, "A");
