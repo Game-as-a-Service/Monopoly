@@ -166,7 +166,7 @@ public class Utils
                                     PlayerState: PlayerState,
                                     BankruptRounds,
                                     LocationId: LocationId,
-                                    roleId: RoleId
+                                    RoleId: RoleId
                                     );
             return player;
         }
