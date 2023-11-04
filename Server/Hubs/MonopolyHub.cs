@@ -77,6 +77,16 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new SelectRoleRequest(gameId, userId, roleId));
     }
 
+    public async Task PlayerPrepare(string gameId, string userId, PlayerPreparedUsecase usecase)
+    {
+        await usecase.ExecuteAsync(new PlayerPreparedRequest(gameId, userId));
+    }
+
+    public async Task GameStart(string gameId, string userId, GameStartUsecase usecase)
+    {
+        await usecase.ExecuteAsync(new GameStartRequest(gameId, userId));
+    }
+
     public MonopolyHub(IRepository repository)
     {
         _repository = repository;

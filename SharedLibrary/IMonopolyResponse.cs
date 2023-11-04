@@ -86,4 +86,14 @@ public interface IMonopolyResponses
     Task PlaySelectLocationEvent(string PlayerId, int LocationId);
 
     Task PlayCannotSelectLocationEvent(string PlayerId, int LocationId);
+
+    Task PlayerPrepareEvent(string PlayerId, string PlayerState);
+
+    Task PlayerCannotPrepareEvent(string PlayerId, string PlayerState, string RoleId, int LocationID);
+
+    Task GameStartEvent(string GameStage, string CurrentPlayer);
+
+    Task OnlyOnePersonEvent(string GameStage);
+
+    Task SomePlayersPreparingEvent(string GameStage, params string[] PlayerIds);
 }

@@ -8,10 +8,11 @@ public class PlayerBuilder
     public Map.Direction CurrentDirection { get; set; }
     public Map Map { get; set; } = default!;
     public List<(string LandId, bool InMortgage, int Deadline)> LandContracts { get; set; }
-    public bool IsBankrupt { get; set; }
+    public PlayerState PlayerState { get; set;}
     public int BankruptRounds { get; private set; }
     public int RemainingSteps { get; set; }
     public int LocationId { get; set; }
+    public string? RoleId { get; set; }
 
     public PlayerBuilder(string id)
     {
@@ -20,8 +21,9 @@ public class PlayerBuilder
         BlockId = "Start";
         CurrentDirection = Map.Direction.Right;
         LandContracts = new();
-        IsBankrupt = false;
+        PlayerState = PlayerState.Normal;
         RemainingSteps = 0;
+        RoleId = null;
     }
 
     public PlayerBuilder WithMoney(decimal money)
@@ -43,9 +45,12 @@ public class PlayerBuilder
         return this;
     }
 
-    public PlayerBuilder WithBankrupt(bool isBankrupt, int Rounds)
+    public PlayerBuilder WithBankrupt(int Rounds)
     {
-        IsBankrupt = isBankrupt;
+        if (Rounds > 0)
+        {
+            PlayerState = PlayerState.Bankrupt;
+        }
         BankruptRounds = Rounds;
         return this;
     }
@@ -68,9 +73,21 @@ public class PlayerBuilder
         return this;
     }
 
+    public PlayerBuilder WithRole(string? roleId)
+    {
+        RoleId = roleId;
+        return this;
+    }
+
+    public PlayerBuilder WithState(PlayerState playerState = PlayerState.Normal)
+    {
+        PlayerState = playerState;
+        return this;
+    }
+
     public Player Build()
     {
-        Player player = new(Id, Money, IsBankrupt, BankruptRounds, LocationId);
+        Player player = new(Id, Money, PlayerState, BankruptRounds, LocationId, RoleId);
         Chess chess = new(player: player,
                           currentBlockId: BlockId,
                           currentDirection: CurrentDirection,

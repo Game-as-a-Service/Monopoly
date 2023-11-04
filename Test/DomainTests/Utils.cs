@@ -38,6 +38,12 @@ static class DomainEventsExtension
             Assert.AreEqual(Rounds, gameSettlementEvent.Rounds);
             CollectionAssert.AreEqual(Players, gameSettlementEvent.Players);
         }
+        else if (first is SomePlayersPreparingEvent somePlayersPreparingEvent)
+        {
+            var (GameStage, Players) = (((SomePlayersPreparingEvent)e).GameStage, ((SomePlayersPreparingEvent)e).Players);
+            Assert.AreEqual(GameStage, somePlayersPreparingEvent.GameStage);
+            CollectionAssert.AreEqual(Players, somePlayersPreparingEvent.Players);
+        }
         else
         {
             Assert.AreEqual(e, first);

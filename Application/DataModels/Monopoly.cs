@@ -2,7 +2,7 @@
 
 public record Monopoly(string Id, Player[] Players, Map Map, string HostId, CurrentPlayerState CurrentPlayerState, LandHouse[] LandHouses, GameStage GameStage);
 
-public record Player(string Id, decimal Money, Chess Chess, LandContract[] LandContracts, bool IsBankrupt, int BankruptRounds, int locationId);
+public record Player(string Id, decimal Money, Chess Chess, LandContract[] LandContracts, Domain.PlayerState PlayerState, int BankruptRounds, int LocationId, string RoleId);
 public record CurrentPlayerState(string PlayerId, bool IsPayToll, bool IsBoughtLand, bool IsUpgradeLand, Auction? Auction, int RemainingSteps, bool HadSelectedDirection);
 public record Chess(string CurrentPosition, Direction Direction);
 public record LandContract(string LandId, bool InMortgage, int Deadline);

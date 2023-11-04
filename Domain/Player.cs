@@ -10,17 +10,17 @@ public class Player
     private Chess chess;
     private readonly List<LandContract> _landContractList = new();
 
-    public Player(string id, decimal money = 15000, bool isBankrupt = false, int bankruptRounds = 0, int locationId = 0)
+    public Player(string id, decimal money = 15000, PlayerState playerState = PlayerState.Preparing, int bankruptRounds = 0, int locationId = 0, string? roleId = null)
     {
         Id = id;
-        State = PlayerState.Normal;
         Money = money;
-        State = isBankrupt ? PlayerState.Bankrupt : PlayerState.Normal;
+        State = playerState;
         BankruptRounds = bankruptRounds;
         LocationId = locationId;
+        RoleId = roleId;
     }
 
-    public PlayerState State { get; private set; }
+    public PlayerState State { get; internal set; }
     public Monopoly Monopoly { get; internal set; }
     public string Id { get; }
     public decimal Money
@@ -59,9 +59,7 @@ public class Player
         return DomainEvent.EmptyEvent;
     }
 
-    public bool IsBankrupt => State == PlayerState.Bankrupt;
-
-    public string RoleId { get; set; }
+    public string? RoleId { get; set; }
 
     public int LocationId { get; set; }
 
@@ -267,5 +265,22 @@ public class Player
     internal bool CanNotSelectDirection(Map.Direction d)
     {
         return d == chess.CurrentDirection.Opposite();
+    }
+
+    internal DomainEvent Parpare()
+    {
+        if (RoleId is null || LocationId == 0)
+        {
+            return new PlayerCannotPrepareEvent(Id, State.ToString(), RoleId, LocationId);
+        }
+        else if (State == PlayerState.Preparing)
+        {
+            State = PlayerState.Normal;
+        }
+        else if (State == PlayerState.Normal)
+        {
+            State = PlayerState.Preparing;
+        }
+        return new PlayerPrepareEvent(Id, State.ToString());
     }
 }

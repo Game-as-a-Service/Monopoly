@@ -39,9 +39,10 @@ internal static class RepositoryExtensions
                         player.Money,
                         chess,
                         landContracts,
-                        player.IsBankrupt,
+                        player.State,
                         player.BankruptRounds,
-                        player.LocationId
+                        player.LocationId,
+                        player.RoleId
                         );
         }).ToArray();
 
@@ -115,8 +116,10 @@ internal static class RepositoryExtensions
                 playerBuilder.WithMoney(p.Money)
                      .WithPosition(p.Chess.CurrentPosition, p.Chess.Direction.ToString())
                      .WithLandContracts(p.LandContracts)
-                     .WithBankrupt(p.IsBankrupt, p.BankruptRounds)
-                     .WithLocation(p.locationId)
+                     .WithBankrupt(p.BankruptRounds)
+                     .WithLocation(p.LocationId)
+                     .WithRole(p.RoleId)
+                     .WithState(p.PlayerState)
             ));
         builder.WithGameStage(monopoly.GameStage switch
         {

@@ -9,7 +9,7 @@ namespace Domain;
 public class Monopoly : AbstractAggregateRoot
 {
     public string Id { get; set; }
-    public GameStage GameStage { get; }
+    public GameStage GameStage { get; private set; }
     public int[]? CurrentDice { get; set; } = null;
     public CurrentPlayerState CurrentPlayerState => _currentPlayerState;
     public IDice[] Dices { set; get; }
@@ -272,6 +272,69 @@ public class Monopoly : AbstractAggregateRoot
         {
             player.LocationId = locationID;
             AddDomainEvent(new PlaySelectLocationEvent(playerId, player.LocationId));
+        }
+    }
+
+    /// <summary>
+    /// 玩家準備
+    /// </summary>
+    /// <param name="playerId"></param> <summary>
+    /// 
+    /// </summary>
+    /// <param name="playerId"></param>
+    public void PlayerPrepare(string playerId)
+    {
+        if (GameStage == GameStage.Preparing)
+        {
+            Player player = GetPlayer(playerId);
+        
+            AddDomainEvent(player.Parpare());
+        }
+        
+    }
+
+    /// <summary>
+    /// 開始遊戲
+    /// </summary>
+    /// <param name="playerId"></param> <summary>
+    /// 
+    /// </summary>
+    /// <param name="playerId"></param>
+    public void GameStart(string playerId)
+    {
+        //playerId == HostId then start
+        if ( GameStage != GameStage.Preparing || playerId != HostId)
+        {
+        }
+        else if (_players.Count == 1)
+        {
+            //玩家只有一人
+            AddDomainEvent(new OnlyOnePersonEvent(GameStage.ToString()));
+        }
+        else
+        {
+            //有人尚未準備
+            List<string> preparingPlayers = new List<string>();
+
+            _players.ForEach(p => 
+            {
+                if(p.State == PlayerState.Preparing)
+                {
+                    preparingPlayers.Add(p.Id);
+                }
+            });
+
+            if (preparingPlayers.Count != 0)
+            {
+                AddDomainEvent(new SomePlayersPreparingEvent(GameStage.ToString(), preparingPlayers.ToArray()));
+            }
+            else
+            {
+                //成功
+                GameStage = GameStage.Gaming;
+                Initial();
+                AddDomainEvent(new GameStartEvent(GameStage.ToString(), _currentPlayerState.PlayerId));
+            }
         }
     }
 }
