@@ -1,0 +1,12 @@
+﻿@page "/games/{id}"
+@using Client.Components
+@using Client.Pages.Gaming
+@using Client.Pages.Preparing
+@if (IsGameStarted)
+{
+    <GamingPage />
+}
+else
+{
+    <PreparingPage />
+}

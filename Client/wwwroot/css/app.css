@@ -1,8 +1,20 @@
+:root {
+    /* 感謝 fixiabis 的贊助 */
+    --vw: min(100vw, calc(100vh / 1080 * 1920));
+    --vh: min(100vh, calc(100vw / 1920 * 1080));
+    --unit: calc(var(--vw) / 1920);
+    /* 感謝 fixiabis 的贊助 */
+}
 h1:focus {
     outline: none;
 }
 .mud-main-content {
     padding: 0 !important;
+    width: var(--vw);
+    height: var(--vh);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    position: relative;
+    margin: 0 auto !important;
 }
 #blazor-error-ui {
     background: lightyellow;
