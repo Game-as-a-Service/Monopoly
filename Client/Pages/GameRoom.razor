@@ -1,0 +1,36 @@
+﻿@page "/GameRoom"
+
+<h3>遊戲房間</h3>
+<p>祖層通知欄: @_msg</p>
+==============================
+
+<CascadingValue Value="@PieceName">
+<Player PlayerRoom="@_playerRoom" PlayerPiece="@_playerPiece" OnAddRoom="@OnAddRoom" OnChoosePiece="@OnChoosePiece"></Player>
+</CascadingValue>
+<br>==============================
+<br>
+<button @onclick="OnForceChoosePiece">更名成棋子0</button>
+
+@code {
+    private string _playerRoom = "遊戲大廳";
+    private string _playerPiece = "";
+    private string _msg = "";
+    private string PieceName = "棋子2";
+
+    private void OnAddRoom(string val)
+    {
+        _playerRoom = val;
+        _msg = $"玩家加入{val}";
+    }
+
+    private void OnChoosePiece(string val)
+    {
+        _playerPiece = val;
+        _msg = $"玩家選擇{val}";
+    }
+
+    private void OnForceChoosePiece()
+    {
+        PieceName = "棋子0";
+    }
+}

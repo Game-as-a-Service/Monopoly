@@ -1,0 +1,48 @@
+
+<h3>玩家</h3>
+<p>玩家位置: @PlayerRoom</p>
+<p>玩家棋子: @PlayerPiece</p>
+<button @onclick="AddRoom">加入房間1</button>
+<hr>
+------------------------
+<br><Piece1 OnChoosePiece="@choosePiece"></Piece1>
+<br>
+<CascadingValue Value="@_grandValue" Name="PieceName">
+    <Piece2 OnChoosePiece="@choosePiece"></Piece2>
+</CascadingValue>
+<br>
+------------------------
+
+@code {
+    private string _grandValue = "未選擇";
+
+    [Parameter]
+    public string PlayerRoom { get; set; }
+
+    [Parameter]
+    public string PlayerPiece { get { return _grandValue; } set { _grandValue = value; } }
+
+    [Parameter]
+    public EventCallback<string> OnAddRoom { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnChoosePiece { get; set; }
+
+    private async Task AddRoom()
+    {
+        string roomName = $"房間1";
+        if (OnAddRoom.HasDelegate)
+        {
+            await OnAddRoom.InvokeAsync(roomName);
+        }
+    }
+
+    private async Task choosePiece(string val)
+    {
+
+        if (OnChoosePiece.HasDelegate)
+        {
+            await OnChoosePiece.InvokeAsync(val);
+        }
+    }
+}

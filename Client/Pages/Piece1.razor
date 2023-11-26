@@ -1,0 +1,21 @@
+´Ñ1
+
+<button @onclick="choosePiece">¿ï¾Ü´Ñ¤l1</button>
+
+@code {
+    private string PieceName = $"´Ñ¤l1";
+
+    [Parameter]
+    public string Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnChoosePiece { get; set; }
+
+    private async Task choosePiece()
+    {
+        if (OnChoosePiece.HasDelegate)
+        {
+            await OnChoosePiece.InvokeAsync(PieceName);
+        }
+    }
+}
