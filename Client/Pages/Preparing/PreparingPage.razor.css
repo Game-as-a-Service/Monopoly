@@ -14,6 +14,9 @@
     height: calc(344 * var(--unit));
     position: relative;
 }
+    .choice-wrapper:hover {
+        cursor: pointer;
+    }
     .choice-wrapper:hover .choice-text {
         opacity: 0;
     }
@@ -21,7 +24,8 @@
         display: block;
     }
 
-.choice-text {
+.choice-text::before {
+    content: '請選擇';
     position: absolute;
     width: calc(180 * var(--unit));
     top: calc(72 * var(--unit));
@@ -77,7 +81,7 @@
     }
 
 .choice-role-area {
-    position: fixed;
+    position: absolute;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -91,14 +95,19 @@
     height: calc(180 * var(--unit));
     padding: calc(16 * var(--unit)) calc(0 * var(--unit)) calc(16 * var(--unit)) calc(0 * var(--unit));
     gap: calc(16 * var(--unit));
+    border-radius: calc(12 * var(--unit));
 }
-    .choice-role-area .choice-role-text {
-        font-size: calc(24 * var(--unit));
-        font-weight: bold;
-        color: white;
-        white-space: nowrap;
-    }
-    .choice-role-area .choice-role-row {
+.choice-role-text{
+    font-size: calc(24 * var(--unit));
+    font-weight: bold;
+    color: white;
+    white-space: nowrap;
+    line-height: calc(32.02 * var(--unit));
+}
+.choice-role-text::before {
+    content: '選擇人物';
+}
+    .choice-role-row {
         display: flex;
         flex-direction: row;
         justify-content: space-evenly;
@@ -107,8 +116,43 @@
         white-space: nowrap;
         left: 0;
         right: 0;
+        column-gap: calc(16 * var(--unit));
     }
-    .choice-role-area  .choice-role-item {
-        font-size: calc(24 * var(--unit));
-        font-weight: bold;
+    .choice-role-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: calc(90 * var(--unit));
+        height: calc(90 * var(--unit));
+        border-radius: calc(8 * var(--unit));
+        box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+        text-align: center;
     }
+    .choice-role-item:hover {
+        cursor: pointer;
+        background-color: #CCCCCC
+    }
+        .choice-role-item .picture {
+            background-size: cover;
+            background-position: center;
+        }
+            .choice-role-item .picture.oldman {
+                width: calc(82 * var(--unit));
+                height: calc(69 * var(--unit));
+                background-image: url('images/老人頭.svg');
+            }
+            .choice-role-item .picture.baby {
+                width: calc(79 * var(--unit));
+                height: calc(61 * var(--unit));
+                background-image: url('images/寶寶頭.svg');
+            }
+            .choice-role-item .picture.dai {
+                width: calc(75 * var(--unit));
+                height: calc(76 * var(--unit));
+                background-image: url('images/阿呆頭.svg');
+            }
+            .choice-role-item .picture.mei {
+                width: calc(75 * var(--unit));
+                height: calc(71 * var(--unit));
+                background-image: url('images/小美頭.svg');
+            }
