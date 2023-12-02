@@ -1,0 +1,25 @@
+﻿.ready-button {
+    position: absolute;
+    background-color: #5B5B5B;
+    border-color: #D8C292;
+    border-width: calc(4 * var(--unit));
+    top: calc(888 * var(--unit));
+    left: calc(1599 * var(--unit));
+    width: calc(289 * var(--unit));
+    height: calc(180 * var(--unit));
+    padding: calc(16 * var(--unit)) calc(0 * var(--unit)) calc(16 * var(--unit)) calc(0 * var(--unit));
+    border-radius: calc(12 * var(--unit));
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.ready-button-text::before {
+    content: 'Ready';
+    font-size: calc(60 * var(--unit));
+    width: calc(224 * var(--unit));
+    height: calc(72 * var(--unit));
+    color: #D8C292;
+    font-weight: 400;
+}

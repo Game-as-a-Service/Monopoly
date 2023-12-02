@@ -1,0 +1,94 @@
+﻿.choice-bar {
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    top: calc(501 * var(--unit));
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: calc((4 * 280 + 3 * 141) * var(--unit) ); /* 四個選擇區寬度加上間隙 */
+}
+
+.choice-wrapper {
+    width: calc(280 * var(--unit));
+    height: calc(344 * var(--unit));
+    position: relative;
+}
+
+    .choice-wrapper:hover {
+        cursor: pointer;
+    }
+
+        .choice-wrapper:hover .choice-text {
+            opacity: 0;
+        }
+
+        .choice-wrapper:hover .choice-arrow {
+            display: block;
+        }
+
+.choice-text::before {
+    content: '請選擇';
+    position: absolute;
+    width: calc(180 * var(--unit));
+    top: calc(72 * var(--unit));
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: calc(60 * var(--unit));
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.choice-step {
+    position: absolute;
+    top: calc(168 * var(--unit));
+    width: calc(280 * var(--unit));
+    height: calc(176 * var(--unit));
+    background-size: cover;
+    background-position: center;
+}
+
+    .choice-step.choice-blue {
+        background-image: url('images/preparing/choice_blue.svg');
+    }
+
+    .choice-step.choice-red {
+        background-image: url('./images/preparing/choice_red.svg');
+    }
+
+    .choice-step.choice-yellow {
+        background-image: url('images/preparing/choice_yellow.svg');
+    }
+
+    .choice-step.choice-green {
+        background-image: url('images/preparing/choice_green.svg');
+    }
+
+.choice-arrow {
+    position: absolute;
+    width: calc(100 * var(--unit));
+    height: calc(115 * var(--unit));
+    display: none;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-size: cover;
+    background-position: center;
+}
+
+    .choice-arrow.choice-arrow-blue {
+        background-image: url('images/preparing/choice_arrow_blue.svg');
+    }
+
+    .choice-arrow.choice-arrow-red {
+        background-image: url('images/preparing/choice_arrow_red.svg');
+    }
+
+    .choice-arrow.choice-arrow-yellow {
+        background-image: url('images/preparing/choice_arrow_yellow.svg');
+    }
+
+    .choice-arrow.choice-arrow-green {
+        background-image: url('images/preparing/choice_arrow_green.svg');
+    }

@@ -1,0 +1,10 @@
+﻿<div class="choice-bar">
+    @foreach (var choice in new[] { "blue", "red", "yellow", "green" })
+    {
+        <div class="choice-wrapper">
+            <div class="choice-text"></div>
+            <div class="choice-arrow choice-arrow-@choice"></div>
+            <div class="choice-step choice-@choice"></div>
+        </div>
+    }
+</div>

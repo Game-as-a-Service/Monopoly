@@ -1,27 +1,5 @@
-<div class="choice-bar">
-    @foreach (var choice in new[] { "blue", "red", "yellow", "green" })
-    {
-        <div class="choice-wrapper">
-            <div class="choice-text"></div>
-            <div class="choice-arrow choice-arrow-@choice"></div>
-            <div class="choice-step choice-@choice"></div>
-        </div>
-    }
-</div>
-<div class="choice-role-area">
-    <div class="choice-role-text"></div>
-    <div class="choice-role-row">
-        <div class="choice-role-item">
-            <div class="picture oldman"></div>
-        </div>
-        <div class="choice-role-item">
-            <div class="picture baby"></div>
-        </div>
-        <div class="choice-role-item">
-            <div class="picture dai"></div>
-        </div>
-        <div class="choice-role-item">
-            <div class="picture mei"></div>
-        </div>
-    </div>
-</div>
+<CascadingValue Value="Players">
+    <ColorChoicePanel />
+    <RoleChoicePanel />
+    <ReadyButton />
+</CascadingValue>
