@@ -2,7 +2,8 @@
 
 public enum RoleEnum
 {
-    Oldman,
+    None,
+    OldMan,
     Baby,
     Dai,
     Mei

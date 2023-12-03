@@ -4,6 +4,17 @@ namespace Client.Pages.Preparing;
 
 public partial class PreparingPage
 {
-    Player[] Players { get; set; } = Array.Empty<Player>();
-}
+    IList<Player> Players { get; set; } = default!;
+    string UserId { get; set; } = string.Empty;
 
+    override protected void OnInitialized()
+    {
+        base.OnInitialized();
+        Players = new List<Player>() { new(UserId, "AA", false, false) };
+    }
+
+    public void Update()
+    {
+        StateHasChanged();
+    }
+}

@@ -14,6 +14,9 @@
     width: calc(280 * var(--unit));
     height: calc(344 * var(--unit));
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
     .choice-wrapper:hover {
@@ -21,20 +24,34 @@
     }
 
         .choice-wrapper:hover .choice-text {
-            opacity: 0;
+            display: none;
         }
 
         .choice-wrapper:hover .choice-arrow {
             display: block;
         }
 
+    .choice-wrapper.selected {
+        cursor: not-allowed;
+    }
+
+    .choice-wrapper.selected .choice-text {
+        display: none;
+    }
+
+    .choice-wrapper.selected .choice-arrow {
+        display: block;
+    }
+
+        .choice-wrapper.selected.role-selected .choice-arrow {
+            position: relative;
+            transform: translateY(calc(-226 * var(--unit)));
+        }
 .choice-text::before {
     content: '請選擇';
-    position: absolute;
+    position: relative;
     width: calc(180 * var(--unit));
     top: calc(72 * var(--unit));
-    left: 50%;
-    transform: translateX(-50%);
     font-size: calc(60 * var(--unit));
     font-weight: bold;
     white-space: nowrap;
@@ -71,12 +88,9 @@
     height: calc(115 * var(--unit));
     display: none;
     top: 0;
-    left: 50%;
-    transform: translateX(-50%);
     background-size: cover;
     background-position: center;
 }
-
     .choice-arrow.choice-arrow-blue {
         background-image: url('images/preparing/choice_arrow_blue.svg');
     }
@@ -91,4 +105,46 @@
 
     .choice-arrow.choice-arrow-green {
         background-image: url('images/preparing/choice_arrow_green.svg');
+    }
+
+.role-container {
+    position: fixed;
+    z-index: 20;
+    top: calc(390 * var(--unit));
+    height: calc(360 * var(--unit));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+    .role-container .player-name {
+        font-weight: bold;
+        font-size: calc(24 * var(--unit));
+    }
+.role {
+    background-size: cover;
+    background-position: center;
+}
+    .role.oldman{
+        width: calc(196 * var(--unit));
+        height: calc(307 * var(--unit));
+        background-image: url('images/roles/modals/教授.svg');
+    }
+
+    .role.baby{
+        width: calc(166 * var(--unit));
+        height: calc(213 * var(--unit));
+        background-image: url('images/roles/modals/寶寶.svg');
+    }
+
+    .role.dai {
+        width: calc(162 * var(--unit));
+        height: calc(313 * var(--unit));
+        background-image: url('images/roles/modals/阿呆.svg');
+    }
+
+    .role.mei {
+        width: calc(173 * var(--unit));
+        height: calc(296 * var(--unit));
+        background-image: url('images/roles/modals/小美.svg');
     }

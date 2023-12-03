@@ -1,10 +1,16 @@
-﻿<div class="choice-bar">
-    @foreach (var choice in new[] { "blue", "red", "yellow", "green" })
+﻿@using Client.Pages.Preparing.Entities
+<div class="choice-bar">
+    @foreach (var color in new[] { ColorEnum.Blue, ColorEnum.Red, ColorEnum.Yellow, ColorEnum.Green })
     {
-        <div class="choice-wrapper">
+        var player = GetPlayerWithColor(color);
+        <div class="choice-wrapper @ColorSelected(color) @RoleSelected(color)" @onclick="() => ChangeColor(color)">
             <div class="choice-text"></div>
-            <div class="choice-arrow choice-arrow-@choice"></div>
-            <div class="choice-step choice-@choice"></div>
+            <div class="choice-arrow choice-arrow-@color.ToLowerCaseName()"></div>
+            <div class="role-container">
+                <div class="player-name">@player?.Name</div>
+                <div class="role @(player?.Role.ToLowerCaseName())"></div>
+            </div>
+            <div class="choice-step choice-@color.ToLowerCaseName()"></div>
         </div>
     }
 </div>

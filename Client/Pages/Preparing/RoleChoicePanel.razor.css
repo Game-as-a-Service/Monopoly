@@ -56,6 +56,10 @@
         background-color: #CCCCCC
     }
 
+    .choice-role-item.selected {
+        background-color: #CCCCCC;
+    }
+
     .choice-role-item .picture {
         background-size: cover;
         background-position: center;
@@ -64,23 +68,23 @@
         .choice-role-item .picture.oldman {
             width: calc(82 * var(--unit));
             height: calc(69 * var(--unit));
-            background-image: url('images/老人頭.svg');
+            background-image: url('images/roles/avatars/老人頭.svg');
         }
 
         .choice-role-item .picture.baby {
             width: calc(79 * var(--unit));
             height: calc(61 * var(--unit));
-            background-image: url('images/寶寶頭.svg');
+            background-image: url('images/roles/avatars/寶寶頭.svg');
         }
 
         .choice-role-item .picture.dai {
             width: calc(75 * var(--unit));
             height: calc(76 * var(--unit));
-            background-image: url('images/阿呆頭.svg');
+            background-image: url('images/roles/avatars/阿呆頭.svg');
         }
 
         .choice-role-item .picture.mei {
             width: calc(75 * var(--unit));
             height: calc(71 * var(--unit));
-            background-image: url('images/小美頭.svg');
+            background-image: url('images/roles/avatars/小美頭.svg');
         }
