@@ -1,11 +1,11 @@
-﻿using Client.Pages.Preparing.Entities;
+﻿using Client.Pages.Ready.Entities;
 using Microsoft.AspNetCore.Components;
 
-namespace Client.Pages.Preparing;
+namespace Client.Pages.Ready;
 
 public partial class ColorChoicePanel
 {
-    [CascadingParameter] public PreparingPage Parent { get; set; } = default!;
+    [CascadingParameter] public ReadyPage Parent { get; set; } = default!;
     IEnumerable<Player> Players => Parent.Players;
     string UserId => Parent.UserId;
     private Player CurrentPlayer => Parent.CurrentPlayer;

@@ -1,11 +1,11 @@
-﻿using Client.Pages.Preparing.Entities;
+﻿using Client.Pages.Ready.Entities;
 using Microsoft.AspNetCore.Components;
 
-namespace Client.Pages.Preparing;
+namespace Client.Pages.Ready;
 
 public partial class ReadyButton
 {
-    [CascadingParameter] public PreparingPage Parent { get; set; } = default!;
+    [CascadingParameter] public ReadyPage Parent { get; set; } = default!;
     Player CurrentPlayer => Parent.CurrentPlayer;
     private void Ready()
     {

@@ -1,4 +1,4 @@
-﻿namespace Client.Pages.Preparing.Entities;
+﻿namespace Client.Pages.Ready.Entities;
 
 public enum ColorEnum
 {
