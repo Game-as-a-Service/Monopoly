@@ -44,3 +44,83 @@ h1:focus {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+#app {
+    width: 100vw;
+    height: 100vh;
+    background-color: #595959;
+}
+#loading-area {
+    position: absolute;
+    top: calc(265 * var(--unit));
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+#logo {
+    width: calc(584 * var(--unit));
+    height: calc(262 * var(--unit));
+    top: calc(265 * var(--unit));
+    background-image: url('../images/logo.svg');
+    background-size: cover;
+    background-position: center;
+}
+#loading {
+    position: absolute;
+    width: calc(626 * var(--unit));
+    height: calc(87 * var(--unit));
+    top: calc(480 * var(--unit));
+    display: flex;
+    flex-direction: row;
+}
+#loading-text {
+    width: calc(394 * var(--unit));
+    height: calc(87 * var(--unit));
+    background-image: url('../images/Loading.svg');
+    background-size: cover;
+    background-position: center;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+#loading-icon-group {
+    position: relative;
+    width: calc(200 * var(--unit));
+    height: calc(32 * var(--unit));
+    top: calc(43 * var(--unit));
+    left: calc(32 * var(--unit));
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+    #loading-icon-group > .icon {
+        width: calc(32 * var(--unit));
+        height: calc(32 * var(--unit));
+        background-size: cover;
+        background-position: center;
+        animation: bounce 1s infinite ease-in-out;
+    }
+
+#loading-icon-group > .mei {
+    animation-delay: 0s;
+    background-image: url('../images/roles/chesses/小美.svg');
+}
+#loading-icon-group > .dai {
+    animation-delay: 0.2s;
+    background-image: url('../images/roles/chesses/阿呆.svg');
+}
+#loading-icon-group > .oldman {
+    animation-delay: 0.4s;
+    background-image: url('../images/roles/chesses/教授.svg');
+}
+#loading-icon-group > .baby {
+    animation-delay: 0.6s;
+    background-image: url('../images/roles/chesses/寶寶.svg');
+}

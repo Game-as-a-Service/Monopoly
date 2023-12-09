@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <title>Client</title>
     <base href="/" />
-    <link href="css/app.css" rel="stylesheet" />
+    <link href="css/app.css?version=0.30" rel="stylesheet" />
 
     <link href="Client.styles.css" rel="stylesheet" /> 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
@@ -13,7 +13,20 @@
 </head>
 
 <body>
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div id="loading-area">
+            <div id="logo"></div>
+            <div id="loading">
+                <div id="loading-text"></div>
+                <div id="loading-icon-group">
+                    <div class="icon mei"></div>
+                    <div class="icon dai"></div>
+                    <div class="icon oldman"></div>
+                    <div class="icon baby"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
