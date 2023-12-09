@@ -1,7 +1,7 @@
 ﻿using Client.Pages.Ready.Entities;
 using Microsoft.AspNetCore.Components;
 
-namespace Client.Pages.Ready;
+namespace Client.Pages.Ready.Components;
 
 public partial class ReadyButton
 {
