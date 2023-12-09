@@ -23,3 +23,17 @@
     color: #D8C292;
     font-weight: 400;
 }
+
+.ready-button:hover {
+    cursor: pointer;
+    background-color: #A5A5A5;
+}
+.ready-button.selected {
+    background-color: #A5A5A5;
+}
+    .ready-button.selected:hover {
+        background-color: #5B5B5B;
+    }
+    .ready-button.selected .ready-button-text::before {
+        content: 'Cancel';
+    }

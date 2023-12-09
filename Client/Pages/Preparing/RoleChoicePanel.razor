@@ -4,7 +4,7 @@
     <div class="choice-role-row">
         @foreach (var role in new[] { RoleEnum.OldMan, RoleEnum.Baby, RoleEnum.Dai, RoleEnum.Mei })
         {
-            <div class="choice-role-item @(CurrentPlayer.Role == role ? "selected" : "")" @onclick="() => ChangeRole(role)">
+            <div class="choice-role-item @(CurrentPlayer.Role == role ? "selected" : string.Empty)" @onclick="() => ChangeRole(role)">
                 <div class="picture @(role.ToLowerCaseName())"></div>
             </div>
         }

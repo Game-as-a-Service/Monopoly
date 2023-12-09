@@ -3,12 +3,15 @@
     @foreach (var color in new[] { ColorEnum.Blue, ColorEnum.Red, ColorEnum.Yellow, ColorEnum.Green })
     {
         var player = GetPlayerWithColor(color);
-        <div class="choice-wrapper @ColorSelected(color) @RoleSelected(color)" @onclick="() => ChangeColor(color)">
+        <div class="choice-wrapper @GetChoiceWrapperCss(color)" @onclick="() => ChangeColor(color)">
             <div class="choice-text"></div>
             <div class="choice-arrow choice-arrow-@color.ToLowerCaseName()"></div>
-            <div class="role-container">
+            <div class="player-container">
                 <div class="player-name">@player?.Name</div>
                 <div class="role @(player?.Role.ToLowerCaseName())"></div>
+            </div>
+            <div class="ready-sign @GetReadySignCss(player)">
+                <h3 class="ready-sign-text"></h3>
             </div>
             <div class="choice-step choice-@color.ToLowerCaseName()"></div>
         </div>

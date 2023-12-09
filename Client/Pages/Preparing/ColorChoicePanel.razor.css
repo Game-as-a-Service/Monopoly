@@ -31,22 +31,26 @@
             display: block;
         }
 
-    .choice-wrapper.selected {
+    .choice-wrapper.color-selected {
         cursor: not-allowed;
     }
 
-    .choice-wrapper.selected .choice-text {
-        display: none;
-    }
-
-    .choice-wrapper.selected .choice-arrow {
-        display: block;
-    }
-
-        .choice-wrapper.selected.role-selected .choice-arrow {
-            position: relative;
-            transform: translateY(calc(-226 * var(--unit)));
+        .choice-wrapper.color-selected .choice-text {
+            display: none;
         }
+        .choice-wrapper.color-selected:hover .choice-arrow {
+            display: none;
+        }
+        .choice-wrapper.color-selected.current-player:hover .choice-arrow {
+            display: block;
+        }
+
+    .choice-wrapper.current-player .choice-arrow {
+        display: block;
+        position: relative;
+        transform: translateY(calc(-226 * var(--unit)));
+    }
+
 .choice-text::before {
     content: '請選擇';
     position: relative;
@@ -82,6 +86,7 @@
         background-image: url('images/preparing/choice_green.svg');
     }
 
+/*箭頭*/
 .choice-arrow {
     position: absolute;
     width: calc(100 * var(--unit));
@@ -107,19 +112,22 @@
         background-image: url('images/preparing/choice_arrow_green.svg');
     }
 
-.role-container {
+/*角色*/
+.player-container {
     position: fixed;
     z-index: 20;
     top: calc(390 * var(--unit));
     height: calc(360 * var(--unit));
+    width: calc(280 * var(--unit));
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
 }
-    .role-container .player-name {
+    .player-container .player-name {
         font-weight: bold;
         font-size: calc(24 * var(--unit));
+        user-select: none
     }
 .role {
     background-size: cover;
@@ -147,4 +155,27 @@
         width: calc(173 * var(--unit));
         height: calc(296 * var(--unit));
         background-image: url('images/roles/modals/小美.svg');
+    }
+
+.ready-sign.ready {
+    position: fixed;
+    top: calc(717 * var(--unit));
+    width: calc(280 * var(--unit));
+    height: calc(77 * var(--unit));
+    border-radius: calc(12 * var(--unit));
+    padding: calc(10 * var(--unit));
+    background-color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 30;
+}
+
+    .ready-sign.ready .ready-sign-text:before {
+        content: '已準備';
+        width: calc(144 * var(--unit));
+        height: calc(57 * var(--unit));
+        font-weight: bold;
+        font-size: calc(48 * var(--unit));
+        line-height: calc(56.02 * var(--unit));
     }

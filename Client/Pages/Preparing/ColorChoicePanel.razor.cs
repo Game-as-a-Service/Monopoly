@@ -5,30 +5,43 @@ namespace Client.Pages.Preparing;
 
 public partial class ColorChoicePanel
 {
-    [CascadingParameter] public IList<Player> Players { get; set; } = default!;
-    [CascadingParameter] public string UserId { get; set; } = string.Empty;
     [CascadingParameter] public PreparingPage Parent { get; set; } = default!;
-    private Player CurrentPlayer => Players.First(p => p.Id == UserId);
-    private string ColorSelected(ColorEnum color) => CurrentPlayer.Color == color ? "selected" : "";
-    private string RoleSelected(ColorEnum color)
-    {
-        var role = GetPlayerWithColor(color)?.Role;
-        if (role is not null)
-        {
-            return role != RoleEnum.None ? "role-selected" : "";
-        }
-        return "";
-    }
+    IEnumerable<Player> Players => Parent.Players;
+    string UserId => Parent.UserId;
+    private Player CurrentPlayer => Parent.CurrentPlayer;
 
     private void ChangeColor(ColorEnum color)
     {
-        var player = Players.FirstOrDefault(p => p.Id == UserId);
-        if (player is not null)
+        if (GetPlayerWithColor(color) is not null)
         {
-            Players.Remove(player);
-            Players.Add(player with { Color = color });
-            Parent.Update();
+            return;
         }
+        var player = Players.FirstOrDefault(p => p.Id == UserId);
+        if (player is null)
+        {
+            return;
+        }
+        CurrentPlayer.Color = color;
+        Parent.Update();
+    }
+
+    private string GetChoiceWrapperCss(ColorEnum color)
+    {
+        var player = GetPlayerWithColor(color);
+        if (player is null)
+        {
+            return string.Empty;
+        }
+        return $"color-selected {(color == CurrentPlayer.Color ? "current-player" : string.Empty)}";
+    }
+
+    private static string GetReadySignCss(Player? player)
+    {
+        if (player is null)
+        {
+            return string.Empty;
+        }
+        return player.IsReady ? "ready" : string.Empty;
     }
 
     private Player? GetPlayerWithColor(ColorEnum color)
