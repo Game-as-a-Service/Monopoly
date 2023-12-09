@@ -1,1 +1,5 @@
-﻿
+﻿.background {
+    width: calc(1920 * var(--unit));
+    height: calc(1080 * var(--unit));
+    background-color: black; /*暫時用黑色來讓其他元素的顏色能用淺色系*/
+}

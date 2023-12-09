@@ -7,7 +7,13 @@
             <div class="choice-text"></div>
             <div class="choice-arrow choice-arrow-@color.ToLowerCaseName()"></div>
             <div class="player-container">
-                <div class="player-name">@player?.Name</div>
+                <div class="player-name">
+                    @if(player?.IsHost is true)
+                    {
+                        <span class="host-icon"></span>
+                    }
+                    @player?.Name
+                </div>
                 <div class="role @(player?.Role.ToLowerCaseName())"></div>
             </div>
             <div class="ready-sign @GetReadySignCss(player)">

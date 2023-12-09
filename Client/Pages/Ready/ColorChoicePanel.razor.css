@@ -59,6 +59,7 @@
     font-size: calc(60 * var(--unit));
     font-weight: bold;
     white-space: nowrap;
+    color: #FFFFFF;
 }
 
 .choice-step {
@@ -127,6 +128,7 @@
     .player-container .player-name {
         font-weight: bold;
         font-size: calc(24 * var(--unit));
+        color: #FFFFFF;
         user-select: none
     }
 .role {
@@ -179,3 +181,13 @@
         font-size: calc(48 * var(--unit));
         line-height: calc(56.02 * var(--unit));
     }
+
+.host-icon {
+    width: calc(24 * var(--unit));
+    height: calc(24 * var(--unit));
+    background-image: url('images/preparing/host-icon.svg');
+    background-size: cover;
+    background-position: center;
+    display: inline-block;
+    margin-right: calc(8 * var(--unit));
+}

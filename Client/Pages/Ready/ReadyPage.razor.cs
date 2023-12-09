@@ -11,9 +11,9 @@ public partial class ReadyPage
     override protected void OnInitialized()
     {
         Players = [
-            new(UserId, "AA", false, false),
-            new("123", "BB", true, true, ColorEnum.Green),
-            new("456", "CC", true, false, ColorEnum.Red, RoleEnum.OldMan),
+            new Player { Id = UserId, Name = "AA", IsHost = true, IsReady = false },
+            new Player { Id = "123", Name = "BB", IsHost = false, IsReady = true, Color = ColorEnum.Red },
+            new Player { Id = "456", Name = "CC", IsHost = false, IsReady = true, Color = ColorEnum.Green, Role = RoleEnum.Dai }
         ];
     }
 

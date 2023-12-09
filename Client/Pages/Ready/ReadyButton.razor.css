@@ -1,4 +1,4 @@
-﻿.ready-button {
+﻿.button {
     position: absolute;
     background-color: #5B5B5B;
     border-color: #D8C292;
@@ -24,16 +24,31 @@
     font-weight: 400;
 }
 
-.ready-button:hover {
+.button.enabled-to-ready:hover {
     cursor: pointer;
     background-color: #A5A5A5;
 }
-.ready-button.selected {
+.button.selected {
     background-color: #A5A5A5;
 }
-    .ready-button.selected:hover {
+    .button.selected:hover {
+        cursor: pointer;
         background-color: #5B5B5B;
     }
-    .ready-button.selected .ready-button-text::before {
+    .button.selected .ready-button-text::before {
         content: 'Cancel';
     }
+
+.start-button-text::before {
+    content: 'Start';
+    font-size: calc(60 * var(--unit));
+    width: calc(224 * var(--unit));
+    height: calc(72 * var(--unit));
+    color: #D8C292;
+    font-weight: 400;
+}
+
+.button.enabled-to-start:hover {
+    cursor: pointer;
+    background-color: #A5A5A5;
+}
