@@ -1,47 +1,34 @@
 ﻿using Client.Options;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
-using MudBlazor;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Security.Claims;
 
 namespace Client.Pages;
 
 public partial class DevPage
 {
-    private readonly List<User> users = new();
-    private List<Room>? rooms = new();
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
+    private IEnumerable<Player>? players = [];
+    private IEnumerable<Room>? rooms = [];
     [Inject] private IOptions<BackendApiOptions> BackendApiOptions { get; set; } = default!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     private Uri BackendApiBaseUri => new(BackendApiOptions.Value.BaseUrl);
 
     protected override async Task OnInitializedAsync()
     {
-        var tokens = await new HttpClient().GetFromJsonAsync<string[]>(new Uri(BackendApiBaseUri, "/tokens"));
-        if (tokens is null)
-        {
-            Snackbar.Add("取得 Token 失敗", Severity.Error);
-            return;
-        }
-
-        foreach (var token in tokens)
-        {
-            AddUser(token);
-        }
-        await base.OnInitializedAsync();
+        var users = await new HttpClient().GetFromJsonAsync<Player[]>(new Uri(BackendApiBaseUri, "/users"));
+        players = users?.Select(p => new Player(p.Id, p.Token));
     }
 
     private async void CreateGame()
     {
-        CreateGameBodyPayload bodyPayload = new(users.Select(user => new Player(user.Id)).ToArray());
+        CreateGameBodyPayload bodyPayload = new([.. players]);
         var url = new Uri(BackendApiBaseUri, "/games");
         var httpClient = new HttpClient();
-        var host = users.FirstOrDefault();
+        var host = players?.FirstOrDefault();
         if (host is null)
         {
-            Snackbar.Add("請先加入使用者", Severity.Error);
+            //Snackbar.Add("請先加入使用者", Severity.Error);
             return;
         }
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", host.Token);
@@ -49,70 +36,27 @@ public partial class DevPage
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            Snackbar.Add($"遊戲建立成功! Url: {content}", Severity.Normal);
+            //Snackbar.Add($"遊戲建立成功! Url: {content}", Severity.Normal);
             await RefleshRoomListAsync();
         }
         else
         {
-            Snackbar.Add($"遊戲建立失敗! {response.StatusCode}", Severity.Error);
-        }
-    }
-
-    private async void AddUser(string token)
-    {
-        var url = new Uri(BackendApiBaseUri, "/whoami");
-        HubConnection hubConnection = new HubConnectionBuilder()
-            .WithAutomaticReconnect()
-            .WithUrl(url, opt =>
-            {
-                opt.AccessTokenProvider = () => Task.FromResult<string?>(token);
-            })
-            .Build();
-        hubConnection.Closed += async (exception) =>
-        {
-            if (exception == null)
-            {
-                Snackbar.Add("中斷連線", Severity.Error);
-            }
-            else
-            {
-                Snackbar.Add($"中斷連線: {exception.Message}", Severity.Error);
-            }
-            await Task.CompletedTask;
-        };
-        var tcs = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
-        hubConnection.On<List<string>>("WhoAmI", data =>
-        {
-            var userId = data.Single(d => d.StartsWith(ClaimTypes.Sid))[(ClaimTypes.Sid.Length + 1)..];
-            tcs.SetResult(userId);
-        });
-
-        try
-        {
-            await hubConnection.StartAsync();
-            Snackbar.Add("連線成功!", Severity.Success);
-            await hubConnection.SendAsync("WhoAmI");
-            var tcst = await tcs.Task;
-            users.Add(new(tcst, token));
-            await hubConnection.StopAsync();
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add(ex.Message, Severity.Error);
+            //Snackbar.Add($"遊戲建立失敗! {response.StatusCode}", Severity.Error);
         }
     }
 
     private async Task RefleshRoomListAsync()
     {
         var roomIds = await new HttpClient().GetFromJsonAsync<List<string>>(new Uri(BackendApiBaseUri, "/rooms"));
-        rooms = roomIds?.Select(id => new Room(id, users)).ToList();
+        rooms = roomIds?.Select(id => new Room(id, [.. players]));
         StateHasChanged();
+    }
+    private void EnterRoom(Room room, Player player)
+    {
+        NavigationManager.NavigateTo($"games/{room.Id}?token={player.Token}");
     }
 
     private record CreateGameBodyPayload(Player[] Players);
-    private record Player(string Id);
-    record Room(string Id, List<User> Players);
-    record GameData(string Id, string Token);
-    record User(string Id, string Token);
+    private record Player(string Id, string Token);
+    record Room(string Id, IEnumerable<Player> Players);
 }

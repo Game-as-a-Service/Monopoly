@@ -7,17 +7,11 @@ public partial class ColorChoicePanel
 {
     [CascadingParameter] public ReadyPage Parent { get; set; } = default!;
     IEnumerable<Player> Players => Parent.Players;
-    string UserId => Parent.UserId;
-    private Player CurrentPlayer => Parent.CurrentPlayer;
+    private Player? CurrentPlayer => Parent.CurrentPlayer;
 
     private void ChangeColor(ColorEnum color)
     {
-        if (GetPlayerWithColor(color) is not null)
-        {
-            return;
-        }
-        var player = Players.FirstOrDefault(p => p.Id == UserId);
-        if (player is null)
+        if (GetPlayerWithColor(color) is not null || CurrentPlayer is null)
         {
             return;
         }
@@ -32,7 +26,7 @@ public partial class ColorChoicePanel
         {
             return string.Empty;
         }
-        return $"color-selected {(color == CurrentPlayer.Color ? "current-player" : string.Empty)}";
+        return $"color-selected {(color == CurrentPlayer?.Color ? "current-player" : string.Empty)}";
     }
 
     private static string GetReadySignCss(Player? player)

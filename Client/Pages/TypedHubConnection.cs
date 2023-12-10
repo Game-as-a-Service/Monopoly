@@ -3,13 +3,10 @@ using System.Linq.Expressions;
 
 namespace Client.Pages;
 
-internal class TypedHubConnection<TResponse> where TResponse : notnull
+internal class TypedHubConnection<TResponse>(HubConnection hubConnection) where TResponse : notnull
 {
-    public HubConnection HubConnection { get; }
-    public TypedHubConnection(HubConnection hubConnection)
-    {
-        HubConnection = hubConnection;
-    }
+    public HubConnection HubConnection { get; } = hubConnection;
+
     public void On(Expression<Func<TResponse, Func<Task>>> @event, Action handler)
     {
         HandleOnEvent(@event,
@@ -20,35 +17,35 @@ internal class TypedHubConnection<TResponse> where TResponse : notnull
     public void On<T1>(Expression<Func<TResponse, Func<T1, Task>>> @event, Action<T1> handler)
     {
         HandleOnEvent(@event,
-            new[] { typeof(T1) },
+            [typeof(T1)],
             args => handler((T1)args[0]!));
     }
 
     public void On<T1, T2>(Expression<Func<TResponse, Func<T1, T2, Task>>> @event, Action<T1, T2> handler)
     {
-        HandleOnEvent(@event, 
-            new[] { typeof(T1), typeof(T2) },
+        HandleOnEvent(@event,
+            [typeof(T1), typeof(T2)],
             args => handler((T1)args[0]!, (T2)args[1]!));
     }
 
     public void On<T1, T2, T3>(Expression<Func<TResponse, Func<T1, T2, T3, Task>>> @event, Action<T1, T2, T3> handler)
     {
         HandleOnEvent(@event,
-            new[] { typeof(T1), typeof(T2), typeof(T3) },
+            [typeof(T1), typeof(T2), typeof(T3)],
             args => handler((T1)args[0]!, (T2)args[1]!, (T3)args[2]!));
     }
 
     public void On<T1, T2, T3, T4>(Expression<Func<TResponse, Func<T1, T2, T3, T4, Task>>> @event, Action<T1, T2, T3, T4> handler)
     {
         HandleOnEvent(@event,
-            new[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4) },
+            [typeof(T1), typeof(T2), typeof(T3), typeof(T4)],
             args => handler((T1)args[0]!, (T2)args[1]!, (T3)args[2]!, (T4)args[3]!));
     }
 
     public void On<T1, T2, T3, T4, T5>(Expression<Func<TResponse, Func<T1, T2, T3, T4, T5, Task>>> @event, Action<T1, T2, T3, T4, T5> handler)
     {
         HandleOnEvent(@event,
-            new[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5) },
+            [typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)],
             args => handler((T1)args[0]!, (T2)args[1]!, (T3)args[2]!, (T4)args[3]!, (T5)args[4]!));
     }
 

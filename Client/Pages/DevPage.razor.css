@@ -1,0 +1,96 @@
+﻿.background {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* 房間樣式 */
+.room {
+    display: flex;
+
+    justify-content: flex-start; /* 在主軸線上靠左對齊 */
+    flex-wrap: wrap; /* 允許元素換行 */
+}
+
+/* 玩家和房間的容器 */
+.players, .rooms {
+    margin-bottom: 20px;
+    max-height: 400px; /* 可以根據需要調整 */
+    overflow-y: auto; /* 需要時顯示垂直滾動條 */
+}
+
+/* 玩家和房間的卡片樣式 */
+.player, .room {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+/* 玩家和房間的ID樣式 */
+.player-id, .room-id {
+    min-width: 50px; /* 確保ID有足夠的空間 */
+    font-weight: bold;
+}
+
+/* 玩家的token樣式 */
+.player-token {
+    color: #555;
+    font-size: 0.9em;
+    word-break: break-word; /* 讓長文字換行 */
+    overflow-x: auto; /* 需要時顯示水平滾動條 */
+}
+
+/* 創建房間按鈕樣式 */
+.create-room {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+    .create-room:hover {
+        background-color: #0056b3;
+    }
+
+/* 房間玩家樣式 */
+.room-player {
+    padding: 5px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+    .room-player:hover {
+        background-color: #dde2e6;
+    }
+
+/* 房間玩家列表 */
+.room-players {
+    display: flex;
+    align-items: center; /* 垂直居中對齊 */
+    gap: 10px; /* 元素之間的間隙 */
+}
+/* 確保滾動條美觀 */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }

@@ -8,7 +8,10 @@
 h1:focus {
     outline: none;
 }
-.mud-main-content {
+body {
+    margin: 0;
+}
+.main-content {
     padding: 0 !important;
     width: var(--vw);
     height: var(--vh);

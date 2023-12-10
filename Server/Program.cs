@@ -64,7 +64,6 @@ app.UseAuthorization();
 
 app.UseResponseCompression();
 app.MapHub<MonopolyHub>("/monopoly");
-app.MapHub<WhoAmIHub>("/whoami");
 
 app.MapGet("/health", () => Results.Ok());
 
@@ -92,7 +91,7 @@ app.MapGet("/map", (string mapId) =>
     {
         return Results.NotFound();
     }
-    
+
     // read json file
     string json = File.ReadAllText(jsonFilePath);
     var data = MonopolyMap.Parse(json);
@@ -106,10 +105,11 @@ app.MapGet("/rooms", () =>
 });
 
 #if DEBUG
-app.MapGet("/tokens", () =>
+app.MapGet("/users", () =>
 {
     DevelopmentPlatformService platformService = (DevelopmentPlatformService)app.Services.CreateScope().ServiceProvider.GetRequiredService<IPlatformService>();
-    return Results.Json(platformService.GetTokens());
+    var users = platformService.GetUsers().Select(user => new { Id = user.Id, Token = user.Token });
+    return Results.Json(users);
 });
 #endif
 

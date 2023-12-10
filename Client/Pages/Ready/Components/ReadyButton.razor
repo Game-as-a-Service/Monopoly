@@ -1,4 +1,8 @@
-@if (CurrentPlayer.IsHost)
+@if (CurrentPlayer is null)
+{
+    
+}
+else if (CurrentPlayer.IsHost)
 {
     <div class="button @(GetStartButtonCss())" @onclick="@Start">
         <div class="start-button-text"></div>

@@ -6,17 +6,15 @@ namespace Client.Pages.Ready.Components;
 public partial class RoleChoicePanel
 {
     [CascadingParameter] public ReadyPage Parent { get; set; } = default!;
-    IEnumerable<Player> Players => Parent.Players;
-    string UserId => Parent.UserId;
-    private Player CurrentPlayer => Parent.CurrentPlayer;
+    private Player? CurrentPlayer => Parent.CurrentPlayer;
     private void ChangeRole(RoleEnum role)
     {
-        var player = Players.FirstOrDefault(p => p.Id == UserId);
-        if (player is not null)
+        if (CurrentPlayer is null)
         {
-            CurrentPlayer.Role = role;
-            Parent.Update();
+            return;
         }
+        CurrentPlayer.Role = role;
+        Parent.Update();
     }
 }
 

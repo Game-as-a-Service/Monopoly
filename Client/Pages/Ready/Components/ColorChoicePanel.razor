@@ -4,8 +4,11 @@
     {
         var player = GetPlayerWithColor(color);
         <div class="choice-wrapper @GetChoiceWrapperCss(color)" @onclick="() => ChangeColor(color)">
-            <div class="choice-text"></div>
-            <div class="choice-arrow choice-arrow-@color.ToLowerCaseName()"></div>
+            @if (CurrentPlayer is not null)
+            {
+                <div class="choice-text"></div>
+                <div class="choice-arrow choice-arrow-@color.ToLowerCaseName()"></div>
+            }
             <div class="player-container">
                 <div class="player-name">
                     @if(player?.IsHost is true)

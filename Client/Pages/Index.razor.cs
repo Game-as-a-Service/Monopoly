@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
-using MudBlazor;
 using SharedLibrary;
 
 namespace Client.Pages;
@@ -13,13 +12,11 @@ public partial class Index
 
     [Parameter, SupplyParameterFromQuery(Name = "token")]
     public string AccessToken { get; set; } = default!;
-
-    [Inject] private ISnackbar Snackbar { get; set; } = default!;
     [Inject] private IOptions<BackendApiOptions> BackendApiOptions { get; set; } = default!;
 
     private HubConnection Client { get; set; } = default!;
 
-    private List<string> Messages { get; } = new();
+    private List<string> Messages { get; } = [];
     public bool IsGameStarted { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
@@ -36,11 +33,11 @@ public partial class Index
         try
         {
             await Client.StartAsync();
-            Snackbar.Add("連線成功!", Severity.Success);
+            Messages.Add("連線成功!");
         }
         catch (Exception ex)
         {
-            Snackbar.Add(ex.Message, Severity.Error);
+            Messages.Add(ex.Message);
         }
     }
 
@@ -49,7 +46,8 @@ public partial class Index
         Client.Closed += async (exception) =>
         {
             var errorMessage = exception?.Message;
-            Snackbar.Add($"中斷連線: {errorMessage}", Severity.Error);
+            Messages.Add($"中斷連線: {errorMessage}");
+
             await Task.CompletedTask;
         };
 
@@ -57,7 +55,6 @@ public partial class Index
 
         connection.On(x => x.PlayerJoinGameEvent, (string id) =>
         {
-            Snackbar.Add($"player {id} joined game!", Severity.Success);
             Messages.Add($"player {id} joined game!");
             StateHasChanged();
         });

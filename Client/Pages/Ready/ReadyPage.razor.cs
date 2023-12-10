@@ -4,14 +4,9 @@ namespace Client.Pages.Ready;
 
 public partial class ReadyPage
 {
-    public IEnumerable<Player> Players { get; set; } = default!;
+    public IEnumerable<Player> Players { get; set; } = [];
     public string UserId { get; set; } = string.Empty;
-    public Player CurrentPlayer => Players.First(x => x.Id == UserId);
-
-    override protected void OnInitialized()
-    {
-
-    }
+    public Player? CurrentPlayer => Players.FirstOrDefault(x => x.Id == UserId);
 
     public void Update()
     {

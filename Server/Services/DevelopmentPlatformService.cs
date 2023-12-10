@@ -31,16 +31,17 @@ public class DevelopmentPlatformService : IPlatformService
         throw new Exception("找不到使用者資訊");
     }
 
-    public string[] GetTokens()
+    public (string Id, string Token)[] GetUsers()
     {
         var usersSection = _configuration.GetSection("Authentication:Users");
         var users = usersSection.GetChildren();
-        var tokens = new List<string>();
+        var usersInfo = new List<(string Id, string Token)>();
         foreach (var user in users)
         {
+            var id = user["Id"];
             var token = user["Token"];
-            tokens.Add(token!);
+            usersInfo.Add((id!, token!));
         }
-        return tokens.ToArray();
+        return usersInfo.ToArray();
     }
 }

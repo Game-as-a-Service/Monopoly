@@ -1,12 +1,15 @@
 ﻿@using Client.Pages.Ready.Entities
-<div class="choice-role-area">
-    <div class="choice-role-text"></div>
-    <div class="choice-role-row">
-        @foreach (var role in new[] { RoleEnum.OldMan, RoleEnum.Baby, RoleEnum.Dai, RoleEnum.Mei })
-        {
-            <div class="choice-role-item @(CurrentPlayer.Role == role ? "selected" : string.Empty)" @onclick="() => ChangeRole(role)">
-                <div class="picture @(role.ToLowerCaseName())"></div>
-            </div>
-        }
+@if (CurrentPlayer is not null)
+{
+    <div class="choice-role-area">
+        <div class="choice-role-text"></div>
+        <div class="choice-role-row">
+            @foreach (var role in new[] { RoleEnum.OldMan, RoleEnum.Baby, RoleEnum.Dai, RoleEnum.Mei })
+            {
+                <div class="choice-role-item @(CurrentPlayer.Role == role ? "selected" : string.Empty)" @onclick="() => ChangeRole(role)">
+                    <div class="picture @(role.ToLowerCaseName())"></div>
+                </div>
+            }
+        </div>
     </div>
-</div>
+}

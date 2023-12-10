@@ -1,39 +1,28 @@
 ﻿@page "/dev-page"
-<MudCard>
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h5">玩家列表</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
-    @foreach (var item in users)
-    {
-        <MudPaper Class="pa-3" Outlined Elevation="5">@item.Id</MudPaper>
-    }
-    </MudCardContent>
-</MudCard>
-<MudButton OnClick="CreateGame" Variant="Variant.Filled" Color="Color.Primary">Create Game</MudButton>
-<MudCard>
-    <MudCardHeader>
-        <CardHeaderContent>
-            <MudText Typo="Typo.h5">房間列表</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
-    <MudCardContent>
-        <MudDataGrid Items="@rooms">
-            <Columns>
-                <PropertyColumn Property="x => x.Id" />
-                <TemplateColumn CellClass="d-flex justify-end" Title="玩家列表" >
-                    <CellTemplate>
-                        <MudStack Row>
-                            @foreach (var player in context.Item.Players)
-                            {
-                                <MudButton Href=@($"games/{context.Item.Id}?token={player.Token}") Target="_blank" Color="Color.Primary" Variant="Variant.Filled">@player.Id</MudButton>
-                            }
-                        </MudStack>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-        </MudDataGrid>
-    </MudCardContent>
-</MudCard>
+
+<div class="background">
+    <div class="players">
+        @foreach (var player in players)
+        {
+            <div class="player">
+                <div class="player-id">@player.Id</div>
+                <div class="player-token">@player.Token</div>
+            </div>
+        }
+    </div>
+    <div class="create-room" @onclick="CreateGame">Create Room</div>
+    <div class="rooms">
+        @foreach (var room in rooms)
+        {
+            <div class="room">
+                <div class="room-id">@room.Id</div>
+                <div class="room-players">
+                    @foreach (var player in room.Players)
+                    {
+                        <div class="room-player" @onclick="() => EnterRoom(room, player)">@player.Id</div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
