@@ -24,8 +24,8 @@ public class PreParedTest
         var B = new { Id = "B", locationId = 2, roleId = "1", preparedState = PlayerState.Normal };
 
         var monopoly = new MonopolyBuilder()
-            .WithPlayer(A.Id, pa => pa.WithLocation(A.locationId).WithState(PlayerState.Preparing))
-            .WithPlayer(B.Id, pb => pb.WithLocation(B.locationId).WithRole(B.roleId).WithState(PlayerState.Preparing))
+            .WithPlayer(A.Id, pa => pa.WithLocation(A.locationId).WithState(PlayerState.Ready))
+            .WithPlayer(B.Id, pb => pb.WithLocation(B.locationId).WithRole(B.roleId).WithState(PlayerState.Ready))
             .WithGameStage(GameStage.Preparing)
             .Build();
 
@@ -35,7 +35,7 @@ public class PreParedTest
         // Assert
         Assert.AreEqual(B.preparedState, monopoly.Players.First(p => p.Id == B.Id).State);
 
-        monopoly.DomainEvents.NextShouldBe(new PlayerPrepareEvent(B.Id, B.preparedState.ToString()));
+        monopoly.DomainEvents.NextShouldBe(new PlayerReadyEvent(B.Id, B.preparedState.ToString()));
     }
 
     [TestMethod]
@@ -50,7 +50,7 @@ public class PreParedTest
     public void 玩家取消準備()
     {
         // Arrange
-        var A = new { Id = "A", locationId = 1, roleId = "1", preparingState = PlayerState.Preparing };
+        var A = new { Id = "A", locationId = 1, roleId = "1", preparingState = PlayerState.Ready };
 
         var monopoly = new MonopolyBuilder()
             .WithPlayer(A.Id, pa => pa.WithLocation(A.locationId).WithRole(A.roleId).WithState(PlayerState.Normal))
@@ -63,7 +63,7 @@ public class PreParedTest
         // Assert
         Assert.AreEqual(A.preparingState, monopoly.Players.First(p => p.Id == A.Id).State);
 
-        monopoly.DomainEvents.NextShouldBe(new PlayerPrepareEvent(A.Id, A.preparingState.ToString()));
+        monopoly.DomainEvents.NextShouldBe(new PlayerReadyEvent(A.Id, A.preparingState.ToString()));
     }
 
     [TestMethod]
@@ -80,7 +80,7 @@ public class PreParedTest
     {
         // Arrange
         var A = new { Id = "A", roleId = "A", locationId = 1, preparedState = PlayerState.Normal };
-        var B = new { Id = "B", roleId = "B", locationId = 0, preparingState = PlayerState.Preparing };
+        var B = new { Id = "B", roleId = "B", locationId = 0, preparingState = PlayerState.Ready };
 
         var monopoly = new MonopolyBuilder()
             .WithPlayer(A.Id, pa => pa.WithLocation(A.locationId)
@@ -100,7 +100,7 @@ public class PreParedTest
         // Assert
         Assert.AreEqual(B.preparingState, monopoly.Players.First(p => p.Id == B.Id).State);
 
-        monopoly.DomainEvents.NextShouldBe(new PlayerCannotPrepareEvent(B.Id, B.preparingState.ToString(), B.roleId, B.locationId));
+        monopoly.DomainEvents.NextShouldBe(new PlayerCannotReadyEvent(B.Id, B.preparingState.ToString(), B.roleId, B.locationId));
     }
 
     [TestMethod]
@@ -117,7 +117,7 @@ public class PreParedTest
     {
         // Arrange
         var A = new { Id = "A", roleId = "A", locationId = 1, preparedState = PlayerState.Normal };
-        var B = new { Id = "B", locationId = 0, preparingState = PlayerState.Preparing };
+        var B = new { Id = "B", locationId = 0, preparingState = PlayerState.Ready };
 
         var monopoly = new MonopolyBuilder()
             .WithPlayer(A.Id, pa => pa.WithLocation(A.locationId)
@@ -136,6 +136,6 @@ public class PreParedTest
         // Assert
         Assert.AreEqual(B.preparingState, monopoly.Players.First(p => p.Id == B.Id).State);
 
-        monopoly.DomainEvents.NextShouldBe(new PlayerCannotPrepareEvent(B.Id, B.preparingState.ToString(), null, B.locationId));
+        monopoly.DomainEvents.NextShouldBe(new PlayerCannotReadyEvent(B.Id, B.preparingState.ToString(), null, B.locationId));
     }
 }

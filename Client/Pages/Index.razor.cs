@@ -2,34 +2,50 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
-using SharedLibrary;
 
 namespace Client.Pages;
 
 public partial class Index
 {
-    [Parameter] public string Id { get; set; } = null!;
+    [Parameter] public string GameId { get; set; } = null!;
 
     [Parameter, SupplyParameterFromQuery(Name = "token")]
     public string AccessToken { get; set; } = default!;
     [Inject] private IOptions<BackendApiOptions> BackendApiOptions { get; set; } = default!;
-
-    private HubConnection Client { get; set; } = default!;
-
+    private string UserId { get; set; } = string.Empty;
     private List<string> Messages { get; } = [];
     public bool IsGameStarted { get; set; } = false;
+    private TypedHubConnection Connection { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
+        await SetupHubConnectionAsync();
+    }
+
+    private async Task SetupHubConnectionAsync()
+    {
         var baseUri = new Uri(BackendApiOptions.Value.BaseUrl);
-        var url = new Uri(baseUri, $"/monopoly?gameid={Id}");
-        Client = new HubConnectionBuilder()
+        var url = new Uri(baseUri, $"/monopoly?gameid={GameId}");
+        var Client = new HubConnectionBuilder()
             .WithUrl(url, options =>
             {
                 options.AccessTokenProvider = async () => await Task.FromResult(AccessToken);
             })
             .Build();
-        SetupHubConnection();
+        Connection = new(Client);
+        Connection.WelcomeEventHandler += (e) =>
+        {
+            UserId = e.PlayerId;
+            Messages.Add($"歡迎 {e.PlayerId} 加入遊戲!");
+            StateHasChanged();
+        };
+        Client.Closed += async (exception) =>
+        {
+            var errorMessage = exception?.Message;
+            Messages.Add($"中斷連線: {errorMessage}");
+
+            await Task.CompletedTask;
+        };
         try
         {
             await Client.StartAsync();
@@ -39,24 +55,5 @@ public partial class Index
         {
             Messages.Add(ex.Message);
         }
-    }
-
-    private void SetupHubConnection()
-    {
-        Client.Closed += async (exception) =>
-        {
-            var errorMessage = exception?.Message;
-            Messages.Add($"中斷連線: {errorMessage}");
-
-            await Task.CompletedTask;
-        };
-
-        TypedHubConnection<IMonopolyResponses> connection = new(Client);
-
-        connection.On(x => x.PlayerJoinGameEvent, (string id) =>
-        {
-            Messages.Add($"player {id} joined game!");
-            StateHasChanged();
-        });
     }
 }

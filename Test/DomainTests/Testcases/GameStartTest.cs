@@ -96,7 +96,7 @@ public class GameStartTest
     {
         // Arrange
         var A = new { Id = "A", roleId = "A", locationId = 1, preparedState = PlayerState.Normal };
-        var B = new { Id = "B", roleId = "B", locationId = 0, preparingState = PlayerState.Preparing };
+        var B = new { Id = "B", roleId = "B", locationId = 0, preparingState = PlayerState.Ready };
         var GameState = "Preparing";
 
         var monopoly = new MonopolyBuilder()

@@ -2,16 +2,16 @@
     position: absolute;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: center;
+    justify-content: center;
     background-color: #5B5B5B;
     border-color: #D8C292;
     border-width: calc(4 * var(--unit));
+    border-style: solid;
     top: calc(888 * var(--unit));
     left: calc(1129 * var(--unit));
     width: calc(446 * var(--unit));
     height: calc(180 * var(--unit));
-    padding: calc(16 * var(--unit)) calc(0 * var(--unit)) calc(16 * var(--unit)) calc(0 * var(--unit));
     gap: calc(16 * var(--unit));
     border-radius: calc(12 * var(--unit));
 }

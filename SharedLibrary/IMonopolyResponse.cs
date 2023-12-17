@@ -1,4 +1,6 @@
-﻿namespace SharedLibrary;
+﻿using SharedLibrary.ResponseArgs;
+
+namespace SharedLibrary;
 
 public interface IMonopolyResponses
 {
@@ -87,13 +89,15 @@ public interface IMonopolyResponses
 
     Task PlayCannotSelectLocationEvent(string PlayerId, int LocationId);
 
-    Task PlayerPrepareEvent(string PlayerId, string PlayerState);
+    Task PlayerReadyEvent(string PlayerId, string PlayerState);
 
-    Task PlayerCannotPrepareEvent(string PlayerId, string PlayerState, string RoleId, int LocationID);
+    Task PlayerCannotReadyEvent(string PlayerId, string PlayerState, string RoleId, int LocationID);
 
     Task GameStartEvent(string GameStage, string CurrentPlayer);
 
     Task OnlyOnePersonEvent(string GameStage);
 
     Task SomePlayersPreparingEvent(string GameStage, params string[] PlayerIds);
+    Task GetReadyInfoEvent(GetReadyInfoEvent e);
+    Task WelcomeEvent(WelcomeEvent e);
 }

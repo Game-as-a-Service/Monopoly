@@ -1,66 +1,30 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using System.Linq.Expressions;
+using SharedLibrary.ResponseArgs;
 
 namespace Client.Pages;
 
-internal class TypedHubConnection<TResponse>(HubConnection hubConnection) where TResponse : notnull
+internal class TypedHubConnection
 {
-    public HubConnection HubConnection { get; } = hubConnection;
+    private readonly HubConnection hubConnection;
 
-    public void On(Expression<Func<TResponse, Func<Task>>> @event, Action handler)
-    {
-        HandleOnEvent(@event,
-            Type.EmptyTypes,
-            args => handler());
-    }
+    public event PlayerJoinGameEventDelegate? PlayerJoinGameEventHandler;
+    public delegate void PlayerJoinGameEventDelegate(PlayerJoinGameEvent e);
+    public event GetReadyInfoEventDelegate? GetReadyInfoEventHandler;
+    public delegate void GetReadyInfoEventDelegate(GetReadyInfoEvent e);
+    public event WelcomeEventDelegate? WelcomeEventHandler;
+    public delegate void WelcomeEventDelegate(WelcomeEvent e);
 
-    public void On<T1>(Expression<Func<TResponse, Func<T1, Task>>> @event, Action<T1> handler)
+    public TypedHubConnection(HubConnection hubConnection)
     {
-        HandleOnEvent(@event,
-            [typeof(T1)],
-            args => handler((T1)args[0]!));
+        hubConnection.On<PlayerJoinGameEvent>(nameof(PlayerJoinGameEvent), (e) => PlayerJoinGameEventHandler?.Invoke(e));
+        hubConnection.On<GetReadyInfoEvent>(nameof(GetReadyInfoEvent), (e) => GetReadyInfoEventHandler?.Invoke(e));
+        hubConnection.On<WelcomeEvent>(nameof(WelcomeEvent), (e) => WelcomeEventHandler?.Invoke(e));
+        this.hubConnection = hubConnection;
     }
+    public async Task GetReadyInfo() => await hubConnection.SendAsync("GetReadyInfo");
+}
 
-    public void On<T1, T2>(Expression<Func<TResponse, Func<T1, T2, Task>>> @event, Action<T1, T2> handler)
-    {
-        HandleOnEvent(@event,
-            [typeof(T1), typeof(T2)],
-            args => handler((T1)args[0]!, (T2)args[1]!));
-    }
-
-    public void On<T1, T2, T3>(Expression<Func<TResponse, Func<T1, T2, T3, Task>>> @event, Action<T1, T2, T3> handler)
-    {
-        HandleOnEvent(@event,
-            [typeof(T1), typeof(T2), typeof(T3)],
-            args => handler((T1)args[0]!, (T2)args[1]!, (T3)args[2]!));
-    }
-
-    public void On<T1, T2, T3, T4>(Expression<Func<TResponse, Func<T1, T2, T3, T4, Task>>> @event, Action<T1, T2, T3, T4> handler)
-    {
-        HandleOnEvent(@event,
-            [typeof(T1), typeof(T2), typeof(T3), typeof(T4)],
-            args => handler((T1)args[0]!, (T2)args[1]!, (T3)args[2]!, (T4)args[3]!));
-    }
-
-    public void On<T1, T2, T3, T4, T5>(Expression<Func<TResponse, Func<T1, T2, T3, T4, T5, Task>>> @event, Action<T1, T2, T3, T4, T5> handler)
-    {
-        HandleOnEvent(@event,
-            [typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)],
-            args => handler((T1)args[0]!, (T2)args[1]!, (T3)args[2]!, (T4)args[3]!, (T5)args[4]!));
-    }
-
-    private void HandleOnEvent<TDelegate>(Expression<Func<TResponse, TDelegate>> @event, Type[] parameterTypes, Action<object?[]> handler)
-         where TDelegate : Delegate
-    {
-        var func = @event.Compile().Invoke(default!);
-        var expression = func.Method.GetBaseDefinition();
-        if (expression.Name is null)
-            throw new ArgumentException("事件名稱無法解析");
-        HubConnection.On(expression.Name, parameterTypes, static (parameters, state) =>
-        {
-            var currentHandler = (Action<object?[]>)state;
-            currentHandler(parameters);
-            return Task.CompletedTask;
-        }, handler);
-    }
+internal class PlayerJoinGameEvent : EventArgs
+{
+    public required string PlayerId { get; set; }
 }
