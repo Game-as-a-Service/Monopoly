@@ -10,7 +10,7 @@ public class Player
     private Chess chess;
     private readonly List<LandContract> _landContractList = new();
 
-    public Player(string id, decimal money = 15000, PlayerState playerState = PlayerState.Preparing, int bankruptRounds = 0, int locationId = 0, string? roleId = null)
+    public Player(string id, decimal money = 15000, PlayerState playerState = PlayerState.Ready, int bankruptRounds = 0, int locationId = 0, string? roleId = null)
     {
         Id = id;
         Money = money;
@@ -271,16 +271,16 @@ public class Player
     {
         if (RoleId is null || LocationId == 0)
         {
-            return new PlayerCannotPrepareEvent(Id, State.ToString(), RoleId, LocationId);
+            return new PlayerCannotReadyEvent(Id, State.ToString(), RoleId, LocationId);
         }
-        else if (State == PlayerState.Preparing)
+        else if (State == PlayerState.Ready)
         {
             State = PlayerState.Normal;
         }
         else if (State == PlayerState.Normal)
         {
-            State = PlayerState.Preparing;
+            State = PlayerState.Ready;
         }
-        return new PlayerPrepareEvent(Id, State.ToString());
+        return new PlayerReadyEvent(Id, State.ToString());
     }
 }

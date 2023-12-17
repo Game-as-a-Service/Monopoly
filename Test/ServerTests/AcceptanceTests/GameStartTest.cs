@@ -117,7 +117,7 @@ public class GameStartTest
             .WithPlayer(
                 new PlayerBuilder("B")
                 .WithRole("2")
-                .WithState(Domain.PlayerState.Preparing)
+                .WithState(Domain.PlayerState.Ready)
                 .Build()
             )
             .WithHost("A");

@@ -318,7 +318,7 @@ public class Monopoly : AbstractAggregateRoot
 
             _players.ForEach(p => 
             {
-                if(p.State == PlayerState.Preparing)
+                if(p.State == PlayerState.Ready)
                 {
                     preparingPlayers.Add(p.Id);
                 }

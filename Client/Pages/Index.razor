@@ -1,15 +1,14 @@
-﻿@page "/games/{id}"
+﻿@page "/games/{gameid}"
 @using Client.Components
 @using Client.Pages.Gaming
 @using Client.Pages.Ready
-<CascadingValue Value="Id">
+<CascadingValue Value="Connection">
     @if (IsGameStarted)
     {
         <GamingPage />
     }
     else
     {
-        <ReadyPage />
+        <ReadyPage UserId="@UserId" />
     }
 </CascadingValue>
-

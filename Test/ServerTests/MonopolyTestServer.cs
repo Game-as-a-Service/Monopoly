@@ -240,6 +240,10 @@ internal class VerificationHub
             {
                 continue;
             }
+            if (method == nameof(IMonopolyResponses.WelcomeEvent))
+            {
+                continue;
+            }
             var options = new JsonSerializerOptions()
             {
                 WriteIndented = true,

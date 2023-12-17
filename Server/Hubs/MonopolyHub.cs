@@ -1,8 +1,11 @@
 using Application.Common;
+using Application.Query;
 using Application.Usecases;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Server.Presenters;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs;
 using System.Security.Claims;
 
 namespace Server.Hubs;
@@ -11,6 +14,8 @@ namespace Server.Hubs;
 public class MonopolyHub : Hub<IMonopolyResponses>
 {
     private readonly IRepository _repository;
+    private string GameId => Context.Items["GameId"] as string ?? "";
+    private string UserId => Context.Items["UserId"] as string ?? "";
 
     public async Task PlayerRollDice(string gameId, string userId, RollDiceUsecase usecase)
     {
@@ -77,7 +82,7 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new SelectRoleRequest(gameId, userId, roleId));
     }
 
-    public async Task PlayerPrepare(string gameId, string userId, PlayerPreparedUsecase usecase)
+    public async Task PlayerReady(string gameId, string userId, PlayerPreparedUsecase usecase)
     {
         await usecase.ExecuteAsync(new PlayerPreparedRequest(gameId, userId));
     }
@@ -87,12 +92,38 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new GameStartRequest(gameId, userId));
     }
 
+    public async Task GetReadyInfo(GetReadyInfosUsecase usecase)
+    {
+        var presenter = new DefaultPresenter<GetReadyInfoResponse>();
+        await usecase.ExecuteAsync(new GetReadyInfoRequest(GameId, UserId), presenter);
+        await Clients.Caller.GetReadyInfoEvent(new()
+        {
+            Players = presenter.Value.Info.Players.Select(x =>
+            {
+                var isRole = Enum.TryParse<GetReadyInfoEvent.RoleEnum>(x.RoleId, true, out var roleEnum);
+                if (isRole is false)
+                {
+                    roleEnum = GetReadyInfoEvent.RoleEnum.None;
+                }
+                return new GetReadyInfoEvent.Player
+                {
+                    Id = x.PlayerId,
+                    Name = x.PlayerId,
+                    IsReady = x.IsReady,
+                    Role = roleEnum,
+                    Color = (GetReadyInfoEvent.ColorEnum?)x.LocationId ?? GetReadyInfoEvent.ColorEnum.None
+                };
+            }).ToList(),
+            HostId = presenter.Value.Info.HostId,
+        });
+    }
+
     public MonopolyHub(IRepository repository)
     {
         _repository = repository;
     }
 
-    public override Task OnConnectedAsync()
+    public override async Task OnConnectedAsync()
     {
         HttpContext httpContext = Context.GetHttpContext()!;
         var gameIdStringValues = httpContext.Request.Query["gameid"];
@@ -100,16 +131,15 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         {
             throw new GameNotFoundException($"Not pass game id");
         }
-        string gameId = gameIdStringValues.ToString();
-        string userId = Context.User!.FindFirst(x => x.Type == ClaimTypes.Sid)!.Value;
-        if (!_repository.IsExist(gameId))
+        Context.Items["GameId"] = gameIdStringValues.ToString();
+        Context.Items["UserId"] = Context.User!.FindFirst(x => x.Type == ClaimTypes.Sid)!.Value;
+        if (!_repository.IsExist(GameId))
         {
-            throw new GameNotFoundException($"Can not find the game that id is {gameId}");
+            throw new GameNotFoundException($"Can not find the game that id is {GameId}");
         }
-        var game = _repository.FindGameById(gameId);
-        Groups.AddToGroupAsync(Context.ConnectionId, gameId);
-        Clients.Group(gameId).PlayerJoinGameEvent(userId!);
-        return base.OnConnectedAsync();
+        await Groups.AddToGroupAsync(Context.ConnectionId, GameId);
+        await Clients.Caller.WelcomeEvent(new() { PlayerId = UserId });
+        await Clients.Group(GameId).PlayerJoinGameEvent(UserId!);
     }
 
     public class GameNotFoundException : Exception

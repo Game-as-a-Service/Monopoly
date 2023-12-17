@@ -4,5 +4,5 @@ public enum PlayerState
 {
     Normal,
     Bankrupt,
-    Preparing
+    Ready
 }

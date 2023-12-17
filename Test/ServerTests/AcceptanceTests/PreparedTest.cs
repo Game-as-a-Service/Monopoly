@@ -34,14 +34,14 @@ public class PreparedTest
                 new PlayerBuilder("A")
                 .WithLocation(1)
                 .WithRole("1")
-                .WithState(Domain.PlayerState.Preparing)
+                .WithState(Domain.PlayerState.Ready)
                 .Build()
             )
             .WithPlayer(
                 new PlayerBuilder("B")
                 .WithLocation(2)
                 .WithRole("2")
-                .WithState(Domain.PlayerState.Preparing)
+                .WithState(Domain.PlayerState.Ready)
                 .Build()
             );
 
@@ -50,11 +50,11 @@ public class PreparedTest
         var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerPrepare), gameId, "B");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerReady), gameId, "B");
 
         // Assert
         hub.Verify<string, string>(
-            nameof(IMonopolyResponses.PlayerPrepareEvent),
+            nameof(IMonopolyResponses.PlayerReadyEvent),
                 (playerId, playerState) => (playerId, playerState) == ("B", "Normal")
             );
     }
@@ -84,12 +84,12 @@ public class PreparedTest
         var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerPrepare), gameId, "A");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerReady), gameId, "A");
 
         // Assert
         hub.Verify<string, string>(
-            nameof(IMonopolyResponses.PlayerPrepareEvent),
-                (playerId, playerState) => (playerId, playerState) == ("A", "Preparing")
+            nameof(IMonopolyResponses.PlayerReadyEvent),
+                (playerId, playerState) => (playerId, playerState) == ("A", "Ready")
             );
     }
 
@@ -110,13 +110,13 @@ public class PreparedTest
                 new PlayerBuilder("A")
                 .WithLocation(1)
                 .WithRole("1")
-                .WithState(Domain.PlayerState.Preparing)
+                .WithState(Domain.PlayerState.Ready)
                 .Build()
             )
             .WithPlayer(
                 new PlayerBuilder("B")
                 .WithRole("2")
-                .WithState(Domain.PlayerState.Preparing)
+                .WithState(Domain.PlayerState.Ready)
                 .Build()
             );
 
@@ -125,12 +125,12 @@ public class PreparedTest
         var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerPrepare), gameId, "B");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerReady), gameId, "B");
 
         // Assert
         hub.Verify<string, string, string, int>(
-            nameof(IMonopolyResponses.PlayerCannotPrepareEvent),
-                (playerId, playerState, roleId, locationId) => (playerId, playerState, roleId, locationId) == ("B", "Preparing", "2", 0)
+            nameof(IMonopolyResponses.PlayerCannotReadyEvent),
+                (playerId, playerState, roleId, locationId) => (playerId, playerState, roleId, locationId) == ("B", "Ready", "2", 0)
             );
     }
 
@@ -157,7 +157,7 @@ public class PreparedTest
             .WithPlayer(
                 new PlayerBuilder("B")
                 .WithLocation(2)
-                .WithState(Domain.PlayerState.Preparing)
+                .WithState(Domain.PlayerState.Ready)
                 .Build()
             );
 
@@ -166,12 +166,12 @@ public class PreparedTest
         var hub = await server.CreateHubConnectionAsync(gameId, "A");
 
         // Act
-        await hub.SendAsync(nameof(MonopolyHub.PlayerPrepare), gameId, "B");
+        await hub.SendAsync(nameof(MonopolyHub.PlayerReady), gameId, "B");
 
         // Assert
         hub.Verify<string, string, string, int>(
-            nameof(IMonopolyResponses.PlayerCannotPrepareEvent),
-                (playerId, playerState, roleId, locationId) => (playerId, playerState, roleId, locationId) == ("B", "Preparing", null, 2)
+            nameof(IMonopolyResponses.PlayerCannotReadyEvent),
+                (playerId, playerState, roleId, locationId) => (playerId, playerState, roleId, locationId) == ("B", "Ready", null, 2)
             );
     }
 }

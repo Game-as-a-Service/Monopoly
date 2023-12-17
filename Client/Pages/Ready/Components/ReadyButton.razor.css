@@ -7,7 +7,7 @@
     left: calc(1599 * var(--unit));
     width: calc(289 * var(--unit));
     height: calc(180 * var(--unit));
-    padding: calc(16 * var(--unit)) calc(0 * var(--unit)) calc(16 * var(--unit)) calc(0 * var(--unit));
+    border-style: solid;
     border-radius: calc(12 * var(--unit));
     display: flex;
     align-content: center;
