@@ -1,0 +1,445 @@
+/* /Pages/DevPage.razor.rz.scp.css */
+.background[b-m9mpbibp55] {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* 房間樣式 */
+.room[b-m9mpbibp55] {
+    display: flex;
+
+    justify-content: flex-start; /* 在主軸線上靠左對齊 */
+    flex-wrap: wrap; /* 允許元素換行 */
+}
+
+/* 玩家和房間的容器 */
+.players[b-m9mpbibp55], .rooms[b-m9mpbibp55] {
+    margin-bottom: 20px;
+    max-height: 400px; /* 可以根據需要調整 */
+    overflow-y: auto; /* 需要時顯示垂直滾動條 */
+}
+
+/* 玩家和房間的卡片樣式 */
+.player[b-m9mpbibp55], .room[b-m9mpbibp55] {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+/* 玩家和房間的ID樣式 */
+.player-id[b-m9mpbibp55], .room-id[b-m9mpbibp55] {
+    min-width: 50px; /* 確保ID有足夠的空間 */
+    font-weight: bold;
+}
+
+/* 玩家的token樣式 */
+.player-token[b-m9mpbibp55] {
+    color: #555;
+    font-size: 0.9em;
+    word-break: break-word; /* 讓長文字換行 */
+    overflow-x: auto; /* 需要時顯示水平滾動條 */
+}
+
+/* 創建房間按鈕樣式 */
+.create-room[b-m9mpbibp55] {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+    .create-room:hover[b-m9mpbibp55] {
+        background-color: #0056b3;
+    }
+
+/* 房間玩家樣式 */
+.room-player[b-m9mpbibp55] {
+    padding: 5px;
+    background-color: #e9ecef;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+    .room-player:hover[b-m9mpbibp55] {
+        background-color: #dde2e6;
+    }
+
+/* 房間玩家列表 */
+.room-players[b-m9mpbibp55] {
+    display: flex;
+    align-items: center; /* 垂直居中對齊 */
+    gap: 10px; /* 元素之間的間隙 */
+}
+/* 確保滾動條美觀 */
+[b-m9mpbibp55]::-webkit-scrollbar {
+    width: 10px;
+}
+
+[b-m9mpbibp55]::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+[b-m9mpbibp55]::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+    [b-m9mpbibp55]::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+/* /Pages/Ready/Components/ColorChoicePanel.razor.rz.scp.css */
+.choice-bar[b-u5nrbsbut8] {
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    top: calc(501 * var(--unit));
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: calc((4 * 280 + 3 * 141) * var(--unit) ); /* 四個選擇區寬度加上間隙 */
+}
+
+.choice-wrapper[b-u5nrbsbut8] {
+    width: calc(280 * var(--unit));
+    height: calc(344 * var(--unit));
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+    .choice-wrapper:hover[b-u5nrbsbut8] {
+        cursor: pointer;
+    }
+
+        .choice-wrapper:hover .choice-text[b-u5nrbsbut8] {
+            display: none;
+        }
+
+        .choice-wrapper:hover .choice-arrow[b-u5nrbsbut8] {
+            display: block;
+        }
+
+    .choice-wrapper.color-selected[b-u5nrbsbut8] {
+        cursor: not-allowed;
+    }
+
+        .choice-wrapper.color-selected .choice-text[b-u5nrbsbut8] {
+            display: none;
+        }
+        .choice-wrapper.color-selected:hover .choice-arrow[b-u5nrbsbut8] {
+            display: none;
+        }
+        .choice-wrapper.color-selected.current-player:hover .choice-arrow[b-u5nrbsbut8] {
+            display: block;
+        }
+
+    .choice-wrapper.current-player .choice-arrow[b-u5nrbsbut8] {
+        display: block;
+        position: relative;
+        transform: translateY(calc(-226 * var(--unit)));
+    }
+
+.choice-text[b-u5nrbsbut8]::before {
+    content: '請選擇';
+    position: relative;
+    width: calc(180 * var(--unit));
+    top: calc(72 * var(--unit));
+    font-size: calc(60 * var(--unit));
+    font-weight: bold;
+    white-space: nowrap;
+    color: #FFFFFF;
+}
+
+.choice-step[b-u5nrbsbut8] {
+    position: absolute;
+    top: calc(168 * var(--unit));
+    width: calc(280 * var(--unit));
+    height: calc(176 * var(--unit));
+    background-size: cover;
+    background-position: center;
+}
+
+    .choice-step.choice-blue[b-u5nrbsbut8] {
+        background-image: url('images/preparing/choice_blue.svg');
+    }
+
+    .choice-step.choice-red[b-u5nrbsbut8] {
+        background-image: url('./images/preparing/choice_red.svg');
+    }
+
+    .choice-step.choice-yellow[b-u5nrbsbut8] {
+        background-image: url('images/preparing/choice_yellow.svg');
+    }
+
+    .choice-step.choice-green[b-u5nrbsbut8] {
+        background-image: url('images/preparing/choice_green.svg');
+    }
+
+/*箭頭*/
+.choice-arrow[b-u5nrbsbut8] {
+    position: absolute;
+    width: calc(100 * var(--unit));
+    height: calc(115 * var(--unit));
+    display: none;
+    top: 0;
+    background-size: cover;
+    background-position: center;
+}
+    .choice-arrow.choice-arrow-blue[b-u5nrbsbut8] {
+        background-image: url('images/preparing/choice_arrow_blue.svg');
+    }
+
+    .choice-arrow.choice-arrow-red[b-u5nrbsbut8] {
+        background-image: url('images/preparing/choice_arrow_red.svg');
+    }
+
+    .choice-arrow.choice-arrow-yellow[b-u5nrbsbut8] {
+        background-image: url('images/preparing/choice_arrow_yellow.svg');
+    }
+
+    .choice-arrow.choice-arrow-green[b-u5nrbsbut8] {
+        background-image: url('images/preparing/choice_arrow_green.svg');
+    }
+
+/*角色*/
+.player-container[b-u5nrbsbut8] {
+    position: fixed;
+    z-index: 20;
+    top: calc(390 * var(--unit));
+    height: calc(360 * var(--unit));
+    width: calc(280 * var(--unit));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+    .player-container .player-name[b-u5nrbsbut8] {
+        font-weight: bold;
+        font-size: calc(24 * var(--unit));
+        color: #FFFFFF;
+        user-select: none
+    }
+.role[b-u5nrbsbut8] {
+    background-size: cover;
+    background-position: center;
+}
+    .role.oldman[b-u5nrbsbut8]{
+        width: calc(196 * var(--unit));
+        height: calc(307 * var(--unit));
+        background-image: url('images/roles/modals/教授.svg');
+    }
+
+    .role.baby[b-u5nrbsbut8]{
+        width: calc(166 * var(--unit));
+        height: calc(213 * var(--unit));
+        background-image: url('images/roles/modals/寶寶.svg');
+    }
+
+    .role.dai[b-u5nrbsbut8] {
+        width: calc(162 * var(--unit));
+        height: calc(313 * var(--unit));
+        background-image: url('images/roles/modals/阿呆.svg');
+    }
+
+    .role.mei[b-u5nrbsbut8] {
+        width: calc(173 * var(--unit));
+        height: calc(296 * var(--unit));
+        background-image: url('images/roles/modals/小美.svg');
+    }
+
+.ready-sign.ready[b-u5nrbsbut8] {
+    position: fixed;
+    top: calc(717 * var(--unit));
+    width: calc(280 * var(--unit));
+    height: calc(77 * var(--unit));
+    border-radius: calc(12 * var(--unit));
+    padding: calc(10 * var(--unit));
+    background-color: rgba(255, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 30;
+}
+
+    .ready-sign.ready .ready-sign-text[b-u5nrbsbut8]:before {
+        content: '已準備';
+        width: calc(144 * var(--unit));
+        height: calc(57 * var(--unit));
+        font-weight: bold;
+        font-size: calc(48 * var(--unit));
+        line-height: calc(56.02 * var(--unit));
+    }
+
+.host-icon[b-u5nrbsbut8] {
+    width: calc(24 * var(--unit));
+    height: calc(24 * var(--unit));
+    background-image: url('images/preparing/host-icon.svg');
+    background-size: cover;
+    background-position: center;
+    display: inline-block;
+    margin-right: calc(8 * var(--unit));
+}
+/* /Pages/Ready/Components/ReadyButton.razor.rz.scp.css */
+.button[b-cdp7lcz6db] {
+    position: absolute;
+    background-color: #5B5B5B;
+    border-color: #D8C292;
+    border-width: calc(4 * var(--unit));
+    top: calc(888 * var(--unit));
+    left: calc(1599 * var(--unit));
+    width: calc(289 * var(--unit));
+    height: calc(180 * var(--unit));
+    border-style: solid;
+    border-radius: calc(12 * var(--unit));
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.ready-button-text[b-cdp7lcz6db]::before {
+    content: 'Ready';
+    font-size: calc(60 * var(--unit));
+    width: calc(224 * var(--unit));
+    height: calc(72 * var(--unit));
+    color: #D8C292;
+    font-weight: 400;
+}
+
+.button.enabled-to-ready:hover[b-cdp7lcz6db] {
+    cursor: pointer;
+    background-color: #A5A5A5;
+}
+.button.selected[b-cdp7lcz6db] {
+    background-color: #A5A5A5;
+}
+    .button.selected:hover[b-cdp7lcz6db] {
+        cursor: pointer;
+        background-color: #5B5B5B;
+    }
+    .button.selected .ready-button-text[b-cdp7lcz6db]::before {
+        content: 'Cancel';
+    }
+
+.start-button-text[b-cdp7lcz6db]::before {
+    content: 'Start';
+    font-size: calc(60 * var(--unit));
+    width: calc(224 * var(--unit));
+    height: calc(72 * var(--unit));
+    color: #D8C292;
+    font-weight: 400;
+}
+
+.button.enabled-to-start:hover[b-cdp7lcz6db] {
+    cursor: pointer;
+    background-color: #A5A5A5;
+}
+/* /Pages/Ready/Components/RoleChoicePanel.razor.rz.scp.css */
+.choice-role-area[b-k5rvq075zv] {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #5B5B5B;
+    border-color: #D8C292;
+    border-width: calc(4 * var(--unit));
+    border-style: solid;
+    top: calc(888 * var(--unit));
+    left: calc(1129 * var(--unit));
+    width: calc(446 * var(--unit));
+    height: calc(180 * var(--unit));
+    gap: calc(16 * var(--unit));
+    border-radius: calc(12 * var(--unit));
+}
+
+.choice-role-text[b-k5rvq075zv] {
+    font-size: calc(24 * var(--unit));
+    font-weight: bold;
+    color: white;
+    white-space: nowrap;
+    line-height: calc(32.02 * var(--unit));
+}
+
+    .choice-role-text[b-k5rvq075zv]::before {
+        content: '選擇人物';
+    }
+
+.choice-role-row[b-k5rvq075zv] {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    font-weight: bold;
+    color: white;
+    white-space: nowrap;
+    left: 0;
+    right: 0;
+    column-gap: calc(16 * var(--unit));
+}
+
+.choice-role-item[b-k5rvq075zv] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(90 * var(--unit));
+    height: calc(90 * var(--unit));
+    border-radius: calc(8 * var(--unit));
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    text-align: center;
+}
+
+    .choice-role-item:hover[b-k5rvq075zv] {
+        cursor: pointer;
+        background-color: #CCCCCC
+    }
+
+    .choice-role-item.selected[b-k5rvq075zv] {
+        background-color: #CCCCCC;
+    }
+
+    .choice-role-item .picture[b-k5rvq075zv] {
+        background-size: cover;
+        background-position: center;
+    }
+
+        .choice-role-item .picture.oldman[b-k5rvq075zv] {
+            width: calc(82 * var(--unit));
+            height: calc(69 * var(--unit));
+            background-image: url('images/roles/avatars/老人頭.svg');
+        }
+
+        .choice-role-item .picture.baby[b-k5rvq075zv] {
+            width: calc(79 * var(--unit));
+            height: calc(61 * var(--unit));
+            background-image: url('images/roles/avatars/寶寶頭.svg');
+        }
+
+        .choice-role-item .picture.dai[b-k5rvq075zv] {
+            width: calc(75 * var(--unit));
+            height: calc(76 * var(--unit));
+            background-image: url('images/roles/avatars/阿呆頭.svg');
+        }
+
+        .choice-role-item .picture.mei[b-k5rvq075zv] {
+            width: calc(75 * var(--unit));
+            height: calc(71 * var(--unit));
+            background-image: url('images/roles/avatars/小美頭.svg');
+        }
+/* /Pages/Ready/ReadyPage.razor.rz.scp.css */
+.background[b-mgd1mayadz] {
+    width: calc(1920 * var(--unit));
+    height: calc(1080 * var(--unit));
+    background-image: url('./images/preparing/background.svg');
+    background-size: cover;
+    background-position: center;
+}
