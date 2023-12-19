@@ -16,10 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IRepository, InMemoryRepository>();
 builder.Services.AddScoped<IEventBus<DomainEvent>, MonopolyEventBus>();
 builder.Services.AddMonopolyApplication();
-builder.Services.AddSignalR(options =>
-{
-    options.EnableDetailedErrors = true;
-});
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
         builder =>
@@ -51,18 +48,12 @@ builder.Services
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer");
 
-builder.Services.AddResponseCompression(options =>
-{
-    options.EnableForHttps = true;
-});
-
 var app = builder.Build();
 
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseResponseCompression();
 app.MapHub<MonopolyHub>("/monopoly");
 
 app.MapGet("/health", () => Results.Ok());
