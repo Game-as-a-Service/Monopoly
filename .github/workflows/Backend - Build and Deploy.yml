@@ -10,7 +10,7 @@ on:
   
 
 env:
-  DOTNET_VERSION: '7.0.x'
+  DOTNET_VERSION: '8.0.x'
   DOTNET_APP_SOURCE_PATH: '.'
   #DOTNET_APP_PUBLISH_PROJECT_PATH: './src/BackEnd/src/InterfaceAdapter/WebApi'
 
