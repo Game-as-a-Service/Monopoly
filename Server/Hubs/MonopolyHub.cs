@@ -11,9 +11,8 @@ using System.Security.Claims;
 namespace Server.Hubs;
 
 [Authorize]
-public class MonopolyHub : Hub<IMonopolyResponses>
+public class MonopolyHub(IRepository repository) : Hub<IMonopolyResponses>
 {
-    private readonly IRepository _repository;
     private string GameId => Context.Items["GameId"] as string ?? "";
     private string UserId => Context.Items["UserId"] as string ?? "";
 
@@ -37,9 +36,9 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new PayTollRequest(gameId, userId));
     }
 
-    public async Task PlaySelectLocation(string gameId, string userId, int LocationID, SelectLocationUsecase usecase)
+    public async Task PlaySelectLocation(string gameId, string userId, int locationId, SelectLocationUsecase usecase)
     {
-        await usecase.ExecuteAsync(new SelectLocationRequest(gameId, userId, LocationID));
+        await usecase.ExecuteAsync(new SelectLocationRequest(gameId, userId, locationId));
     }
 
     public async Task PlayerBuildHouse(string gameId, string userId, BuildHouseUsecase usecase)
@@ -92,11 +91,11 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         await usecase.ExecuteAsync(new GameStartRequest(gameId, userId));
     }
 
-    public async Task GetReadyInfo(GetReadyInfosUsecase usecase)
+    public async Task GetReadyInfo(GetReadyInfoUsecase usecase)
     {
         var presenter = new DefaultPresenter<GetReadyInfoResponse>();
         await usecase.ExecuteAsync(new GetReadyInfoRequest(GameId, UserId), presenter);
-        await Clients.Caller.GetReadyInfoEvent(new()
+        await Clients.Caller.GetReadyInfoEvent(new GetReadyInfoEvent
         {
             Players = presenter.Value.Info.Players.Select(x =>
             {
@@ -118,35 +117,24 @@ public class MonopolyHub : Hub<IMonopolyResponses>
         });
     }
 
-    public MonopolyHub(IRepository repository)
-    {
-        _repository = repository;
-    }
-
     public override async Task OnConnectedAsync()
     {
-        HttpContext httpContext = Context.GetHttpContext()!;
-        var gameIdStringValues = httpContext.Request.Query["gameid"];
-        if (gameIdStringValues.Count == 0)
+        var httpContext = Context.GetHttpContext()!;
+        var gameIdStringValues = httpContext.Request.Query["gameId"];
+        if (gameIdStringValues.Count is 0)
         {
             throw new GameNotFoundException($"Not pass game id");
         }
         Context.Items["GameId"] = gameIdStringValues.ToString();
         Context.Items["UserId"] = Context.User!.FindFirst(x => x.Type == ClaimTypes.Sid)!.Value;
-        if (!_repository.IsExist(GameId))
+        if (repository.IsExist(GameId) is false)
         {
             throw new GameNotFoundException($"Can not find the game that id is {GameId}");
         }
         await Groups.AddToGroupAsync(Context.ConnectionId, GameId);
-        await Clients.Caller.WelcomeEvent(new() { PlayerId = UserId });
+        await Clients.Caller.WelcomeEvent(new WelcomeEvent { PlayerId = UserId });
         await Clients.Group(GameId).PlayerJoinGameEvent(UserId!);
     }
 
-    public class GameNotFoundException : Exception
-    {
-        public GameNotFoundException(string message)
-            : base(message)
-        {
-        }
-    }
+    private class GameNotFoundException(string message) : Exception(message);
 }

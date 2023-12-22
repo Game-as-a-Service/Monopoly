@@ -10,9 +10,9 @@ public record GetReadyInfoResponse(GetReadyInfoResponse.ReadyInfo Info)
     public record Player(string PlayerId, bool IsReady, string? RoleId, int? LocationId);
 }
 
-public class GetReadyInfosUsecase : QueryUsecase<GetReadyInfoRequest, GetReadyInfoResponse>
+public class GetReadyInfoUsecase : QueryUsecase<GetReadyInfoRequest, GetReadyInfoResponse>
 {
-    public GetReadyInfosUsecase(IRepository repository) : base(repository)
+    public GetReadyInfoUsecase(IRepository repository) : base(repository)
     {
     }
 
