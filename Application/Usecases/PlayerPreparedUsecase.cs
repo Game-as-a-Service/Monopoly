@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record PlayerPreparedRequest(string GameId, string PlayerId)
     : Request(GameId, PlayerId);
 
-public class PlayerPreparedUsecase : Usecase<PlayerPreparedRequest>
-{
-    public PlayerPreparedUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record PlayerPreparedResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(PlayerPreparedRequest request)
+public class PlayerPreparedUsecase(IRepository repository)
+    : Usecase<PlayerPreparedRequest, PlayerPreparedResponse>(repository)
+{
+    public override async Task ExecuteAsync(PlayerPreparedRequest request, IPresenter<PlayerPreparedResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +23,6 @@ public class PlayerPreparedUsecase : Usecase<PlayerPreparedRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new PlayerPreparedResponse(game.DomainEvents));
     }
 }

@@ -79,7 +79,7 @@ public interface IMonopolyResponses
 
     Task SuspendRoundEvent(string PlayerId, int SuspendRounds);
 
-    Task BankruptEvent(string PlayerId);
+    Task PlayerBankruptEvent(PlayerBankruptEvent e);
 
     Task SettlementEvent(int Rounds, params string[] PlayerIds);
 

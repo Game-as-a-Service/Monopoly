@@ -54,7 +54,7 @@ public class Player
                 RemoveLandContract(landContract);
             }
             EndRoundFlag = true;
-            return new BankruptEvent(Id);
+            return new PlayerBankruptEvent(Id);
         }
         return DomainEvent.EmptyEvent;
     }

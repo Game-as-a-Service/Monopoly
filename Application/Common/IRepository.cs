@@ -15,7 +15,7 @@ internal static class RepositoryExtensions
 {
     internal static string Save(this IRepository repository, Domain.Monopoly domainMonopoly)
     {
-        Monopoly monopoly = domainMonopoly.ToApplication();
+        var monopoly = domainMonopoly.ToApplication();
         return repository.Save(monopoly);
     }
     /// <summary>
@@ -25,14 +25,14 @@ internal static class RepositoryExtensions
     /// <returns></returns>
     private static Monopoly ToApplication(this Domain.Monopoly domainMonopoly)
     {
-        Player[] players = domainMonopoly.Players.Select(player =>
+        var players = domainMonopoly.Players.Select(player =>
         {
             var playerChess = player.Chess;
 
             Chess chess = new(playerChess.CurrentBlockId, playerChess.CurrentDirection.ToApplicationDirection());
 
             var landContracts = player.LandContractList.Select(contract =>
-            new LandContract(contract.Land.Id, contract.InMortgage, contract.Deadline)).ToArray();
+                new LandContract(contract.Land.Id, contract.InMortgage, contract.Deadline)).ToArray();
 
             return new Player(
                         player.Id,

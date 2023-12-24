@@ -7,20 +7,12 @@ namespace Application.Usecases;
 
 public record CreateGameRequest(string HostId, string[] PlayerIds) : Request(null!, HostId);
 
-public class CreateGameUsecase : Usecase<CreateGameRequest>
+public record CreateGameResponse(string GameId) : Response;
+
+public class CreateGameUsecase(IRepository repository)
+    : Usecase<CreateGameRequest, CreateGameResponse>(repository)
 {
-    public CreateGameUsecase(IRepository repository, IEventBus<DomainEvent> eventBus) : base(repository, eventBus)
-    {
-    }
-
-#pragma warning disable CS1998 // Async 方法缺乏 'await' 運算子，將同步執行
-    public override async Task ExecuteAsync(CreateGameRequest request)
-#pragma warning restore CS1998 // Async 方法缺乏 'await' 運算子，將同步執行
-    {
-        throw new NotImplementedException();
-    }
-
-    public string Execute(CreateGameRequest request)
+    public override async Task ExecuteAsync(CreateGameRequest request, IPresenter<CreateGameResponse> presenter)
     {
         // 查
         // 改
@@ -35,8 +27,9 @@ public class CreateGameUsecase : Usecase<CreateGameRequest>
         builder.WithMap(new SevenXSevenMap());
 
         // 存
-        string id = Repository.Save(builder.Build());
+        var id = Repository.Save(builder.Build());
 
-        return id;
+        // 推
+        await presenter.PresentAsync(new CreateGameResponse(id));
     }
 }

@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record SelectLocationRequest(string GameId, string PlayerId, int LocationID)
     : Request(GameId, PlayerId);
 
-public class SelectLocationUsecase : Usecase<SelectLocationRequest>
-{
-    public SelectLocationUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record SelectLocationResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(SelectLocationRequest request)
+public class SelectLocationUsecase(IRepository repository)
+    : Usecase<SelectLocationRequest, SelectLocationResponse>(repository)
+{
+    public override async Task ExecuteAsync(SelectLocationRequest request, IPresenter<SelectLocationResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +23,6 @@ public class SelectLocationUsecase : Usecase<SelectLocationRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new SelectLocationResponse(game.DomainEvents));
     }
 }

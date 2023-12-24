@@ -6,14 +6,11 @@ namespace Application.Usecases;
 public record RedeemRequest(string GameId, string PlayerId, string BlockId)
     : Request(GameId, PlayerId);
 
-public class RedeemUsecase : Usecase<RedeemRequest>
-{
-    public RedeemUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record RedeemResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(RedeemRequest request)
+public class RedeemUsecase(IRepository repository) : Usecase<RedeemRequest, RedeemResponse>(repository)
+{
+    public override async Task ExecuteAsync(RedeemRequest request, IPresenter<RedeemResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +22,6 @@ public class RedeemUsecase : Usecase<RedeemRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new RedeemResponse(game.DomainEvents));
     }
 }

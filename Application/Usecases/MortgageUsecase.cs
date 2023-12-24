@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record MortgageRequest(string GameId, string PlayerId, string BlockId)
     : Request(GameId, PlayerId);
 
-public class MortgageUsecase : Usecase<MortgageRequest>
-{
-    public MortgageUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record MortgageResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(MortgageRequest request)
+public class MortgageUsecase(IRepository repository)
+    : Usecase<MortgageRequest, MortgageResponse>(repository)
+{
+    public override async Task ExecuteAsync(MortgageRequest request, IPresenter<MortgageResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +23,6 @@ public class MortgageUsecase : Usecase<MortgageRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new MortgageResponse(game.DomainEvents));
     }
 }

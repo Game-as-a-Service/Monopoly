@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record ChooseDirectionRequest(string GameId, string PlayerId, string Direction)
     : Request(GameId, PlayerId);
 
-public class ChooseDirectionUsecase : Usecase<ChooseDirectionRequest>
-{
-    public ChooseDirectionUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record ChooseDirectionResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(ChooseDirectionRequest request)
+public class ChooseDirectionUsecase(IRepository repository)
+    : Usecase<ChooseDirectionRequest, ChooseDirectionResponse>(repository)
+{
+    public override async Task ExecuteAsync(ChooseDirectionRequest request, IPresenter<ChooseDirectionResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -22,6 +20,6 @@ public class ChooseDirectionUsecase : Usecase<ChooseDirectionRequest>
         //存
         Repository.Save(game);
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new ChooseDirectionResponse(game.DomainEvents));
     }
 }

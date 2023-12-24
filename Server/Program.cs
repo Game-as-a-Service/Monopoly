@@ -1,20 +1,18 @@
 ﻿using Application;
 using Application.Common;
 using Application.Usecases;
-using Domain.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Server;
 using Server.DataModels;
 using Server.Hubs;
-using Server.Repositories;
 using Server.Services;
 using SharedLibrary.MonopolyMap;
 using System.Security.Claims;
+using Server.Presenters;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IRepository, InMemoryRepository>();
-builder.Services.AddScoped<IEventBus<DomainEvent>, MonopolyEventBus>();
+builder.Services.AddMonopolyServer();
 builder.Services.AddMonopolyApplication();
 builder.Services.AddSignalR();
 
@@ -61,22 +59,24 @@ app.MapGet("/health", () => Results.Ok());
 // 開始遊戲
 app.MapPost("/games", async (context) =>
 {
-    string hostId = context.User.FindFirst(ClaimTypes.Sid)!.Value;
-    CreateGameBodyPayload payload = (await context.Request.ReadFromJsonAsync<CreateGameBodyPayload>())!;
-    CreateGameUsecase createGameUsecase = app.Services.CreateScope().ServiceProvider.GetRequiredService<CreateGameUsecase>();
-    string gameId = createGameUsecase.Execute(new CreateGameRequest(hostId, payload.Players.Select(x => x.Id).ToArray()));
+    var hostId = context.User.FindFirst(ClaimTypes.Sid)!.Value;
+    var payload = (await context.Request.ReadFromJsonAsync<CreateGameBodyPayload>())!;
+    var createGameUsecase = app.Services.CreateScope().ServiceProvider.GetRequiredService<CreateGameUsecase>();
+    var presenter = new DefaultPresenter<CreateGameResponse>();
+    await createGameUsecase.ExecuteAsync(
+        new CreateGameRequest(hostId, payload.Players.Select(x => x.Id).ToArray()),
+        presenter);
 
-    string frontendBaseUrl = app.Configuration["FrontendBaseUrl"]!.ToString();
+    var frontendBaseUrl = app.Configuration["FrontendBaseUrl"]!;
 
-    var url = $@"{frontendBaseUrl}games/{gameId}";
+    var url = $@"{frontendBaseUrl}games/{presenter.Value.GameId}";
 
     await context.Response.WriteAsync(url);
 }).RequireAuthorization();
-
 app.MapGet("/map", (string mapId) =>
 {
-    string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
-    string jsonFilePath = Path.Combine(projectDirectory, "Maps", $"{mapId}.json");
+    var projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+    var jsonFilePath = Path.Combine(projectDirectory, "Maps", $"{mapId}.json");
 
     if (!File.Exists(jsonFilePath))
     {
@@ -84,7 +84,7 @@ app.MapGet("/map", (string mapId) =>
     }
 
     // read json file
-    string json = File.ReadAllText(jsonFilePath);
+    var json = File.ReadAllText(jsonFilePath);
     var data = MonopolyMap.Parse(json);
     return Results.Json(data, MonopolyMap.JsonSerializerOptions);
 });
@@ -98,8 +98,8 @@ app.MapGet("/rooms", () =>
 #if DEBUG
 app.MapGet("/users", () =>
 {
-    DevelopmentPlatformService platformService = (DevelopmentPlatformService)app.Services.CreateScope().ServiceProvider.GetRequiredService<IPlatformService>();
-    var users = platformService.GetUsers().Select(user => new { Id = user.Id, Token = user.Token });
+    var platformService = app.Services.CreateScope().ServiceProvider.GetRequiredService<IPlatformService>() as DevelopmentPlatformService;
+    var users = platformService?.GetUsers().Select(user => new { Id = user.Id, Token = user.Token });
     return Results.Json(users);
 });
 #endif

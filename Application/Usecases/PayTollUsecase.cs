@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record PayTollRequest(string GameId, string PlayerId)
     : Request(GameId, PlayerId);
 
-public class PayTollUsecase : Usecase<PayTollRequest>
-{
-    public PayTollUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record PayTollResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(PayTollRequest request)
+public class PayTollUsecase(IRepository repository)
+    : Usecase<PayTollRequest, PayTollResponse>(repository)
+{
+    public override async Task ExecuteAsync(PayTollRequest request, IPresenter<PayTollResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +23,6 @@ public class PayTollUsecase : Usecase<PayTollRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new PayTollResponse(game.DomainEvents));
     }
 }

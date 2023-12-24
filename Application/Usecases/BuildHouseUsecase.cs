@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record BuildHouseRequest(string GameId, string PlayerId)
     : Request(GameId, PlayerId);
 
-public class BuildHouseUsecase : Usecase<BuildHouseRequest>
-{
-    public BuildHouseUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record BuildHouseResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(BuildHouseRequest request)
+public class BuildHouseUsecase(IRepository repository)
+    : Usecase<BuildHouseRequest, BuildHouseResponse>(repository)
+{
+    public override async Task ExecuteAsync(BuildHouseRequest request, IPresenter<BuildHouseResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +23,6 @@ public class BuildHouseUsecase : Usecase<BuildHouseRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new BuildHouseResponse(game.DomainEvents));
     }
 }

@@ -5,15 +5,8 @@ using Server.Hubs;
 
 namespace Server;
 
-public class MonopolyEventBus : IEventBus<DomainEvent>
+public class MonopolyEventBus(IHubContext<MonopolyHub> hubContext) : IEventBus<DomainEvent>
 {
-    private readonly IHubContext<MonopolyHub> hubContext;
-
-    public MonopolyEventBus(IHubContext<MonopolyHub> hubContext)
-    {
-        this.hubContext = hubContext;
-    }
-
     // 這裡暫時採用
     // 1. 不同的event，使用不同的發送方式
     // 2. 傳送到所有使用者

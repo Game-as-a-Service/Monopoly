@@ -6,13 +6,12 @@ namespace Application.Usecases;
 public record SelectRoleRequest(string GameId, string PlayerId, string roleId)
     : Request(GameId, PlayerId);
 
-public class SelectRoleUsecase : Usecase<SelectRoleRequest>
+public record SelectRoleResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
+
+public class SelectRoleUsecase(IRepository repository)
+    : Usecase<SelectRoleRequest, SelectRoleResponse>(repository)
 {
-    public SelectRoleUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
-    public override async Task ExecuteAsync(SelectRoleRequest request)
+    public override async Task ExecuteAsync(SelectRoleRequest request, IPresenter<SelectRoleResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -21,6 +20,6 @@ public class SelectRoleUsecase : Usecase<SelectRoleRequest>
         //存
         Repository.Save(game);
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new SelectRoleResponse(game.DomainEvents));
     }
 }

@@ -2,16 +2,10 @@
 
 namespace Application.Common;
 
-public abstract class Usecase<TRequest> where TRequest : Request
+public abstract class Usecase<TRequest, TResponse>(IRepository repository)
+    where TRequest : Request where TResponse : Response
 {
-    protected IRepository Repository { get; }
-    protected IEventBus<DomainEvent> EventBus { get; }
+    protected IRepository Repository { get; } = repository;
 
-    public Usecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-    {
-        Repository = repository;
-        EventBus = eventBus;
-    }
-
-    public abstract Task ExecuteAsync(TRequest request);
+    public abstract Task ExecuteAsync(TRequest request, IPresenter<TResponse> presenter);
 }

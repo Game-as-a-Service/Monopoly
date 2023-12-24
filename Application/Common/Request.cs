@@ -1,3 +1,3 @@
 ﻿namespace Application.Common;
 
-public record Request(string GameId, string PlayerId);
+public abstract record Request(string GameId, string PlayerId);

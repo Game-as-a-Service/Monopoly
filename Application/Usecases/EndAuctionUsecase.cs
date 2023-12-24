@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record EndAuctionRequest(string GameId, string PlayerId)
     : Request(GameId, PlayerId);
 
-public class EndAuctionUsecase : Usecase<EndAuctionRequest>
-{
-    public EndAuctionUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record EndAuctionResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(EndAuctionRequest request)
+public class EndAuctionUsecase(IRepository repository)
+    : Usecase<EndAuctionRequest, EndAuctionResponse>(repository)
+{
+    public override async Task ExecuteAsync(EndAuctionRequest request, IPresenter<EndAuctionResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +23,6 @@ public class EndAuctionUsecase : Usecase<EndAuctionRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new EndAuctionResponse(game.DomainEvents));
     }
 }

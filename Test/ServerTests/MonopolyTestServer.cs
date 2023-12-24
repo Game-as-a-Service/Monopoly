@@ -88,8 +88,8 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
                     options.Authority = null;
                 });
 
-            services.RemoveAll<RollDiceUsecase>();
-            services.AddScoped<RollDiceUsecase, MockRollDiceUsecase>();
+            services.RemoveAll<PlayerRollDiceUsecase>();
+            services.AddScoped<PlayerRollDiceUsecase, MockPlayerRollDiceUsecase>();
             services.AddSingleton<MockDiceService>();
         });
     }

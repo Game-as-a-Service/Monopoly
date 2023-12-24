@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record GameStartRequest(string GameId, string PlayerId)
     : Request(GameId, PlayerId);
 
-public class GameStartUsecase : Usecase<GameStartRequest>
-{
-    public GameStartUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record GameStartResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(GameStartRequest request)
+public class GameStartUsecase(IRepository repository)
+    : Usecase<GameStartRequest, GameStartResponse>(repository)
+{
+    public override async Task ExecuteAsync(GameStartRequest request, IPresenter<GameStartResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +23,6 @@ public class GameStartUsecase : Usecase<GameStartRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new GameStartResponse(game.DomainEvents));
     }
 }

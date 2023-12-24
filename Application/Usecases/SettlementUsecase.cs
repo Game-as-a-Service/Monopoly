@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record SettlementRequest(string GameId, string PlayerId)
     : Request(GameId, PlayerId);
 
-public class SettlementUsecase : Usecase<SettlementRequest>
-{
-    public SettlementUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record SettlementResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(SettlementRequest request)
+public class SettlementUsecase(IRepository repository)
+    : Usecase<SettlementRequest, SettlementResponse>(repository)
+{
+    public override async Task ExecuteAsync(SettlementRequest request, IPresenter<SettlementResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +23,6 @@ public class SettlementUsecase : Usecase<SettlementRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new SettlementResponse(game.DomainEvents));
     }
 }

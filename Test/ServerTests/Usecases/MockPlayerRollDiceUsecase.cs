@@ -4,16 +4,16 @@ using Domain.Common;
 
 namespace ServerTests.Usecases;
 
-public class MockRollDiceUsecase : RollDiceUsecase
+public class MockPlayerRollDiceUsecase : PlayerRollDiceUsecase
 {
     private readonly MockDiceService _mockDiceService;
-    public MockRollDiceUsecase(IRepository repository, IEventBus<DomainEvent> eventBus, MockDiceService mockDiceService)
-        : base(repository, eventBus)
+    public MockPlayerRollDiceUsecase(IRepository repository, MockDiceService mockDiceService)
+        : base(repository)
     {
         _mockDiceService = mockDiceService;
     }
 
-    public override async Task ExecuteAsync(RollDiceRequest request)
+    public override async Task ExecuteAsync(PlayerRollDiceRequest request, IPresenter<PlayerRollDiceResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -28,6 +28,6 @@ public class MockRollDiceUsecase : RollDiceUsecase
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new PlayerRollDiceResponse(game.DomainEvents));
     }
 }

@@ -6,14 +6,12 @@ namespace Application.Usecases;
 public record BidRequest(string GameId, string PlayerId, decimal BidPrice)
     : Request(GameId, PlayerId);
 
-public class BidUsecase : Usecase<BidRequest>
-{
-    public BidUsecase(IRepository repository, IEventBus<DomainEvent> eventBus)
-        : base(repository, eventBus)
-    {
-    }
+public record BidResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-    public override async Task ExecuteAsync(BidRequest request)
+public class BidUsecase(IRepository repository)
+    : Usecase<BidRequest, BidResponse>(repository)
+{
+    public override async Task ExecuteAsync(BidRequest request, IPresenter<BidResponse> presenter)
     {
         //查
         var game = Repository.FindGameById(request.GameId).ToDomain();
@@ -25,6 +23,6 @@ public class BidUsecase : Usecase<BidRequest>
         Repository.Save(game);
 
         //推
-        await EventBus.PublishAsync(game.DomainEvents);
+        await presenter.PresentAsync(new BidResponse(game.DomainEvents));
     }
 }
