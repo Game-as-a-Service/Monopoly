@@ -1,6 +1,7 @@
 ﻿using Client.Pages.Ready.Entities;
 using Microsoft.AspNetCore.Components;
 using SharedLibrary.ResponseArgs;
+using SharedLibrary.ResponseArgs.ReadyRoom;
 
 namespace Client.Pages.Ready;
 
@@ -28,7 +29,7 @@ public partial class ReadyPage
         Players = Players.Append(player).ToList();
         Update();
     }
-    private void OnGetReadyInfoEvent(GetReadyInfoEvent e)
+    private void OnGetReadyInfoEvent(GetReadyInfoEventArgs e)
     {
         Players = e.Players.Select(x => new Player
         {

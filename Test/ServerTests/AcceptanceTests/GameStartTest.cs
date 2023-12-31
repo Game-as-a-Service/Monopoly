@@ -1,6 +1,7 @@
 using Application.DataModels;
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -53,9 +54,9 @@ public class GameStartTest
         await hub.SendAsync(nameof(MonopolyHub.GameStart), gameId, "A");
 
         // Assert
-        hub.Verify<string, string>(
+        hub.Verify(
             nameof(IMonopolyResponses.GameStartEvent),
-                (gameState, currentPlayer) => (gameState, currentPlayer) == ("Gaming", "A")
+                (GameStartEventArgs e) => e is { GameStage: "Gaming", CurrentPlayerId: "A" }
             );
     }
 
@@ -88,9 +89,9 @@ public class GameStartTest
         await hub.SendAsync(nameof(MonopolyHub.GameStart), gameId, "A");
 
         // Assert
-        hub.Verify<string>(
+        hub.Verify(
             nameof(IMonopolyResponses.OnlyOnePersonEvent),
-                (gameState) => gameState == "Preparing"
+                (OnlyOnePersonEventArgs e) => e.GameStage == "Preparing"
             );
     }
 
@@ -130,9 +131,9 @@ public class GameStartTest
         await hub.SendAsync(nameof(MonopolyHub.GameStart), gameId, "A");
 
         // Assert
-        hub.Verify<string, string[]>(
+        hub.Verify(
             nameof(IMonopolyResponses.SomePlayersPreparingEvent),
-                (gameState, players) => gameState == "Preparing" && players.OrderBy(x => x).SequenceEqual(new[] { "B" }.OrderBy(x => x))
+                (SomePlayersPreparingEventArgs e) => e.GameStage == "Preparing" && e.PlayerIds.OrderBy(x => x).SequenceEqual(new[] { "B" }.OrderBy(x => x))
             );
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -53,9 +54,8 @@ public class BuyBlockTest
 
         // Assert
         // A 購買土地
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.PlayerBuyBlockEvent),
-                                  (playerId, blockId) => playerId == "A" && blockId == "F4");
+        hub.Verify(nameof(IMonopolyResponses.PlayerBuyBlockEvent),
+                  (PlayerBuyBlockEventArgs e) => e is { PlayerId: "A", LandId: "F4" });
 
         hub.VerifyNoElseEvent();
     }
@@ -99,9 +99,8 @@ public class BuyBlockTest
 
         // Assert
         // A 購買土地金額不足
-        hub.Verify<string, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerBuyBlockInsufficientFundsEvent),
-                                  (playerId, blockId, landMoney) => playerId == "A" && blockId == "F4" && landMoney == 1000);
+        hub.Verify(nameof(IMonopolyResponses.PlayerBuyBlockInsufficientFundsEvent),
+                  (PlayerBuyBlockInsufficientFundsEventArgs e) => e is { PlayerId: "A", LandId: "F4", Price: 1000 });
 
         hub.VerifyNoElseEvent();
     }
@@ -154,9 +153,8 @@ public class BuyBlockTest
 
         // Assert
         // A 購買土地非空地
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.PlayerBuyBlockOccupiedByOtherPlayerEvent),
-                                  (playerId, blockId) => playerId == "A" && blockId == "F4");
+        hub.Verify(nameof(IMonopolyResponses.PlayerBuyBlockOccupiedByOtherPlayerEvent),
+                   (PlayerBuyBlockOccupiedByOtherPlayerEventArgs e) => e is { PlayerId: "A", LandId: "F4" });
 
         hub.VerifyNoElseEvent();
     }

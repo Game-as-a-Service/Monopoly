@@ -1,6 +1,7 @@
 ﻿using Application.DataModels;
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -43,9 +44,9 @@ public class SelectLocation
         await hub.SendAsync(nameof(MonopolyHub.PlaySelectLocation), gameId, A.Id, A.selectLocationId);
 
         //Assert
-        hub.Verify<string, int>(
+        hub.Verify(
             nameof(IMonopolyResponses.PlaySelectLocationEvent),
-            (playerId, locationId) => (playerId, locationId) == (A.Id, A.selectLocationId)
+            (PlaySelectLocationEventArgs e) => e is { PlayerId: "A", LocationId: 1 }
             );
         hub.VerifyNoElseEvent();
     }
@@ -83,9 +84,9 @@ public class SelectLocation
         await hub.SendAsync(nameof(MonopolyHub.PlaySelectLocation), gameId, A.Id, A.selectLocationId);
 
         //Assert
-        hub.Verify<string, int>(
+        hub.Verify(
             nameof(IMonopolyResponses.PlayCannotSelectLocationEvent),
-            (playerId, locationId) => (playerId, locationId) == (A.Id, A.locationId)
+            (PlayCannotSelectLocationEventArgs e) => e is { PlayerId: "A", LocationId: 0 }
             );
         hub.VerifyNoElseEvent();
     }
@@ -116,9 +117,9 @@ public class SelectLocation
         await hub.SendAsync(nameof(MonopolyHub.PlaySelectLocation), gameId, A.Id, A.selectLocationId);
 
         //Assert
-        hub.Verify<string, int>(
+        hub.Verify(
             nameof(IMonopolyResponses.PlaySelectLocationEvent),
-            (playerId, locationId) => (playerId, locationId) == (A.Id, A.selectLocationId)
+            (PlaySelectLocationEventArgs e) => e is { PlayerId: "A", LocationId: 2 } 
             );
         hub.VerifyNoElseEvent();
     }

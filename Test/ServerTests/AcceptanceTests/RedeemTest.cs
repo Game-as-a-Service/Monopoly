@@ -1,5 +1,6 @@
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -53,10 +54,8 @@ public class RedeemTest
 
         // Assert
         // A 贖回房地產
-        hub.Verify<string, decimal, string>(
-                       nameof(IMonopolyResponses.PlayerRedeemEvent),
-                                (playerId, playerMoney, blockId)
-                                => playerId == "A" && playerMoney == 2000 && blockId == "A1");
+        hub.Verify(nameof(IMonopolyResponses.PlayerRedeemEvent),
+                (PlayerRedeemEventArgs e) => e is { PlayerId: "A", LandId: "A1", PlayerMoney: 2000 });
         hub.VerifyNoElseEvent();
     }
 
@@ -98,10 +97,9 @@ public class RedeemTest
 
         // Assert
         // A 贖回房地產
-        hub.Verify<string, decimal, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerTooPoorToRedeemEvent),
-                                (playerId, playerMoney, blockId, redeemPrice)
-                                => playerId == "A" && playerMoney == 2000 && blockId == "A1" && redeemPrice == 3000);
+        hub.Verify(nameof(IMonopolyResponses.PlayerTooPoorToRedeemEvent),
+            (PlayerTooPoorToRedeemEventArgs e) =>
+                e is { PlayerId: "A", LandId: "A1", PlayerMoney: 2000, RedeemPrice: 3000 });
         hub.VerifyNoElseEvent();
     }
 }

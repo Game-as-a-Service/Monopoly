@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -56,10 +57,10 @@ public class SelectDirectionTest
         // A 選擇方向為 Left
         // A 停在 Jail，方向為 Left，剩下 0 步
         // A 下一回合無法行動，暫停2回合
-        hub.Verify<string, string>(nameof(IMonopolyResponses.PlayerChooseDirectionEvent),
-            (playerId, direction) => playerId == A.Id && direction == "Left");
-        hub.Verify<string, int>(nameof(IMonopolyResponses.SuspendRoundEvent),
-                       (playerId, suspendRounds) => playerId == A.Id && suspendRounds == 2);
+        hub.Verify(nameof(IMonopolyResponses.PlayerChooseDirectionEvent),
+            (PlayerChooseDirectionEventArgs e) => e is { PlayerId: "A", Direction: "Left" });
+        hub.Verify(nameof(IMonopolyResponses.SuspendRoundEvent),
+                (SuspendRoundEventArgs e) => e is { PlayerId: "A", SuspendRounds: 2 });
         hub.VerifyNoElseEvent();
 
         var repo = server.GetRequiredService<IRepository>();
@@ -109,8 +110,8 @@ public class SelectDirectionTest
         // A 選擇方向為 Left
         // A 停在 ParkingLot，方向為 Left，剩下 0 步
 
-        hub.Verify<string, string>(nameof(IMonopolyResponses.PlayerChooseDirectionEvent),
-            (playerId, direction) => playerId == A.Id && direction == Direction.Left.ToString());
+        hub.Verify(nameof(IMonopolyResponses.PlayerChooseDirectionEvent),
+            (PlayerChooseDirectionEventArgs e) => e.PlayerId == A.Id && e.Direction == Direction.Left.ToString());
 
         hub.VerifyNoElseEvent();
 

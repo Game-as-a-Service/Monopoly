@@ -1,7 +1,7 @@
 ﻿using Application.Common;
 using Domain.Common;
 
-namespace Server.Hubs;
+namespace Server.Presenters;
 
 public class SignalrDefaultPresenter<TResponse>(IEventBus<DomainEvent> eventBus) : IPresenter<TResponse> 
     where TResponse : CommandResponse

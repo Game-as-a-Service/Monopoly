@@ -2,4 +2,4 @@
 
 namespace Domain.Events;
 
-public record PlayerCanBuildHouseEvent(string PlayerId, string BlockId, int HouseCount, decimal UpgradeMoney) : DomainEvent;
+public record PlayerCanBuildHouseEvent(string PlayerId, string LandId, int HouseCount, decimal UpgradePrice) : DomainEvent;

@@ -3,20 +3,14 @@ using System.Text.Json.Serialization;
 
 namespace SharedLibrary.MonopolyMap;
 
-public class MonopolyMap
+public class MonopolyMap(string id, BlockBase[][] data)
 {
-    public MonopolyMap(string Id, BlockBase[][] Data)
-    {
-        this.Id = Id;
-        this.Data = Data;
-    }
-
-    public string Id { get; }
-    public BlockBase[][] Data { get; }
+    public string Id { get; } = id;
+    public BlockBase[][] Data { get; } = data;
 
     public static MonopolyMap Parse(string data)
     {
-        return JsonSerializer.Deserialize<MonopolyMap>(data, JsonSerializerOptions);
+        return JsonSerializer.Deserialize<MonopolyMap>(data, JsonSerializerOptions) ?? throw new InvalidOperationException();
     }
     public static JsonSerializerOptions JsonSerializerOptions => new()
     {
@@ -82,7 +76,7 @@ public class BlockConverter : JsonConverter<BlockBase>
         {
             throw new JsonException("Missing Type property");
         }
-        BlockType type = JsonSerializer.Deserialize<BlockType>(typeProperty.GetRawText(), options);
+        var type = JsonSerializer.Deserialize<BlockType>(typeProperty.GetRawText(), options);
         return type switch
         {
             BlockType.None => JsonSerializer.Deserialize<EmptyBlock>(root.GetRawText(), options),

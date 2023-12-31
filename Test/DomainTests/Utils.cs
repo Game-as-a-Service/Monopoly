@@ -40,9 +40,9 @@ static class DomainEventsExtension
         }
         else if (first is SomePlayersPreparingEvent somePlayersPreparingEvent)
         {
-            var (GameStage, Players) = (((SomePlayersPreparingEvent)e).GameStage, ((SomePlayersPreparingEvent)e).Players);
+            var (GameStage, Players) = (((SomePlayersPreparingEvent)e).GameStage, Players: ((SomePlayersPreparingEvent)e).PlayerIds);
             Assert.AreEqual(GameStage, somePlayersPreparingEvent.GameStage);
-            CollectionAssert.AreEqual(Players, somePlayersPreparingEvent.Players);
+            CollectionAssert.AreEqual(Players, somePlayersPreparingEvent.PlayerIds);
         }
         else
         {

@@ -4,6 +4,7 @@ using Domain;
 using Domain.Interfaces;
 using ServerTests.Usecases;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 
 namespace ServerTests;
 
@@ -25,8 +26,8 @@ public class Utils
 
     internal static void VerifyChessMovedEvent(VerificationHub hub, string playerId, string blockId, string direction, int remainingSteps)
     {
-        hub.Verify<string, string, string, int>(nameof(IMonopolyResponses.ChessMovedEvent), (PlayerId, BlockId, Direction, RemainingSteps) =>
-            PlayerId == playerId && BlockId == blockId && Direction == direction && RemainingSteps == remainingSteps);
+        hub.Verify(nameof(IMonopolyResponses.ChessMovedEvent), (ChessMovedEventArgs e) =>
+            e.PlayerId == playerId && e.BlockId == blockId && e.Direction == direction && e.RemainingSteps == remainingSteps);
     }
 
     public class MonopolyBuilder

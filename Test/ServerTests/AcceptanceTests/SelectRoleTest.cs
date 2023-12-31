@@ -1,6 +1,7 @@
 ﻿using Application.DataModels;
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -41,9 +42,9 @@ public class SelectRoleTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerSelectRole), gameId, "A", "1");
 
         // Assert
-        hub.Verify<string, string>(
+        hub.Verify(
             nameof(IMonopolyResponses.PlayerSelectRoleEvent),
-                (playerId, roleId) => (playerId, roleId) == ("A", "1")
+                (PlayerSelectRoleEventArgs e) => e is { PlayerId: "A", RoleId: "1" }
             );
     }
 
@@ -72,9 +73,9 @@ public class SelectRoleTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerSelectRole), gameId, "A", "2");
 
         // Assert
-        hub.Verify<string, string>(
+        hub.Verify(
             nameof(IMonopolyResponses.PlayerSelectRoleEvent),
-                (playerId, roleId) => (playerId, roleId) == ("A", "2")
+                (PlayerSelectRoleEventArgs e) => e is { PlayerId: "A", RoleId: "2" }
             );
     }
 }

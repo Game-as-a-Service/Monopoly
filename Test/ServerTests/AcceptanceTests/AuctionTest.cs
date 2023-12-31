@@ -1,5 +1,6 @@
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -62,10 +63,8 @@ public class AuctionTest
 
         // Assert
         // B 喊價
-        hub.Verify<string, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerBidEvent),
-                                (playerId, blockId, highestPrice)
-                                => playerId == B.Id && blockId == A1.Id && highestPrice == 1500);
+        hub.Verify(nameof(IMonopolyResponses.PlayerBidEvent),
+                  (PlayerBidEventArgs e) => e is { PlayerId: "B", LandId: "A1", HighestPrice: 1500 });
         hub.VerifyNoElseEvent();
     }
 
@@ -113,10 +112,8 @@ public class AuctionTest
 
         // Assert
         // B 喊價
-        hub.Verify<string, decimal, decimal, decimal>(
-                       nameof(IMonopolyResponses.PlayerTooPoorToBidEvent),
-                                (playerId, playerMoney, bidPrice, highestPrice)
-                                => playerId == "B" && playerMoney == 2000 && bidPrice == 3000 && highestPrice == 1000);
+        hub.Verify(nameof(IMonopolyResponses.PlayerTooPoorToBidEvent),
+                   (PlayerTooPoorToBidEventArgs e) => e is { PlayerId: "B", PlayerMoney: 2000, BidPrice: 3000, HighestPrice: 1000 });
         hub.VerifyNoElseEvent();
     }
 
@@ -164,10 +161,8 @@ public class AuctionTest
 
         // Assert
         // B 喊價
-        hub.Verify<string, string, decimal, decimal>(
-                       nameof(IMonopolyResponses.PlayerBidFailEvent),
-                                (playerId, blockId, bidPrice, highestPrice)
-                                => playerId == B.Id && blockId == A1.Id && bidPrice == 800 && highestPrice == 1000);
+        hub.Verify(nameof(IMonopolyResponses.PlayerBidFailEvent),
+                  (PlayerBidFailEventArgs e) => e is { PlayerId: "B", LandId: "A1", BidPrice: 800, HighestPrice: 1000 });
         hub.VerifyNoElseEvent();
     }
 
@@ -212,10 +207,15 @@ public class AuctionTest
         // Assert
         // 流拍
         // 在流拍中，土地為系統所有，OwnerMoney值回傳0
-        hub.Verify<string, decimal, string, string?, decimal>(
-                       nameof(IMonopolyResponses.EndAuctionEvent),
-                                (playerId, playerMoney, blockId, owner, ownerMoney)
-                                => playerId == "A" && playerMoney == 3400 && blockId == "A1" && owner == null && ownerMoney == 0);
+        hub.Verify(nameof(IMonopolyResponses.EndAuctionEvent),
+                   (EndAuctionEventArgs e) => e is
+                       {
+                           PlayerId: "A",
+                           PlayerMoney: 3400,
+                           LandId: "A1",
+                           OwnerId: null,
+                           OwnerMoney: 0
+                       });
         hub.VerifyNoElseEvent();
     }
 
@@ -266,10 +266,15 @@ public class AuctionTest
 
         // Assert
         // 拍賣結算
-        hub.Verify<string, decimal, string, string?, decimal>(
-                       nameof(IMonopolyResponses.EndAuctionEvent),
-                                (playerId, playerMoney, blockId, owner, ownerMoney)
-                                => playerId == "A" && playerMoney == 1600 && blockId == "A1" && owner == "B" && ownerMoney == 1400);
+        hub.Verify(nameof(IMonopolyResponses.EndAuctionEvent),
+                   (EndAuctionEventArgs e) => e is
+                       {
+                           PlayerId: "A",
+                           PlayerMoney: 1600,
+                           LandId: "A1",
+                           OwnerId: "B",
+                           OwnerMoney: 1400
+                       });
         hub.VerifyNoElseEvent();
     }
 
@@ -317,10 +322,8 @@ public class AuctionTest
 
         // Assert
         // A 喊價
-        hub.Verify<string>(
-                       nameof(IMonopolyResponses.CurrentPlayerCannotBidEvent),
-                                (playerId)
-                                => playerId == "A");
+        hub.Verify(nameof(IMonopolyResponses.CurrentPlayerCannotBidEvent),
+                   (CurrentPlayerCannotBidEventArgs e) => e.PlayerId == "A");
         hub.VerifyNoElseEvent();
     }
 }

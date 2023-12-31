@@ -17,11 +17,11 @@ builder.Services.AddMonopolyApplication();
 builder.Services.AddSignalR();
 
 builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
-        builder =>
+        configurePolicy =>
         {
-            builder.AllowAnyHeader()
+            configurePolicy.AllowAnyHeader()
                    .AllowAnyMethod()
-                   .SetIsOriginAllowed((host) => true)
+                   .SetIsOriginAllowed(_ => true)
                    .AllowCredentials();
         }));
 
@@ -43,8 +43,8 @@ builder.Services
         builder.Configuration.Bind(nameof(JwtBearerOptions), opt);
         opt.Events = jwtEvents;
     });
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer");
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme);
 
 var app = builder.Build();
 
@@ -99,7 +99,7 @@ app.MapGet("/rooms", () =>
 app.MapGet("/users", () =>
 {
     var platformService = app.Services.CreateScope().ServiceProvider.GetRequiredService<IPlatformService>() as DevelopmentPlatformService;
-    var users = platformService?.GetUsers().Select(user => new { Id = user.Id, Token = user.Token });
+    var users = platformService?.GetUsers().Select(user => new { user.Id, user.Token });
     return Results.Json(users);
 });
 #endif

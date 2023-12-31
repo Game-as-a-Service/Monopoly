@@ -6,14 +6,9 @@ using System.Net.Http.Headers;
 
 namespace Server.Services;
 
-public class PlatformService : IPlatformService
+public class PlatformService(IOptionsMonitor<JwtBearerOptions> options) : IPlatformService
 {
-    private readonly JwtBearerOptions _jwtOptions;
-
-    public PlatformService(IOptionsMonitor<JwtBearerOptions> options)
-    {
-        _jwtOptions = options.Get("Bearer");
-    }
+    private readonly JwtBearerOptions _jwtOptions = options.Get("Bearer");
 
     public async Task<UserInfo> GetUserInfo(string tokenString)
     {
@@ -31,9 +26,4 @@ public class PlatformService : IPlatformService
 
         return userInfo!;
     }
-}
-
-public interface IPlatformService
-{
-    public Task<UserInfo> GetUserInfo(string tokenString);
 }

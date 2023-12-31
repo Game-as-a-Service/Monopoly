@@ -1,6 +1,7 @@
 using Application.DataModels;
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -53,9 +54,9 @@ public class PreparedTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerReady), gameId, "B");
 
         // Assert
-        hub.Verify<string, string>(
+        hub.Verify(
             nameof(IMonopolyResponses.PlayerReadyEvent),
-                (playerId, playerState) => (playerId, playerState) == ("B", "Normal")
+                (PlayerReadyEventArgs e) => e is { PlayerId: "B", PlayerState: "Normal" }
             );
     }
 
@@ -87,9 +88,8 @@ public class PreparedTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerReady), gameId, "A");
 
         // Assert
-        hub.Verify<string, string>(
-            nameof(IMonopolyResponses.PlayerReadyEvent),
-                (playerId, playerState) => (playerId, playerState) == ("A", "Ready")
+        hub.Verify(nameof(IMonopolyResponses.PlayerReadyEvent),
+                (PlayerReadyEventArgs e) => e is {PlayerId: "A", PlayerState: "Ready" }
             );
     }
 
@@ -128,9 +128,9 @@ public class PreparedTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerReady), gameId, "B");
 
         // Assert
-        hub.Verify<string, string, string, int>(
+        hub.Verify(
             nameof(IMonopolyResponses.PlayerCannotReadyEvent),
-                (playerId, playerState, roleId, locationId) => (playerId, playerState, roleId, locationId) == ("B", "Ready", "2", 0)
+                (PlayerCannotReadyEventArgs e) => e is { PlayerId: "B", PlayerState: "Ready", RoleId: "2", LocationId: 0 }
             );
     }
 
@@ -169,9 +169,9 @@ public class PreparedTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerReady), gameId, "B");
 
         // Assert
-        hub.Verify<string, string, string, int>(
+        hub.Verify(
             nameof(IMonopolyResponses.PlayerCannotReadyEvent),
-                (playerId, playerState, roleId, locationId) => (playerId, playerState, roleId, locationId) == ("B", "Ready", null, 2)
+                (PlayerCannotReadyEventArgs e) => e is { PlayerId: "B", PlayerState: "Ready", RoleId: null, LocationId: 2 }
             );
     }
 }

@@ -7,6 +7,8 @@ using Server.Presenters;
 using SharedLibrary;
 using SharedLibrary.ResponseArgs;
 using System.Security.Claims;
+using SharedLibrary.ResponseArgs.Monopoly;
+using SharedLibrary.ResponseArgs.ReadyRoom;
 
 namespace Server.Hubs;
 
@@ -142,22 +144,22 @@ public class MonopolyHub(IRepository repository) : Hub<IMonopolyResponses>
     {
         var presenter = new DefaultPresenter<GetReadyInfoResponse>();
         await usecase.ExecuteAsync(new GetReadyInfoRequest(GameId, PlayerId), presenter);
-        await Clients.Caller.GetReadyInfoEvent(new GetReadyInfoEvent
+        await Clients.Caller.GetReadyInfoEvent(new GetReadyInfoEventArgs
         {
             Players = presenter.Value.Info.Players.Select(x =>
             {
-                var isRole = Enum.TryParse<GetReadyInfoEvent.RoleEnum>(x.RoleId, true, out var roleEnum);
+                var isRole = Enum.TryParse<GetReadyInfoEventArgs.RoleEnum>(x.RoleId, true, out var roleEnum);
                 if (isRole is false)
                 {
-                    roleEnum = GetReadyInfoEvent.RoleEnum.None;
+                    roleEnum = GetReadyInfoEventArgs.RoleEnum.None;
                 }
-                return new GetReadyInfoEvent.Player
+                return new GetReadyInfoEventArgs.Player
                 {
                     Id = x.PlayerId,
                     Name = x.PlayerId,
                     IsReady = x.IsReady,
                     Role = roleEnum,
-                    Color = (GetReadyInfoEvent.ColorEnum?)x.LocationId ?? GetReadyInfoEvent.ColorEnum.None
+                    Color = (GetReadyInfoEventArgs.ColorEnum?)x.LocationId ?? GetReadyInfoEventArgs.ColorEnum.None
                 };
             }).ToList(),
             HostId = presenter.Value.Info.HostId,
@@ -179,8 +181,8 @@ public class MonopolyHub(IRepository repository) : Hub<IMonopolyResponses>
             throw new GameNotFoundException($"Can not find the game that id is {GameId}");
         }
         await Groups.AddToGroupAsync(Context.ConnectionId, GameId);
-        await Clients.Caller.WelcomeEvent(new WelcomeEvent { PlayerId = PlayerId });
-        await Clients.Group(GameId).PlayerJoinGameEvent(PlayerId);
+        await Clients.Caller.WelcomeEvent(new WelcomeEventArgs { PlayerId = PlayerId });
+        await Clients.Group(GameId).PlayerJoinGameEvent(new PlayerJoinGameEventArgs { PlayerId = PlayerId });
     }
 
     private class GameNotFoundException(string message) : Exception(message);

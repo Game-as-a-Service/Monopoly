@@ -1,5 +1,6 @@
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -60,10 +61,8 @@ public class EndRoundTest
 
         // Assert
         // A 結束回合
-        hub.Verify<string>(
-                       nameof(IMonopolyResponses.EndRoundFailEvent),
-                                  (playerId)
-                                  => playerId == "A");
+        hub.Verify(nameof(IMonopolyResponses.EndRoundFailEvent),
+                   (EndRoundFailEventArgs e) => e is { PlayerId: "A" });
         hub.VerifyNoElseEvent();
     }
 
@@ -113,10 +112,8 @@ public class EndRoundTest
 
         // Assert
         // A 結束回合                      
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.EndRoundEvent),
-                                  (playerId, nextPlayer)
-                                  => playerId == "A" && nextPlayer == "B");
+        hub.Verify(nameof(IMonopolyResponses.EndRoundEvent),
+                  (EndRoundEventArgs e) => e is { PlayerId: "A", NextPlayerId: "B" });
         hub.VerifyNoElseEvent();
     }
 
@@ -167,14 +164,10 @@ public class EndRoundTest
         // Assert
         // A 結束回合
         // A1 抵押到期
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.EndRoundEvent),
-                                  (playerId, nextPlayer)
-                                  => playerId == "A" && nextPlayer == "B");
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.MortgageDueEvent),
-                                  (playerId, BlockId)
-                                  => playerId == "A" && BlockId == "A1");
+        hub.Verify(nameof(IMonopolyResponses.EndRoundEvent),
+                  (EndRoundEventArgs e) => e is { PlayerId: "A", NextPlayerId: "B" });
+        hub.Verify(nameof(IMonopolyResponses.MortgageDueEvent),
+                  (MortgageDueEventArgs e) => e is { PlayerId: "A", LandId: "A1" });
         hub.VerifyNoElseEvent();
     }
 
@@ -231,10 +224,9 @@ public class EndRoundTest
 
         // Assert
         // A 結束回合，輪到下一個未破產玩家
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.EndRoundEvent),
-                                  (playerId, nextPlayer)
-                                  => playerId == "A" && nextPlayer == "C");
+        hub.Verify(nameof(IMonopolyResponses.EndRoundEvent),
+                   (EndRoundEventArgs e)
+                                  => e is { PlayerId: "A", NextPlayerId: "C" });
         hub.VerifyNoElseEvent();
     }
 
@@ -290,18 +282,12 @@ public class EndRoundTest
         // A 結束回合，輪到下一個玩家 B
         // B 在監獄，輪到下一個玩家 C
 
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.EndRoundEvent),
-                                  (playerId, nextPlayer)
-                                  => playerId == "A" && nextPlayer == "B");
-        hub.Verify<string, int>(
-                       nameof(IMonopolyResponses.SuspendRoundEvent),
-                                  (playerId, suspendRounds)
-                                  => playerId == "B" && suspendRounds == 1);
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.EndRoundEvent),
-                                  (playerId, nextPlayer)
-                                  => playerId == "B" && nextPlayer == "C");
+        hub.Verify(nameof(IMonopolyResponses.EndRoundEvent),
+                   (EndRoundEventArgs e) => e is { PlayerId: "A", NextPlayerId: "B" });
+        hub.Verify(nameof(IMonopolyResponses.SuspendRoundEvent),
+             (SuspendRoundEventArgs e) => e is { PlayerId: "B", SuspendRounds: 1 });
+        hub.Verify(nameof(IMonopolyResponses.EndRoundEvent),
+                  (EndRoundEventArgs e) => e is { PlayerId: "B", NextPlayerId: "C" });
                                   
         hub.VerifyNoElseEvent();
     }

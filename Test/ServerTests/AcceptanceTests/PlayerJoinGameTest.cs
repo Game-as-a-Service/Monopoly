@@ -5,6 +5,7 @@ using Server.DataModels;
 using SharedLibrary;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using SharedLibrary.ResponseArgs.Monopoly;
 
 namespace ServerTests.AcceptanceTests;
 
@@ -37,10 +38,11 @@ public class PlayerJoinGameTest
         await CreateGameAsync("A", "A", "B", "C");
 
         // Act
-        VerificationHub hub = await server.CreateHubConnectionAsync("1", "A");
+        var hub = await server.CreateHubConnectionAsync("1", "A");
 
         // Assert
-        hub.Verify<string>(nameof(IMonopolyResponses.PlayerJoinGameEvent), id => id == "A");
+        hub.Verify(nameof(IMonopolyResponses.PlayerJoinGameEvent),
+            (PlayerJoinGameEventArgs e) => e.PlayerId == "A");
     }
 
     [TestMethod]

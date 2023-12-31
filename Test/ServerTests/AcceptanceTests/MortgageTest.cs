@@ -1,5 +1,6 @@
 ﻿using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -51,10 +52,8 @@ public class MortgageTest
 
         // Assert
         // A 抵押房地產
-        hub.Verify<string, decimal, string, int>(
-                       nameof(IMonopolyResponses.PlayerMortgageEvent),
-                                (playerId, playerMoney, blockId, deadLine)
-                                => playerId == "A" && playerMoney == 5700 && blockId == "A1" && deadLine == 10);
+        hub.Verify(nameof(IMonopolyResponses.PlayerMortgageEvent),
+            (PlayerMortgageEventArgs e) => e is { PlayerId: "A", PlayerMoney: 5700, LandId: "A1", DeadLine: 10 });
         hub.VerifyNoElseEvent();
     }
 
@@ -92,10 +91,9 @@ public class MortgageTest
 
         // Assert
         // A 抵押房地產
-        hub.Verify<string, decimal, string>(
-                       nameof(IMonopolyResponses.PlayerCannotMortgageEvent),
-                                (playerId, playerMoney, blockId)
-                                => playerId == "A" && playerMoney == 1000 && blockId == "A1");
+        hub.Verify(nameof(IMonopolyResponses.PlayerCannotMortgageEvent),
+                                (PlayerCannotMortgageEventArgs e)
+                                => e is { PlayerId: "A", PlayerMoney: 1000, LandId: "A1" });
         hub.VerifyNoElseEvent();
     }
 
@@ -129,10 +127,8 @@ public class MortgageTest
 
         // Assert
         // A 抵押房地產
-        hub.Verify<string, decimal, string>(
-                       nameof(IMonopolyResponses.PlayerCannotMortgageEvent),
-                                (playerId, playerMoney, blockId)
-                                => playerId == "A" && playerMoney == 5000 && blockId == "A1");
+        hub.Verify(nameof(IMonopolyResponses.PlayerCannotMortgageEvent),
+                    (PlayerCannotMortgageEventArgs e) => e is { PlayerId: "A", PlayerMoney: 5000, LandId: "A1" });
         hub.VerifyNoElseEvent();
     }
 }

@@ -2,5 +2,5 @@
 
 namespace Domain.Events;
 
-public record PlayerCanBuyLandEvent(string PlayerId, string BlockId, decimal landMoney)
+public record PlayerCanBuyLandEvent(string PlayerId, string LandId, decimal Price)
     : DomainEvent;

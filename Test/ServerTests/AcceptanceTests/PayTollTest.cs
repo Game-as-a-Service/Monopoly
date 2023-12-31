@@ -1,5 +1,6 @@
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -59,10 +60,8 @@ public class PayTollTest
 
         // Assert
         // A 付過路費
-        hub.Verify<string, decimal, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerPayTollEvent),
-                                  (playerId, playerMoney, ownerId, ownerMoney)
-                                  => playerId == "A" && playerMoney == 950 && ownerId == "B" && ownerMoney == 1050);
+        hub.Verify(nameof(IMonopolyResponses.PlayerPayTollEvent),
+                (PlayerPayTollEventArgs e) => e is { PlayerId: "A", PlayerMoney: 950, OwnerId: "B", OwnerMoney: 1050 });
         hub.VerifyNoElseEvent();
     }
 
@@ -112,10 +111,8 @@ public class PayTollTest
 
         // Assert
         // A 付過路費
-        hub.Verify<string, decimal>(
-                       nameof(IMonopolyResponses.PlayerDoesntNeedToPayTollEvent),
-                                  (playerId, playerMoney)
-                                  => playerId == "A" && playerMoney == 1000);
+        hub.Verify(nameof(IMonopolyResponses.PlayerDoesntNeedToPayTollEvent),
+            (PlayerDoesntNeedToPayTollEventArgs e) => e is { PlayerId: "A", PlayerMoney: 1000 });
         hub.VerifyNoElseEvent();
     }
 
@@ -164,10 +161,8 @@ public class PayTollTest
 
         // Assert
         // A 付過路費
-        hub.Verify<string, decimal>(
-                       nameof(IMonopolyResponses.PlayerDoesntNeedToPayTollEvent),
-                                  (playerId, playerMoney)
-                                  => playerId == "A" && playerMoney == 1000);
+        hub.Verify(nameof(IMonopolyResponses.PlayerDoesntNeedToPayTollEvent),
+                  (PlayerDoesntNeedToPayTollEventArgs e) => e is { PlayerId: "A", PlayerMoney: 1000 });
         hub.VerifyNoElseEvent();
     }
 
@@ -215,10 +210,8 @@ public class PayTollTest
 
         // Assert
         // A 付過路費
-        hub.Verify<string, decimal, decimal>(
-                       nameof(IMonopolyResponses.PlayerTooPoorToPayTollEvent),
-                                  (playerId, playerMoney, toll)
-                                  => playerId == "A" && playerMoney == 30 && toll == 50);
+        hub.Verify(nameof(IMonopolyResponses.PlayerTooPoorToPayTollEvent),
+            (PlayerTooPoorToPayTollEventArgs e) => e is { PlayerId: "A", PlayerMoney: 30, Toll: 50 });
         hub.VerifyNoElseEvent();
     }
 
@@ -265,10 +258,8 @@ public class PayTollTest
 
         // Assert
         // A 付過路費
-        hub.Verify<string, decimal, string, decimal>(
-                       nameof(IMonopolyResponses.PlayerPayTollEvent),
-                                  (playerId, playerMoney, ownerId, ownerMoney)
-                                  => playerId == "A" && playerMoney == 2000 && ownerId == "B" && ownerMoney == 2000);
+        hub.Verify(nameof(IMonopolyResponses.PlayerPayTollEvent),
+                (PlayerPayTollEventArgs e) => e is { PlayerId: "A", PlayerMoney: 2000, OwnerId: "B", OwnerMoney: 2000 });
         hub.VerifyNoElseEvent();
     }
 

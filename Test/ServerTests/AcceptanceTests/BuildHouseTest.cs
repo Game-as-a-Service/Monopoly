@@ -1,5 +1,7 @@
+using Domain.Events;
 using Server.Hubs;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using static ServerTests.Utils;
 
 namespace ServerTests.AcceptanceTests;
@@ -56,10 +58,8 @@ public class BuildHouseTest
 
         // Assert
         // A 蓋房子
-        hub.Verify<string, string, decimal, int>(
-                       nameof(IMonopolyResponses.PlayerBuildHouseEvent),
-                                  (playerId, blockId, playerMoney, house)
-                                  => playerId == "A" && blockId == "A1" && playerMoney == 1000 && house == 2);
+        hub.Verify(nameof(IMonopolyResponses.PlayerBuildHouseEvent),
+                  (PlayerBuildHouseEventArgs e) => e is { PlayerId: "A", LandId: "A1", PlayerMoney: 1000, HouseCount: 2 });
         hub.VerifyNoElseEvent();
     }
 
@@ -99,10 +99,8 @@ public class BuildHouseTest
 
         // Assert
         // A 蓋房子
-        hub.Verify<string, string, int>(
-                       nameof(IMonopolyResponses.HouseMaxEvent),
-                                  (playerId, blockId, house)
-                                  => playerId == "A" && blockId == "A1" && house == 5);
+        hub.Verify(nameof(IMonopolyResponses.HouseMaxEvent),
+                (HouseMaxEventArgs e) => e is { PlayerId: "A", LandId: "A1", HouseCount: 5 });
         hub.VerifyNoElseEvent();
     }
 
@@ -140,10 +138,8 @@ public class BuildHouseTest
 
         // Assert
         // A 蓋房子
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
-                                  (playerId, blockId)
-                                  => playerId == "A" && blockId == "Station1");
+        hub.Verify(nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
+            (PlayerCannotBuildHouseEventArgs e) => e is { PlayerId: "A", LandId: "Station1" });
         hub.VerifyNoElseEvent();
     }
 
@@ -186,10 +182,9 @@ public class BuildHouseTest
 
         // Assert
         // A 蓋房子
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
-                                  (playerId, blockId)
-                                  => playerId == "A" && blockId == "A1");
+        hub.Verify(nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
+                                  (PlayerCannotBuildHouseEventArgs e)
+                                  => e is { PlayerId: "A", LandId: "A1" });
         hub.VerifyNoElseEvent();
     }
 
@@ -230,10 +225,9 @@ public class BuildHouseTest
         await hub.SendAsync(nameof(MonopolyHub.PlayerBuildHouse), gameId, "A");
 
         // Assert
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
-                                  (playerId, blockId)
-                                  => playerId == "A" && blockId == "A1");
+        hub.Verify(nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
+                                  (PlayerCannotBuildHouseEventArgs e)
+                                  => e is { PlayerId: "A", LandId: "A1" });
         hub.VerifyNoElseEvent();
     }
 
@@ -275,10 +269,8 @@ public class BuildHouseTest
 
         // Assert
         // A 蓋房子失敗
-        hub.Verify<string, string>(
-                       nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
-                                  (playerId, blockId)
-                                  => playerId == "A" && blockId == "A2");
+        hub.Verify(nameof(IMonopolyResponses.PlayerCannotBuildHouseEvent),
+                   (PlayerCannotBuildHouseEventArgs e) => e is { PlayerId: "A", LandId: "A2" });
         hub.VerifyNoElseEvent();
     }
 }

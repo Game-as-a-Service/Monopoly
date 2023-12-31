@@ -15,7 +15,6 @@ using ServerTests.Usecases;
 using SharedLibrary;
 using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -24,7 +23,7 @@ namespace ServerTests;
 
 internal class MonopolyTestServer : WebApplicationFactory<Program>
 {
-    public HttpClient Client { get; init; }
+    public HttpClient Client { get; }
 
     public MonopolyTestServer()
     {
@@ -97,35 +96,34 @@ internal class MonopolyTestServer : WebApplicationFactory<Program>
 
 internal class VerificationHub
 {
-    private readonly HubConnection Connection;
+    private readonly HubConnection _connection;
 
-    private readonly Dictionary<string, ConcurrentQueue<object[]>> Queues;
+    private readonly Dictionary<string, ConcurrentQueue<object[]>> _queues = new();
 
-    public VerificationHub(HubConnection Connection)
+    public VerificationHub(HubConnection connection)
     {
-        this.Connection = Connection;
-        Queues = new();
+        _connection = connection;
         ListenAllEvent();
     }
     public async void VerifyDisconnection(int delay = 1000)
     {
         await Task.Delay(delay);
-        Assert.AreEqual(HubConnectionState.Disconnected, Connection.State);
+        Assert.AreEqual(HubConnectionState.Disconnected, _connection.State);
     }
     // 利用反射讀出所有HubResponse的Method，並且設置On function
     private void ListenAllEvent()
     {
-        Type interfaceType = typeof(IMonopolyResponses);
-        MethodInfo[] methods = interfaceType.GetMethods();
+        var interfaceType = typeof(IMonopolyResponses);
+        var methods = interfaceType.GetMethods();
 
-        foreach (MethodInfo method in methods)
+        foreach (var method in methods)
         {
-            ParameterInfo[] parameters = method.GetParameters();
-            Queues.Add(method.Name, new());
+            var parameters = method.GetParameters();
+            _queues.Add(method.Name, new());
 
-            Type[] parameterTypes = parameters.Select(x => x.ParameterType).ToArray();
-            void handler(object?[] x) => Queues[method.Name].Enqueue(x!);
-            Connection.On(method.Name, parameterTypes, handler);
+            var parameterTypes = parameters.Select(x => x.ParameterType).ToArray();
+            void handler(object?[] x) => _queues[method.Name].Enqueue(x!);
+            _connection.On(method.Name, parameterTypes, handler);
         }
     }
 
@@ -136,7 +134,7 @@ internal class VerificationHub
             var startTime = DateTime.Now;
             while (true)
             {
-                if (Queues[methodName].TryDequeue(out var result))
+                if (_queues[methodName].TryDequeue(out var result))
                 {
                     var options = new JsonSerializerOptions()
                     {
@@ -148,35 +146,33 @@ internal class VerificationHub
                         $"\n回傳結果為 {JsonSerializer.Serialize(result, options)}");
                     break;
                 }
-                else
+
+                // 如果已經斷開連線測試失敗
+                if (_connection.State == HubConnectionState.Disconnected)
                 {
-                    // 如果已經斷開連線測試失敗
-                    if (Connection.State == HubConnectionState.Disconnected)
-                    {
-                        if (Queues[nameof(IMonopolyResponses.PlayerJoinGameFailedEvent)].TryPeek(out var errorMessages))
-                            Assert.Fail(
-                                $"""
-                                已經斷開連線
-                                訊息:
-                                {string.Join("\n", errorMessages!)}
-                                """);
-                    }
-                    // 計算已經等待的時間
-                    var elapsedMilliseconds = (DateTime.Now - startTime).TotalMilliseconds;
-                    if (elapsedMilliseconds >= timeout)
-                    {
+                    if (_queues[nameof(IMonopolyResponses.PlayerJoinGameFailedEvent)].TryPeek(out var errorMessages))
                         Assert.Fail(
                             $"""
-                            超出預期時間 {timeout} ms，預期得到 Event【{methodName}】
-                            可以嘗試檢查下面的問題:
-                            1. 在 EventBus 中，缺少 Event 的傳送
-                            2. 在 Usecase 中，沒有使用 EventBus.PublishAsync
-                            3. 在 Domain 中，沒有 添加 Domain Event
-                            """);
-                    }
-                    // 等待一段時間再繼續嘗試
-                    SpinWait.SpinUntil(() => false, 50);
+                             已經斷開連線
+                             訊息:
+                             {string.Join("\n", errorMessages!)}
+                             """);
                 }
+                // 計算已經等待的時間
+                var elapsedMilliseconds = (DateTime.Now - startTime).TotalMilliseconds;
+                if (elapsedMilliseconds >= timeout)
+                {
+                    Assert.Fail(
+                        $"""
+                         超出預期時間 {timeout} ms，預期得到 Event【{methodName}】
+                         可以嘗試檢查下面的問題:
+                         1. 在 EventBus 中，缺少 Event 的傳送
+                         2. 在 Usecase 中，沒有使用 EventBus.PublishAsync
+                         3. 在 Domain 中，沒有 添加 Domain Event
+                         """);
+                }
+                // 等待一段時間再繼續嘗試
+                SpinWait.SpinUntil(() => false, 50);
             }
         }
         catch (KeyNotFoundException ex)
@@ -203,7 +199,7 @@ internal class VerificationHub
 
     public async Task SendAsync(string method, params object?[] args)
     {
-        await Connection.SendCoreAsync(method, args);
+        await _connection.SendCoreAsync(method, args);
     }
 
     public void Verify<T1>(string methodName, Func<T1, bool> verify, int timeout = 1000)
@@ -234,7 +230,7 @@ internal class VerificationHub
     // 確認所有的Queue已經是空的了
     public void VerifyNoElseEvent()
     {
-        foreach (var (method, queue) in Queues)
+        foreach (var (method, queue) in _queues)
         {
             if (method == nameof(IMonopolyResponses.PlayerJoinGameEvent))
             {
