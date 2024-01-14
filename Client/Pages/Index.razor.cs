@@ -32,7 +32,7 @@ public partial class Index
                 options.AccessTokenProvider = async () => await Task.FromResult(AccessToken);
             })
             .Build();
-        Connection = new(Client);
+        Connection = new TypedHubConnection(Client);
         Connection.WelcomeEventHandler += (e) =>
         {
             UserId = e.PlayerId;

@@ -13,22 +13,10 @@ public partial class ReadyPage
     public Player? CurrentPlayer => Players.FirstOrDefault(x => x.Id == UserId);
     protected override async Task OnInitializedAsync()
     {
-        Connection.PlayerJoinGameEventHandler += OnPlayerJoinGameEvent;
         Connection.GetReadyInfoEventHandler += OnGetReadyInfoEvent;
         await Connection.GetReadyInfo();
     }
     public void Update() => StateHasChanged();
-    private void OnPlayerJoinGameEvent(PlayerJoinGameEvent e)
-    {
-        var player = new Player
-        {
-            Id = e.PlayerId,
-            Name = e.PlayerId,
-            IsReady = false,
-        };
-        Players = Players.Append(player).ToList();
-        Update();
-    }
     private void OnGetReadyInfoEvent(GetReadyInfoEventArgs e)
     {
         Players = e.Players.Select(x => new Player
