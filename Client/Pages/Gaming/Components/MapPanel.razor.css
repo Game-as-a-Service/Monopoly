@@ -1,10 +1,11 @@
 ﻿.container {
     width: calc(1277 * var(--unit));
-    top: 20vh;
+    top: calc(1080 * var(--unit) * 0.2);
     margin: auto;
     /* background-color: antiquewhite; */
     position: relative;
     font-size: 0;
+    user-select: none; 
 }
 
 div {
@@ -14,6 +15,7 @@ div {
     div.row {
         margin: 0;
         height: calc(156 * var(--unit));
+        display: flex;
     }
 
 /* #region special block */
@@ -51,6 +53,7 @@ div.start {
 
     .roadTop img {
         width: 100%;
+        display: flex;
         position: relative;
     }
 
@@ -66,13 +69,13 @@ div.start {
 .roadLeft {
     display: inline-block;
     width: calc(133 * var(--unit));
-    height: calc(133 * var(--unit));
     text-align: right;
     position: relative;
 }
 
     .roadLeft img {
         width: 100%;
+        display: flex;
         position: relative;
     }
 
@@ -94,6 +97,7 @@ div.start {
 
     .roadRight img {
         width: 100%;
+        display: flex;
         position: relative;
     }
 
