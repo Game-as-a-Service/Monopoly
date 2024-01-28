@@ -95,6 +95,174 @@
     [b-m9mpbibp55]::-webkit-scrollbar-thumb:hover {
         background: #555;
     }
+/* /Pages/Gaming/Components/MapPanel.razor.rz.scp.css */
+.container[b-9s5izdb9cc] {
+    width: calc(1277 * var(--unit));
+    top: 20vh;
+    margin: auto;
+    /* background-color: antiquewhite; */
+    position: relative;
+    font-size: 0;
+}
+
+div[b-9s5izdb9cc] {
+    margin: calc(4 * var(--unit));
+}
+
+    div.row[b-9s5izdb9cc] {
+        margin: 0;
+        height: calc(156 * var(--unit));
+    }
+
+/* #region special block */
+
+.empty[b-9s5izdb9cc], .start[b-9s5izdb9cc], .parking[b-9s5izdb9cc], .prison[b-9s5izdb9cc] {
+    display: inline-block;
+    position: relative;
+    width: calc(133 * var(--unit));
+    vertical-align: bottom;
+}
+
+div.parking[b-9s5izdb9cc] {
+    content: url('images/gamepage/parkinglot.svg');
+}
+
+div.prison[b-9s5izdb9cc] {
+    content: url('images/gamepage/prison.svg');
+}
+
+div.start[b-9s5izdb9cc] {
+    content: url('images/gamepage/startpoint.svg');
+}
+
+/* #endregion */
+
+/* #region roadTop */
+
+.roadTop[b-9s5izdb9cc] {
+    display: inline-block;
+    position: relative;
+    width: calc(133 * var(--unit));
+    padding: 0;
+    border: 0;
+}
+
+    .roadTop img[b-9s5izdb9cc] {
+        width: 100%;
+        display: flex;
+        position: relative;
+    }
+
+    .roadTop .landH[b-9s5izdb9cc] {
+        position: absolute;
+        top: -48%;
+    }
+
+/* #endregion */
+
+/* #region roadLeft */
+
+.roadLeft[b-9s5izdb9cc] {
+    display: inline-block;
+    width: calc(133 * var(--unit));
+    height: calc(133 * var(--unit));
+    text-align: right;
+    position: relative;
+}
+
+    .roadLeft img[b-9s5izdb9cc] {
+        width: 100%;
+        display: flex;
+        position: relative;
+    }
+
+    .roadLeft .landV[b-9s5izdb9cc] {
+        position: absolute;
+        right: 105%;
+    }
+
+/* #endregion */
+
+/* #region roadRight */
+
+.roadRight[b-9s5izdb9cc] {
+    display: inline-block;
+    width: calc(133 * var(--unit));
+    text-align: left;
+    position: relative;
+}
+
+    .roadRight img[b-9s5izdb9cc] {
+        width: 100%;
+        display: flex;
+        position: relative;
+    }
+
+    .roadRight .landV[b-9s5izdb9cc] {
+        position: absolute;
+        left: 105%;
+    }
+
+/* #endregion */
+
+/* #region img */
+
+img.empty[b-9s5izdb9cc] {
+    content: url('images/gamepage/empty.svg');
+}
+
+img.landH[b-9s5izdb9cc] {
+    content: url('images/gamepage/land_horizontal.svg');
+    opacity: 0.7;
+}
+
+img.landV[b-9s5izdb9cc] {
+    content: url('images/gamepage/land_vertical.svg');
+    width: 80%;
+    opacity: 0.7;
+}
+
+img.railH[b-9s5izdb9cc] {
+    content: url('images/gamepage/railway_horizontal.svg');
+}
+
+img.railV[b-9s5izdb9cc] {
+    content: url('images/gamepage/railway_vertical.svg');
+}
+
+img.roadBtmL[b-9s5izdb9cc] {
+    content: url('images/gamepage/road_bottom_left.svg');
+}
+
+img.roadBtmR[b-9s5izdb9cc] {
+    content: url('images/gamepage/road_bottom_right.svg');
+}
+
+img.roadH[b-9s5izdb9cc] {
+    content: url('images/gamepage/road_horizontal.svg');
+}
+
+img.roadTopL[b-9s5izdb9cc] {
+    content: url('images/gamepage/road_top_left.svg');
+}
+
+img.roadTopR[b-9s5izdb9cc] {
+    content: url('images/gamepage/road_top_right.svg');
+}
+
+img.roadV[b-9s5izdb9cc] {
+    content: url('images/gamepage/road_vertical.svg');
+}
+
+/* #endregion */
+/* /Pages/Gaming/GamingPage.razor.rz.scp.css */
+.background[b-c7b4xtdkca] {
+    width: calc(1920 * var(--unit));
+    height: calc(1080 * var(--unit));
+    background-image: url('./images/gamepage/background.svg');
+    background-size: cover;
+    background-position: center;
+}
 /* /Pages/Ready/Components/ColorChoicePanel.razor.rz.scp.css */
 .choice-bar[b-u5nrbsbut8] {
     display: flex;
