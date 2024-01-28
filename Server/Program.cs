@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Server;
 using Server.DataModels;
 using Server.Hubs;
+using Server.Presenters;
 using Server.Services;
 using SharedLibrary.MonopolyMap;
 using System.Security.Claims;
-using Server.Presenters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,7 +91,7 @@ app.MapGet("/map", (string mapId) =>
 
 app.MapGet("/rooms", () =>
 {
-    var repository = app.Services.CreateScope().ServiceProvider.GetRequiredService<IRepository>();
+    var repository = app.Services.CreateScope().ServiceProvider.GetRequiredService<IQueryRepository>();
     return Results.Json(repository.GetRooms());
 });
 
