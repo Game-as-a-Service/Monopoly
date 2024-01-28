@@ -1,10 +1,9 @@
-﻿using System.Reflection;
-using Application.Common;
+﻿using Application.Common;
 using Domain.Common;
 using Server.Common;
-using Server.Hubs;
 using Server.Presenters;
 using Server.Repositories;
+using System.Reflection;
 
 namespace Server;
 
@@ -12,7 +11,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddMonopolyServer(this IServiceCollection services)
     {
-        services.AddSingleton<IRepository, InMemoryRepository>()
+        var repository = new InMemoryRepository();
+        services.AddSingleton<ICommandRepository>(repository)
+                .AddSingleton<IQueryRepository>(repository)
                 .AddSingleton<IEventBus<DomainEvent>, MonopolyEventBus>()
                 .AddTransient(typeof(SignalrDefaultPresenter<>), typeof(SignalrDefaultPresenter<>));
         services.AddSignalREventHandlers();
@@ -22,7 +23,7 @@ public static class DependencyInjection
     private static IServiceCollection AddSignalREventHandlers(this IServiceCollection services)
     {
         var handlers = Assembly.GetExecutingAssembly().GetTypes()
-            .Where(t => t is { IsClass: true, IsAbstract: false } 
+            .Where(t => t is { IsClass: true, IsAbstract: false }
                           && t.IsAssignableTo(typeof(IMonopolyEventHandler)))
             .ToList();
         foreach (var handler in handlers)

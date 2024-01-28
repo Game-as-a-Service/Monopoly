@@ -15,10 +15,10 @@ public static class DependencyInjection
     {
         var assembly = typeof(DependencyInjection).Assembly;
         var types = assembly.GetTypes();
-        var useCaseType = typeof(Usecase<,>);
+        var useCaseType = typeof(CommandUsecase<,>);
         var queryUsecaseType = typeof(QueryUsecase<,>);
 
-        foreach (var type in types.Where(t => t.BaseType?.IsGenericType is true))
+        foreach (var type in types.Where(t => t.BaseType?.IsGenericType is true && t.IsAbstract == false))
         {
             if (type.BaseType?.GetGenericTypeDefinition() == useCaseType)
             {

@@ -8,8 +8,8 @@ public record PayTollRequest(string GameId, string PlayerId)
 
 public record PayTollResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class PayTollUsecase(IRepository repository)
-    : Usecase<PayTollRequest, PayTollResponse>(repository)
+public class PayTollUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<PayTollRequest, PayTollResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(PayTollRequest request, IPresenter<PayTollResponse> presenter)
     {

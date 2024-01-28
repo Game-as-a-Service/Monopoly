@@ -8,8 +8,8 @@ public record EndAuctionRequest(string GameId, string PlayerId)
 
 public record EndAuctionResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class EndAuctionUsecase(IRepository repository)
-    : Usecase<EndAuctionRequest, EndAuctionResponse>(repository)
+public class EndAuctionUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<EndAuctionRequest, EndAuctionResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(EndAuctionRequest request, IPresenter<EndAuctionResponse> presenter)
     {

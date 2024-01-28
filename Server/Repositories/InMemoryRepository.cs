@@ -3,7 +3,7 @@ using Application.DataModels;
 
 namespace Server.Repositories;
 
-public class InMemoryRepository : IRepository
+public class InMemoryRepository : ICommandRepository, IQueryRepository
 {
     private readonly Dictionary<string, Monopoly> Games = new();
 

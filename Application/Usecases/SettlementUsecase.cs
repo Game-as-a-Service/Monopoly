@@ -8,8 +8,8 @@ public record SettlementRequest(string GameId, string PlayerId)
 
 public record SettlementResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class SettlementUsecase(IRepository repository)
-    : Usecase<SettlementRequest, SettlementResponse>(repository)
+public class SettlementUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<SettlementRequest, SettlementResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(SettlementRequest request, IPresenter<SettlementResponse> presenter)
     {

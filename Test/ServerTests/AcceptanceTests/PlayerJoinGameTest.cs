@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Server.DataModels;
 using SharedLibrary;
+using SharedLibrary.ResponseArgs.Monopoly;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using SharedLibrary.ResponseArgs.Monopoly;
 
 namespace ServerTests.AcceptanceTests;
 
@@ -22,7 +22,7 @@ public class PlayerJoinGameTest
     {
         server = new MonopolyTestServer();
         jwtTokenService = server.GetRequiredService<MockJwtTokenService>();
-        repository = server.GetRequiredService<IRepository>();
+        repository = server.GetRequiredService<IQueryRepository>();
         jwtBearerOptions = server.GetRequiredService<IOptionsMonitor<JwtBearerOptions>>().Get("Bearer");
     }
 

@@ -11,6 +11,14 @@ public interface IRepository
     public string Save(Monopoly monopoly);
 }
 
+public interface ICommandRepository : IRepository
+{
+}
+
+public interface IQueryRepository : IRepository
+{
+}
+
 internal static class RepositoryExtensions
 {
     internal static string Save(this IRepository repository, Domain.Monopoly domainMonopoly)

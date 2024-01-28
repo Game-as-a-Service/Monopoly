@@ -8,7 +8,8 @@ public record RedeemRequest(string GameId, string PlayerId, string BlockId)
 
 public record RedeemResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class RedeemUsecase(IRepository repository) : Usecase<RedeemRequest, RedeemResponse>(repository)
+public class RedeemUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<RedeemRequest, RedeemResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(RedeemRequest request, IPresenter<RedeemResponse> presenter)
     {

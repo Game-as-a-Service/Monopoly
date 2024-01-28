@@ -8,8 +8,8 @@ public record SelectRoleRequest(string GameId, string PlayerId, string roleId)
 
 public record SelectRoleResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class SelectRoleUsecase(IRepository repository)
-    : Usecase<SelectRoleRequest, SelectRoleResponse>(repository)
+public class SelectRoleUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<SelectRoleRequest, SelectRoleResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(SelectRoleRequest request, IPresenter<SelectRoleResponse> presenter)
     {

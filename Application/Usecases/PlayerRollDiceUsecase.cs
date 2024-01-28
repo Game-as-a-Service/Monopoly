@@ -8,8 +8,8 @@ public record PlayerRollDiceRequest(string GameId, string PlayerId)
 
 public record PlayerRollDiceResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class PlayerRollDiceUsecase(IRepository repository)
-    : Usecase<PlayerRollDiceRequest, PlayerRollDiceResponse>(repository)
+public class PlayerRollDiceUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<PlayerRollDiceRequest, PlayerRollDiceResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(PlayerRollDiceRequest request, IPresenter<PlayerRollDiceResponse> presenter)
     {

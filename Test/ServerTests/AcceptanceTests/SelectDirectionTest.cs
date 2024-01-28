@@ -43,7 +43,7 @@ public class SelectDirectionTest
             .WithPosition(A_block.Id, Direction.Down)
             .Build()
         )
-        .WithMockDice(new[] { 2 })
+        .WithMockDice([2])
         .WithCurrentPlayer(new CurrentPlayerStateBuilder(A.Id).Build());
 
         monopolyBuilder.Save(server);
@@ -63,7 +63,7 @@ public class SelectDirectionTest
                 (SuspendRoundEventArgs e) => e is { PlayerId: "A", SuspendRounds: 2 });
         hub.VerifyNoElseEvent();
 
-        var repo = server.GetRequiredService<IRepository>();
+        var repo = server.GetRequiredService<IQueryRepository>();
         var game = repo.FindGameById("1");
         var player = game.Players.First(p => p.Id == A.Id)!;
         Assert.AreEqual("Jail", player.Chess.CurrentPosition);
@@ -92,7 +92,7 @@ public class SelectDirectionTest
             .WithPosition("ParkingLot", Direction.Down)
             .Build()
         )
-        .WithMockDice(new[] { 2 })
+        .WithMockDice([2])
         .WithCurrentPlayer(
             new CurrentPlayerStateBuilder(A.Id)
                 .WithRemainingSteps(0)
@@ -115,9 +115,9 @@ public class SelectDirectionTest
 
         hub.VerifyNoElseEvent();
 
-        var repo = server.GetRequiredService<IRepository>();
+        var repo = server.GetRequiredService<IQueryRepository>();
         var game = repo.FindGameById("1");
-        var player = game.Players.First(p=>p.Id== A.Id)!;
+        var player = game.Players.First(p => p.Id == A.Id)!;
         Assert.AreEqual("ParkingLot", player.Chess.CurrentPosition);
     }
 }

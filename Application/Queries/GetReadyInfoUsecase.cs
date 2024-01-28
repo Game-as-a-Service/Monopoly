@@ -10,12 +10,9 @@ public record GetReadyInfoResponse(GetReadyInfoResponse.ReadyInfo Info)
     public record Player(string PlayerId, bool IsReady, string? RoleId, int? LocationId);
 }
 
-public class GetReadyInfoUsecase : QueryUsecase<GetReadyInfoRequest, GetReadyInfoResponse>
+public class GetReadyInfoUsecase(ICommandRepository repository)
+    : QueryUsecase<GetReadyInfoRequest, GetReadyInfoResponse>(repository)
 {
-    public GetReadyInfoUsecase(IRepository repository) : base(repository)
-    {
-    }
-
     public override async Task ExecuteAsync(GetReadyInfoRequest request, IPresenter<GetReadyInfoResponse> presenter)
     {
         var game = Repository.FindGameById(request.GameId);

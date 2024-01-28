@@ -38,7 +38,7 @@ public class Utils
 
         public string HostId { get; private set; }
 
-        public int[] Dices { get; private set; } = {0};
+        public int[] Dices { get; private set; } = { 0 };
 
         public Application.DataModels.CurrentPlayerState CurrentPlayerState { get; private set; }
         public List<LandHouse> LandHouses { get; private set; } = new();
@@ -95,7 +95,7 @@ public class Utils
         internal void Save(MonopolyTestServer server)
         {
             var monopoly = Build();
-            server.GetRequiredService<IRepository>().Save(monopoly);
+            server.GetRequiredService<ICommandRepository>().Save(monopoly);
             server.GetRequiredService<MockDiceService>().Dices = Dices.Select(value => new MockDice(value)).ToArray<IDice>();
         }
 
@@ -112,8 +112,8 @@ public class Utils
         public decimal Money { get; set; }
         public string BlockId { get; set; }
         public Direction Direction { get; set; }
-        public List<Application.DataModels.LandContract> LandContracts { get; set; }     
-        public PlayerState PlayerState { get; set;}
+        public List<Application.DataModels.LandContract> LandContracts { get; set; }
+        public PlayerState PlayerState { get; set; }
         public int BankruptRounds { get; set; }
         public string RoleId { get; set; }
         public int LocationId { get; set; }

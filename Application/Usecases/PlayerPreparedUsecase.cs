@@ -8,8 +8,8 @@ public record PlayerPreparedRequest(string GameId, string PlayerId)
 
 public record PlayerPreparedResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class PlayerPreparedUsecase(IRepository repository)
-    : Usecase<PlayerPreparedRequest, PlayerPreparedResponse>(repository)
+public class PlayerPreparedUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<PlayerPreparedRequest, PlayerPreparedResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(PlayerPreparedRequest request, IPresenter<PlayerPreparedResponse> presenter)
     {

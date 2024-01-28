@@ -8,8 +8,8 @@ public record PlayerBuyLandRequest(string GameId, string PlayerId, string LandID
 
 public record PlayerBuyLandResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class PlayerBuyLandUsecase(IRepository repository)
-    : Usecase<PlayerBuyLandRequest, PlayerBuyLandResponse>(repository)
+public class PlayerBuyLandUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<PlayerBuyLandRequest, PlayerBuyLandResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(PlayerBuyLandRequest request, IPresenter<PlayerBuyLandResponse> presenter)
     {

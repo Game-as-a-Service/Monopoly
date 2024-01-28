@@ -4,15 +4,10 @@ using Server.Common;
 
 namespace Server;
 
-internal class MonopolyEventBus : IEventBus<DomainEvent>
+internal class MonopolyEventBus(IEnumerable<IMonopolyEventHandler> handlers) : IEventBus<DomainEvent>
 {
-    private readonly Dictionary<Type, IMonopolyEventHandler> _handlers;
+    private readonly Dictionary<Type, IMonopolyEventHandler> _handlers = handlers.ToDictionary(h => h.EventType, h => h);
 
-    public MonopolyEventBus(IEnumerable<IMonopolyEventHandler> handlers)
-    {
-        _handlers = handlers.ToDictionary(h => h.EventType, h => h);
-    }
-    
     public async Task PublishAsync(IEnumerable<DomainEvent> events)
     {
         foreach (var e in events)

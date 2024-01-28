@@ -8,8 +8,8 @@ public record BuildHouseRequest(string GameId, string PlayerId)
 
 public record BuildHouseResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class BuildHouseUsecase(IRepository repository)
-    : Usecase<BuildHouseRequest, BuildHouseResponse>(repository)
+public class BuildHouseUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<BuildHouseRequest, BuildHouseResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(BuildHouseRequest request, IPresenter<BuildHouseResponse> presenter)
     {

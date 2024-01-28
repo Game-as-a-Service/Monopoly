@@ -8,8 +8,8 @@ public record SelectLocationRequest(string GameId, string PlayerId, int Location
 
 public record SelectLocationResponse(IReadOnlyList<DomainEvent> Events) : CommandResponse(Events);
 
-public class SelectLocationUsecase(IRepository repository)
-    : Usecase<SelectLocationRequest, SelectLocationResponse>(repository)
+public class SelectLocationUsecase(ICommandRepository repository, IEventBus<DomainEvent> eventBus)
+    : CommandUsecase<SelectLocationRequest, SelectLocationResponse>(repository, eventBus)
 {
     public override async Task ExecuteAsync(SelectLocationRequest request, IPresenter<SelectLocationResponse> presenter)
     {

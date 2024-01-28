@@ -7,8 +7,6 @@ internal class TypedHubConnection
 {
     private readonly HubConnection hubConnection;
 
-    public event PlayerJoinGameEventDelegate? PlayerJoinGameEventHandler;
-    public delegate void PlayerJoinGameEventDelegate(PlayerJoinGameEvent e);
     public event GetReadyInfoEventDelegate? GetReadyInfoEventHandler;
     public delegate void GetReadyInfoEventDelegate(GetReadyInfoEventArgs e);
     public event WelcomeEventDelegate? WelcomeEventHandler;
@@ -16,15 +14,9 @@ internal class TypedHubConnection
 
     public TypedHubConnection(HubConnection hubConnection)
     {
-        hubConnection.On<PlayerJoinGameEvent>(nameof(PlayerJoinGameEvent), (e) => PlayerJoinGameEventHandler?.Invoke(e));
         hubConnection.On<GetReadyInfoEventArgs>("GetReadyInfoEvent", (e) => GetReadyInfoEventHandler?.Invoke(e));
         hubConnection.On<WelcomeEventArgs>("WelcomeEvent", (e) => WelcomeEventHandler?.Invoke(e));
         this.hubConnection = hubConnection;
     }
     public async Task GetReadyInfo() => await hubConnection.SendAsync("GetReadyInfo");
-}
-
-internal class PlayerJoinGameEvent : EventArgs
-{
-    public required string PlayerId { get; set; }
 }

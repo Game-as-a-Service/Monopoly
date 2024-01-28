@@ -5,14 +5,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Server.Presenters;
 using SharedLibrary;
-using System.Security.Claims;
 using SharedLibrary.ResponseArgs.Monopoly;
 using SharedLibrary.ResponseArgs.ReadyRoom;
+using System.Security.Claims;
 
 namespace Server.Hubs;
 
 [Authorize]
-public class MonopolyHub(IRepository repository) : Hub<IMonopolyResponses>
+public class MonopolyHub(ICommandRepository repository) : Hub<IMonopolyResponses>
 {
     private const string Playerid = "PlayerId";
     private const string Gameid = "GameId";
@@ -38,7 +38,7 @@ public class MonopolyHub(IRepository repository) : Hub<IMonopolyResponses>
     public async Task PlayerBuyLand(string gameId, string userId, string blockId, PlayerBuyLandUsecase usecase, SignalrDefaultPresenter<PlayerBuyLandResponse> presenter)
     {
         await usecase.ExecuteAsync(
-            new PlayerBuyLandRequest(gameId, userId, blockId), 
+            new PlayerBuyLandRequest(gameId, userId, blockId),
             presenter
             );
     }
