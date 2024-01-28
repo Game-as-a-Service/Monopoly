@@ -51,6 +51,7 @@ div.start {
 
     .roadTop img {
         width: 100%;
+        display: flex;
         position: relative;
     }
 
@@ -73,6 +74,7 @@ div.start {
 
     .roadLeft img {
         width: 100%;
+        display: flex;
         position: relative;
     }
 
@@ -94,6 +96,7 @@ div.start {
 
     .roadRight img {
         width: 100%;
+        display: flex;
         position: relative;
     }
 
