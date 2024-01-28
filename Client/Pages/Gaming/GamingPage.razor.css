@@ -1,0 +1,7 @@
+.background {
+    width: calc(1920 * var(--unit));
+    height: calc(1080 * var(--unit));
+    background-image: url('./images/gamepage/background.svg');
+    background-size: cover;
+    background-position: center;
+}

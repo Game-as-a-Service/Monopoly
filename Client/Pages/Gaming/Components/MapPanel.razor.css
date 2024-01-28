@@ -1,0 +1,156 @@
+﻿.container {
+    width: calc(1277 * var(--unit));
+    top: 20vh;
+    margin: auto;
+    /* background-color: antiquewhite; */
+    position: relative;
+    font-size: 0;
+}
+
+div {
+    margin: calc(4 * var(--unit));
+}
+
+    div.row {
+        margin: 0;
+        height: calc(156 * var(--unit));
+    }
+
+/* #region special block */
+
+.empty, .start, .parking, .prison {
+    display: inline-block;
+    position: relative;
+    width: calc(133 * var(--unit));
+    vertical-align: bottom;
+}
+
+div.parking {
+    content: url('images/gamepage/parkinglot.svg');
+}
+
+div.prison {
+    content: url('images/gamepage/prison.svg');
+}
+
+div.start {
+    content: url('images/gamepage/startpoint.svg');
+}
+
+/* #endregion */
+
+/* #region roadTop */
+
+.roadTop {
+    display: inline-block;
+    position: relative;
+    width: calc(133 * var(--unit));
+    padding: 0;
+    border: 0;
+}
+
+    .roadTop img {
+        width: 100%;
+        position: relative;
+    }
+
+    .roadTop .landH {
+        position: absolute;
+        top: -48%;
+    }
+
+/* #endregion */
+
+/* #region roadLeft */
+
+.roadLeft {
+    display: inline-block;
+    width: calc(133 * var(--unit));
+    height: calc(133 * var(--unit));
+    text-align: right;
+    position: relative;
+}
+
+    .roadLeft img {
+        width: 100%;
+        position: relative;
+    }
+
+    .roadLeft .landV {
+        position: absolute;
+        right: 105%;
+    }
+
+/* #endregion */
+
+/* #region roadRight */
+
+.roadRight {
+    display: inline-block;
+    width: calc(133 * var(--unit));
+    text-align: left;
+    position: relative;
+}
+
+    .roadRight img {
+        width: 100%;
+        position: relative;
+    }
+
+    .roadRight .landV {
+        position: absolute;
+        left: 105%;
+    }
+
+/* #endregion */
+
+/* #region img */
+
+img.empty {
+    content: url('images/gamepage/empty.svg');
+}
+
+img.landH {
+    content: url('images/gamepage/land_horizontal.svg');
+    opacity: 0.7;
+}
+
+img.landV {
+    content: url('images/gamepage/land_vertical.svg');
+    width: 80%;
+    opacity: 0.7;
+}
+
+img.railH {
+    content: url('images/gamepage/railway_horizontal.svg');
+}
+
+img.railV {
+    content: url('images/gamepage/railway_vertical.svg');
+}
+
+img.roadBtmL {
+    content: url('images/gamepage/road_bottom_left.svg');
+}
+
+img.roadBtmR {
+    content: url('images/gamepage/road_bottom_right.svg');
+}
+
+img.roadH {
+    content: url('images/gamepage/road_horizontal.svg');
+}
+
+img.roadTopL {
+    content: url('images/gamepage/road_top_left.svg');
+}
+
+img.roadTopR {
+    content: url('images/gamepage/road_top_right.svg');
+}
+
+img.roadV {
+    content: url('images/gamepage/road_vertical.svg');
+}
+
+/* #endregion */
