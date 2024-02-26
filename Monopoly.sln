@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{928580F2-D3C6-421A-AD82-1835536FD353}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{7DC91B93-4273-41C6-B504-B72DA0617ACC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7DC91B93-4273-41C6-B504-B72DA0617ACC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{E5C927B5-EE0B-4EE4-8A30-D5B9871EE4A3}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -18,9 +18,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainTests", "Test\DomainT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerTests", "Test\ServerTests\ServerTests.csproj", "{0E459B0A-840A-4C8E-A8CC-B6225D8C4F3F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{0542FC09-B1F6-47DD-B99B-1DA85285CA16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monopoly.Web", "Monopoly.Web\Monopoly.Web.csproj", "{0542FC09-B1F6-47DD-B99B-1DA85285CA16}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedLibrary", "SharedLibrary\SharedLibrary.csproj", "{4BBE8D55-D8DD-4A8B-B6D7-F26626CB33F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{95BDEC7B-E156-4D7B-914E-D4E1E7B3A35B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{99A640BE-CB0B-4822-BF61-B2FAE2FFB4D7} = {7DC91B93-4273-41C6-B504-B72DA0617ACC}
 		{0E459B0A-840A-4C8E-A8CC-B6225D8C4F3F} = {7DC91B93-4273-41C6-B504-B72DA0617ACC}
+		{0542FC09-B1F6-47DD-B99B-1DA85285CA16} = {95BDEC7B-E156-4D7B-914E-D4E1E7B3A35B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6585E240-3235-4BD7-BDF5-456A83B85D9F}
