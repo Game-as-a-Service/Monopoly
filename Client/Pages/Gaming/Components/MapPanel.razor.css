@@ -1,4 +1,4 @@
-﻿.container {
+﻿.container[b-9s5izdb9cc] {
     width: calc(1277 * var(--unit));
     top: calc(1080 * var(--unit) * 0.2);
     margin: auto;
@@ -8,7 +8,7 @@
     user-select: none; 
 }
 
-div {
+div[b-9s5izdb9cc] {
     margin: calc(4 * var(--unit));
 }
 
@@ -51,7 +51,7 @@ div.start {
     border: 0;
 }
 
-    .roadTop img {
+    .roadTop img[b-9s5izdb9cc] {
         width: 100%;
         display: flex;
         position: relative;
@@ -73,7 +73,7 @@ div.start {
     position: relative;
 }
 
-    .roadLeft img {
+    .roadLeft img[b-9s5izdb9cc] {
         width: 100%;
         display: flex;
         position: relative;
@@ -95,7 +95,7 @@ div.start {
     position: relative;
 }
 
-    .roadRight img {
+    .roadRight img[b-9s5izdb9cc] {
         width: 100%;
         display: flex;
         position: relative;

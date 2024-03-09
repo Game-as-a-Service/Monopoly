@@ -1,4 +1,5 @@
 ﻿@using Client.Pages.Gaming.Entities
+@using System.Web;
 <div class="container">
     <!--
 
@@ -12,70 +13,14 @@
     </div>
 
     -->
-
-    @* @for (int i = 0; i < GetMapRow(); i++)
+    
+    @for (int i = 0; i < GetMapRow(); i++)
     {
         <div class="row">
             @for (int j = 0; j < GetMapCol(); j++)
             {
-                @GetBlockTag(i, j)
+                @((MarkupString)GetBlockTag(i, j))
             }
         </div>
-    } *@
-
-    <div class="row">
-        <div class="start"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadTop"><img class="landH"><img class="railH"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadTop"><img class="landH"><img class="roadTopR"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-    </div>
-    <div class="row">
-        <div class="roadLeft"><img class="landV"><img class="roadV"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-        <div class="roadTop"><img class="roadV"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-    </div>
-    <div class="row">
-        <div class="roadLeft"><img class="landV"><img class="railV"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-        <div class="roadTop"><img class="landH"><img class="roadTopL"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="parking"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadTop"><img class="landH"><img class="roadTopR"></div>
-    </div>
-    <div class="row">
-        <div class="roadLeft"><img class="landV"> <img class="roadBtmL"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="prison"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-        <div class="roadRight"><img class="landV"><img class="railV"></div>
-    </div>
-    <div class="row">
-        <div class="roadLeft"></div>
-        <div class="empty"></div>
-        <div class="empty"></div>
-        <div class="roadLeft"><img class="landV"><img class="roadBtmL"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadTop"><img class="landH"><img class="railH"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadTop"><img class="landH"><img class="roadH"></div>
-        <div class="roadRight"><img class="roadBtmR"></div>
-    </div>
+    }
 </div>
