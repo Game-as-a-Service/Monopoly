@@ -1,6 +1,4 @@
-﻿using Client.Options;
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Components;
 using Client.HttpClients;
 
 namespace Client.Pages;
@@ -20,7 +18,6 @@ public partial class DevPage
 
     private async void CreateGame()
     {
-        CreateGameBodyPayload bodyPayload = new([.. _players]);
         var host = _players.FirstOrDefault();
         if (host is null)
         {
@@ -42,8 +39,6 @@ public partial class DevPage
     {
         NavigationManager.NavigateTo($"games/{room.Id}?token={player.Token}");
     }
-
-    private record CreateGameBodyPayload(Player[] Players);
 
     private record Player(string Id, string Token);
 
