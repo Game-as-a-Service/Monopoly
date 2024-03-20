@@ -2,7 +2,7 @@
 
 <div class="background">
     <div class="players">
-        @foreach (var player in players)
+        @foreach (var player in _players)
         {
             <div class="player">
                 <div class="player-id">@player.Id</div>
@@ -12,7 +12,7 @@
     </div>
     <div class="create-room" @onclick="CreateGame">Create Room</div>
     <div class="rooms">
-        @foreach (var room in rooms)
+        @foreach (var room in _rooms)
         {
             <div class="room">
                 <div class="room-id">@room.Id</div>

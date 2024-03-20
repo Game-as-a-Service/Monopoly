@@ -11,7 +11,7 @@ public partial class Index
 
     [Parameter, SupplyParameterFromQuery(Name = "token")]
     public string AccessToken { get; set; } = default!;
-    [Inject] private IOptions<BackendApiOptions> BackendApiOptions { get; set; } = default!;
+    [Inject] private IOptions<MonopolyApiOptions> BackendApiOptions { get; set; } = default!;
     private string UserId { get; set; } = string.Empty;
     private List<string> Messages { get; } = [];
     public bool IsGameStarted { get; set; } = false;

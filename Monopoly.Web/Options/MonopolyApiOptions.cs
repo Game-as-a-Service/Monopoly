@@ -1,9 +1,9 @@
 ﻿namespace Client.Options;
 
-public class BackendApiOptions
+public class MonopolyApiOptions
 {
     public string BaseUrl { get; set; } = default!;
-    public BackendApiOptions()
+    public MonopolyApiOptions()
     {
 
     }
